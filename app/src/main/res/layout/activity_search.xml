@@ -1,16 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SearchActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/search"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/default_padding">
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="@dimen/default_padding"
+            android:text="@string/search"
+            android:fontFamily="@font/ys_display_medium"
+            android:textFontWeight="500"
+            android:textSize="@dimen/primary_text_size"
+            style="@style/Search.Theme.PlaylistMaker" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="11dp"
+                android:paddingHorizontal="13dp"
+                app:cornerRadius="16dp"
+                android:hint="@string/search"
+                android:fontFamily="@font/ys_display_regular"
+                android:textColorHint="@color/text_gray"
+                android:textColor="@color/dark"
+                android:textFontWeight="400"
+                android:textSize="16sp"
+                android:drawableStart="@drawable/search_edit_text"
+                android:background="@drawable/search_field"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E6E8EB"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cornerRadius="0dp"
+                android:foreground="?attr/selectableItemBackground"
+                android:backgroundTint="@color/white"
+                android:text="Поиск"
+                android:textColor="@color/blue"
+                android:fontFamily="@font/ys_display_regular"
+                android:textFontWeight="400"
+                android:textSize="12sp"
+                android:letterSpacing="0"
+                android:textAllCaps="false"
+                app:icon="@drawable/search"
+                app:iconGravity="textTop"
+                app:iconTint="@color/blue"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:paddingBottom="8dp"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cornerRadius="0dp"
+                android:foreground="?attr/selectableItemBackground"
+                android:backgroundTint="@color/white"
+                android:text="Медиатека"
+                android:textColor="@color/dark"
+                android:fontFamily="@font/ys_display_regular"
+                android:textFontWeight="400"
+                android:textSize="12sp"
+                android:letterSpacing="0"
+                android:textAllCaps="false"
+                app:icon="@drawable/media"
+                app:iconGravity="textTop"
+                app:iconTint="@color/dark"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:paddingBottom="8dp"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cornerRadius="0dp"
+                android:foreground="?attr/selectableItemBackground"
+                android:backgroundTint="@color/white"
+                android:text="Настройки"
+                android:textColor="@color/dark"
+                android:fontFamily="@font/ys_display_regular"
+                android:textFontWeight="400"
+                android:textSize="12sp"
+                android:letterSpacing="0"
+                android:textAllCaps="false"
+                app:icon="@drawable/settings"
+                app:iconGravity="textTop"
+                app:iconTint="@color/dark"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:paddingBottom="8dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

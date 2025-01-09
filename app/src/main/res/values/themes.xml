@@ -12,4 +12,8 @@
     <style name="Settings.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
         <item name="android:background">@color/white</item>
     </style>
+
+    <style name="Search.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
+        <item name="android:background">@color/white</item>
+    </style>
 </resources>
