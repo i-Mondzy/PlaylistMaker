@@ -44,30 +44,49 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="8dp"
             android:paddingHorizontal="@dimen/default_padding">
 
-            <EditText
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="11dp"
-                android:paddingHorizontal="13dp"
-                app:cornerRadius="16dp"
-                android:hint="@string/search"
-                android:fontFamily="@font/ys_display_regular"
-                android:textColorHint="@color/text_gray"
-                android:textColor="@color/dark"
-                android:textFontWeight="400"
-                android:textSize="16sp"
-                android:textCursorDrawable="@drawable/custom_cursor"
-                android:drawableStart="@drawable/search_edit_text"
-                android:drawablePadding="8dp"
-                android:background="@drawable/search_field"/>
+                android:background="@drawable/search_field">
 
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/input_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingHorizontal="13dp"
+                    android:paddingVertical="11dp"
+                    android:background="@drawable/search_field"
+                    android:drawableStart="@drawable/search_edit_text"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/search"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:fontFamily="@font/ys_display_regular"
+                    android:textColor="@color/dark"
+                    android:textColorHint="@color/text_gray"
+                    android:textCursorDrawable="@drawable/custom_cursor"
+                    android:textFontWeight="400"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/clear_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/default_padding"
+                    android:layout_gravity="center"
+                    android:src="@drawable/clear"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
 
     </LinearLayout>
 
