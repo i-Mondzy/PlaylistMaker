@@ -9,33 +9,16 @@
     style="@style/Settings.Theme.PlaylistMaker">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:padding="4dp"
-        android:orientation="horizontal">
+        style="@style/ToolBarLinearLayout">
 
         <Button
             android:id="@+id/btn_back"
-            android:layout_width="48dp"
-            android:layout_height="match_parent"
-            android:foreground="?attr/selectableItemBackground"
-            android:padding="@dimen/default_padding"
-            android:layout_gravity="center"
-            android:outlineProvider="none"
-            app:icon="@drawable/back"
             style="@style/BackButtonStyle"/>
 
         <TextView
             android:id="@+id/settings"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="12dp"
-            android:gravity="center"
             android:text="@string/settings"
-            android:fontFamily="@font/ys_display_medium"
-            android:textFontWeight="500"
-            android:textSize="@dimen/primary_text_size"
-            style="@style/Settings.Theme.PlaylistMaker"/>
+            style="@style/ToolBarTextView"/>
 
     </LinearLayout>
 
@@ -52,7 +35,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/settings_padding"
+                android:layout_marginVertical="@dimen/settings_button_padding"
                 android:layout_gravity="center|start"
                 android:text="@string/theme"
                 android:fontFamily="@font/ys_display_regular"

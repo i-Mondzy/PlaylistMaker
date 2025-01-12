@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -29,30 +30,26 @@ class SettingsActivity : AppCompatActivity() {
 
         val btnShare = findViewById<Button>(R.id.share)
         btnShare.setOnClickListener{
-            val message = "https://practicum.yandex.ru/android-developer/"
             val btnShareIntent = Intent(Intent.ACTION_SEND)
-            btnShareIntent.putExtra(Intent.EXTRA_TEXT, message)
+            btnShareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.shareUrl))
             btnShareIntent.type = "text/plain"
             startActivity(Intent.createChooser(btnShareIntent, "Поделиться через"))
         }
 
         val btnSupport = findViewById<Button>(R.id.support)
         btnSupport.setOnClickListener{
-            val titleMail = "Сообщение разработчикам и разработчицам приложения Playlist Maker"
-            val bodyMail = "Спасибо разработчикам и разработчицам за крутое приложение!"
             val btnSupportIntent = Intent(Intent.ACTION_SENDTO)
             btnSupportIntent.data = Uri.parse("mailto:")
-            btnSupportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("iMondzy@yandex.ru"))
-            btnSupportIntent.putExtra(Intent.EXTRA_SUBJECT, titleMail)
-            btnSupportIntent.putExtra(Intent.EXTRA_TEXT, bodyMail)
+            btnSupportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.supportAddressMail)))
+            btnSupportIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.supportTitleMail))
+            btnSupportIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.supportBodyMail))
             startActivity(btnSupportIntent)
         }
 
         val btnUserAgreement = findViewById<Button>(R.id.user_agreement)
         btnUserAgreement.setOnClickListener{
-            val url = "https://yandex.ru/legal/practicum_offer/"
             val btnUserAgreementIntent = Intent(Intent.ACTION_VIEW)
-            btnUserAgreementIntent.data = Uri.parse(url)
+            btnUserAgreementIntent.data = Uri.parse(getString(R.string.userAgreementUrl))
             startActivity(btnUserAgreementIntent)
         }
 

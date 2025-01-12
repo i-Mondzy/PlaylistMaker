@@ -6,7 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    style="@style/Search.Theme.PlaylistMaker">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,33 +15,16 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:padding="4dp"
-            android:orientation="horizontal">
+            style="@style/ToolBarLinearLayout">
 
             <Button
                 android:id="@+id/btn_back"
-                android:layout_width="48dp"
-                android:layout_height="match_parent"
-                android:foreground="?attr/selectableItemBackground"
-                android:padding="@dimen/default_padding"
-                android:layout_gravity="center"
-                android:outlineProvider="none"
-                app:icon="@drawable/back"
                 style="@style/BackButtonStyle"/>
 
             <TextView
                 android:id="@+id/settings"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
-                android:gravity="center"
                 android:text="@string/search"
-                android:fontFamily="@font/ys_display_medium"
-                android:textFontWeight="500"
-                android:textSize="@dimen/primary_text_size"
-                style="@style/Settings.Theme.PlaylistMaker"/>
+                style="@style/ToolBarTextView"/>
 
         </LinearLayout>
 
@@ -53,7 +37,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/search_field">
+                android:background="@drawable/search_field_day">
 
                 <EditText
                     android:id="@+id/input_text"
@@ -62,7 +46,6 @@
                     android:layout_weight="1"
                     android:paddingHorizontal="13dp"
                     android:paddingVertical="11dp"
-                    android:background="@drawable/search_field"
                     android:drawableStart="@drawable/search_edit_text"
                     android:drawablePadding="8dp"
                     android:hint="@string/search"
@@ -70,10 +53,10 @@
                     android:maxLines="1"
                     android:fontFamily="@font/ys_display_regular"
                     android:textColor="@color/dark"
-                    android:textColorHint="@color/text_gray"
                     android:textCursorDrawable="@drawable/custom_cursor"
                     android:textFontWeight="400"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    style="@style/SearchEditTextStyle"/>
 
                 <ImageView
                     android:id="@+id/clear_text"
