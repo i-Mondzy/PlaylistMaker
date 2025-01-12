@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -17,6 +18,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class SearchActivity : AppCompatActivity() {
+    var inputText = STRING_DEF
+
+    companion object {
+        const val SEARCH_STRING = "SEARCH_STRING"
+        const val STRING_DEF = ""
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,6 +40,8 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
+
+
         val inputEditText = findViewById<EditText>(R.id.input_text)
         val clearButton = findViewById<ImageView>(R.id.clear_text)
 
@@ -45,18 +55,20 @@ class SearchActivity : AppCompatActivity() {
         }
 
         val simpleTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.visibility = clearButtonVisibility(s)
             }
 
-            override fun afterTextChanged(s: Editable?) {}
+            override fun afterTextChanged(s: Editable?) {
+                inputText = s.toString()
+            }
         }
 
         inputEditText.addTextChangedListener(simpleTextWatcher)
-
-
 
         val rootLayout = findViewById<FrameLayout>(R.id.main)
 
@@ -84,6 +96,19 @@ class SearchActivity : AppCompatActivity() {
             imm.hideSoftInputFromWindow(currentFocusView.windowToken, 0)
             currentFocusView.clearFocus()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_STRING, inputText)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        inputText = savedInstanceState.getString(SEARCH_STRING, STRING_DEF)
+
+        val editText = findViewById<EditText>(R.id.input_text)
+        editText.setText(inputText)
     }
 
 }
