@@ -62,8 +62,8 @@
                 android:paddingStart="7dp"
                 android:paddingEnd="@dimen/default_padding"
                 android:layout_gravity="center|end"
-                android:src="@drawable/clear"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                style="@style/SearchImageViewStyle"/>
 
 <!--            <LinearLayout-->
 <!--                android:layout_width="match_parent"-->

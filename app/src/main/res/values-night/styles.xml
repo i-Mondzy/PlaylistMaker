@@ -64,4 +64,8 @@
         <item name="android:drawableTint">@color/dark</item>
     </style>
 
+    <style name="SearchImageViewStyle">
+        <item name="android:src">@drawable/clear_night</item>
+    </style>
+
 </resources>
