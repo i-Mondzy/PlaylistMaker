@@ -44,10 +44,18 @@
                 style="@style/Settings.Theme.PlaylistMaker"/>
 
             <Switch
+                android:id="@+id/switch_theme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|end"
-                tools:ignore="UseSwitchCompatOrMaterialXml"/>
+                tools:ignore="UseSwitchCompatOrMaterialXml"
+                android:thumb="@drawable/switch_thumb"
+                android:thumbTint="@color/switch_thumb_color"
+                android:thumbTintMode="src_over"
+                app:track="@drawable/switch_track"
+                android:trackTint="@color/switch_track_color"
+                android:trackTintMode="src_over"
+                android:checked="false"/>
 
         </FrameLayout>
 

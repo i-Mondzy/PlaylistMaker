@@ -1,12 +1,13 @@
 package com.practicum.playlistmaker
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Switch
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
@@ -27,6 +28,15 @@ class SettingsActivity : AppCompatActivity() {
         }
 
 
+
+        val switch = findViewById<Switch>(R.id.switch_theme)
+        switch.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked) {
+                switch.background = ContextCompat.getDrawable(this, R.drawable.custom_ripple_night)
+            } else {
+                switch.background = ContextCompat.getDrawable(this, R.drawable.custom_ripple_day)
+            }
+        }
 
         val btnShare = findViewById<Button>(R.id.share)
         btnShare.setOnClickListener{
