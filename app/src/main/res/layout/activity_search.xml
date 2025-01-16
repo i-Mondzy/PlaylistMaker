@@ -1,16 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchActivity">
+    style="@style/Search.Theme.PlaylistMaker">
 
-    <TextView
-        android:id="@+id/search"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <LinearLayout
+            style="@style/ToolBarLinearLayout">
+
+            <Button
+                android:id="@+id/btn_back"
+                style="@style/BackButtonStyle"/>
+
+            <TextView
+                android:id="@+id/settings"
+                android:text="@string/search"
+                style="@style/ToolBarTextView"/>
+
+        </LinearLayout>
+
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="@dimen/default_padding">
+
+            <EditText
+                android:id="@+id/input_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="13dp"
+                android:paddingEnd="35dp"
+                android:paddingVertical="11dp"
+                android:drawableStart="@drawable/search_edit_text"
+                android:drawablePadding="8dp"
+                android:hint="@string/search"
+                android:inputType="text"
+                android:maxLines="1"
+                android:fontFamily="@font/ys_display_regular"
+                android:textColor="@color/dark"
+                android:textCursorDrawable="@drawable/custom_cursor"
+                android:textFontWeight="400"
+                android:textSize="@dimen/default_text_size"
+                style="@style/SearchEditTextStyle"/>
+
+            <ImageView
+                android:id="@+id/clear_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingStart="7dp"
+                android:paddingEnd="@dimen/default_padding"
+                android:layout_gravity="center|end"
+                android:visibility="gone"
+                style="@style/SearchImageViewStyle"/>
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/search_field_day">-->
+
+<!--                <EditText-->
+<!--                    android:id="@+id/input_text"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:paddingHorizontal="13dp"-->
+<!--                    android:paddingVertical="11dp"-->
+<!--                    android:drawableStart="@drawable/search_edit_text"-->
+<!--                    android:drawablePadding="8dp"-->
+<!--                    android:hint="@string/search"-->
+<!--                    android:inputType="text"-->
+<!--                    android:maxLines="1"-->
+<!--                    android:fontFamily="@font/ys_display_regular"-->
+<!--                    android:textColor="@color/dark"-->
+<!--                    android:textCursorDrawable="@drawable/custom_cursor"-->
+<!--                    android:textFontWeight="400"-->
+<!--                    android:textSize="16sp"-->
+<!--                    style="@style/SearchEditTextStyle"/>-->
+
+<!--                <ImageView-->
+<!--                    android:id="@+id/clear_text"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:paddingHorizontal="@dimen/default_padding"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:src="@drawable/clear"/>-->
+
+<!--            </LinearLayout>-->
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
