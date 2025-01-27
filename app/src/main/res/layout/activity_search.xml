@@ -34,7 +34,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="8dp"
-            android:paddingHorizontal="@dimen/default_padding">
+            android:paddingHorizontal="@dimen/default_padding"
+            android:layout_marginBottom="16dp">
 
             <EditText
                 android:id="@+id/input_text"
@@ -43,7 +44,7 @@
                 android:paddingStart="13dp"
                 android:paddingEnd="35dp"
                 android:paddingVertical="11dp"
-                android:drawableStart="@drawable/search_edit_text"
+                android:drawableStart="@drawable/ic_search_edit_text"
                 android:drawablePadding="8dp"
                 android:hint="@string/search"
                 android:inputType="text"
@@ -100,6 +101,13 @@
 <!--            </LinearLayout>-->
 
         </FrameLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trackRecyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="vertical"/>
 
     </LinearLayout>
 

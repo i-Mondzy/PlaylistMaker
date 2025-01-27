@@ -49,10 +49,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|end"
                 tools:ignore="UseSwitchCompatOrMaterialXml"
-                android:thumb="@drawable/switch_thumb"
+                android:thumb="@drawable/custom_switch_thumb"
                 android:thumbTint="@color/switch_thumb_color"
                 android:thumbTintMode="src_over"
-                app:track="@drawable/switch_track"
+                app:track="@drawable/custom_switch_track"
                 android:trackTint="@color/switch_track_color"
                 android:trackTintMode="src_over"
                 android:checked="false"/>
@@ -66,7 +66,7 @@
                 android:id="@+id/share"
                 android:paddingEnd="2dp"
                 android:text="@string/share"
-                app:icon="@drawable/share"
+                app:icon="@drawable/ic_share"
                 style="@style/SettingsButtonStyle"/>
 
         </FrameLayout>
@@ -77,7 +77,7 @@
             <Button
                 android:id="@+id/support"
                 android:text="@string/support"
-                app:icon="@drawable/support"
+                app:icon="@drawable/ic_support"
                 style="@style/SettingsButtonStyle"/>
 
         </FrameLayout>
@@ -89,7 +89,7 @@
                 android:id="@+id/user_agreement"
                 android:paddingEnd="6dp"
                 android:text="@string/user_agreement"
-                app:icon="@drawable/user_agreement"
+                app:icon="@drawable/ic_user_agreement"
                 style="@style/SettingsButtonStyle"/>
 
         </FrameLayout>

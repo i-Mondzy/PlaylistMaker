@@ -35,16 +35,16 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
+//      Обработчик кнопки "Назад"
         val btnBack = findViewById<Button>(R.id.btn_back)
         btnBack.setOnClickListener{
             finish()
         }
 
+        val inputEditText = findViewById<EditText>(R.id.input_text) // Переменная для поля ввода EditText "Поиск"
+        val clearButton = findViewById<ImageView>(R.id.clear_text) // Переменная для кнопки "Очистить" в поле ввода EditText
 
-
-        val inputEditText = findViewById<EditText>(R.id.input_text)
-        val clearButton = findViewById<ImageView>(R.id.clear_text)
-
+//      Обработчик кнопки "Очистить текст" в поиске
         clearButton.setOnClickListener{
             inputEditText.setText("")
             inputEditText.clearFocus()
@@ -54,6 +54,7 @@ class SearchActivity : AppCompatActivity() {
             inputMethodManager?.hideSoftInputFromWindow(currentView.windowToken, 0)
         }
 
+//      Работа с полем EditText
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -67,11 +68,10 @@ class SearchActivity : AppCompatActivity() {
                 inputText = s.toString()
             }
         }
-
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
+//      Обработчик "Скрытия клавиатуры"
         val rootLayout = findViewById<FrameLayout>(R.id.main)
-
         rootLayout.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 hideKeyboardIfNeeded()
@@ -81,6 +81,7 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
+//  Метод для видимости кнопки "Очистить текст"
     private fun clearButtonVisibility(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) {
             View.GONE
@@ -89,6 +90,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+//  Метод для "Скрытия клавиатуры"
     private fun hideKeyboardIfNeeded() {
         val currentFocusView = currentFocus
         if (currentFocusView != null && currentFocusView is EditText) {
@@ -98,11 +100,13 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+//  Метод для "Сохранения текста"
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_STRING, inputText)
     }
 
+//  Метод для "Воостановления текста"
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         inputText = savedInstanceState.getString(SEARCH_STRING, STRING_DEF)

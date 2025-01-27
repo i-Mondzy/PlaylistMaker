@@ -56,7 +56,7 @@
         <item name="android:padding">@dimen/default_padding</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:outlineProvider">none</item>
-        <item name="icon">@drawable/back</item>
+        <item name="icon">@drawable/ic_back</item>
     </style>
     
     <style name="ToolBarTextView" parent="Settings.Theme.PlaylistMaker">
@@ -77,13 +77,13 @@
     </style>
 
     <style name="SearchEditTextStyle">
-        <item name="android:background">@drawable/search_field_day</item>
+        <item name="android:background">@drawable/custom_search_field_day</item>
         <item name="android:textColorHint">@color/text_gray</item>
         <item name="android:drawableTint">@color/text_gray</item>
     </style>
 
     <style name="SearchImageViewStyle">
-        <item name="android:src">@drawable/clear_day</item>
+        <item name="android:src">@drawable/ic_clear_day</item>
     </style>
 
 </resources>
