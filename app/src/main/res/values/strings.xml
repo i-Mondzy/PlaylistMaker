@@ -3,6 +3,11 @@
     <string name="search">Поиск</string>
     <string name="media">Медиатека</string>
     <string name="settings">Настройки</string>
+
+    <string name="temp_track_name">Название трека</string>
+    <string name="temp_artist_name">Название исполнителя</string>
+    <string name="temp_time">2:55</string>
+
     <string name="theme">Темная тема</string>
     <string name="share">Поделиться приложением</string>
     <string name="support">Написать в поддержку</string>
