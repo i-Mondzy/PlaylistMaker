@@ -6,11 +6,17 @@
     </style>
 
     <style name="Main.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-        <item name="android:background">@color/blue</item>
+        <item name="colorBackground">@color/blue</item>
+        <item name="colorTitle">@color/white</item>
+        <item name="colorText">@color/dark</item>
+        <item name="colorButton">@color/white</item>
     </style>
 
     <style name="Settings.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
         <item name="android:background">@color/white</item>
+        <item name="colorTitle">@color/dark</item>
+        <item name="colorText">@color/dark</item>
+        <item name="colorButton">@color/white</item>
     </style>
 
     <style name="Search.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
