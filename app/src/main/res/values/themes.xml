@@ -8,18 +8,23 @@
     <style name="Main.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
         <item name="colorBackground">@color/blue</item>
         <item name="colorTitle">@color/white</item>
-        <item name="colorText">@color/dark</item>
+        <item name="colorTextPrimary">@color/dark</item>
         <item name="colorButton">@color/white</item>
     </style>
 
     <style name="Settings.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-        <item name="android:background">@color/white</item>
+        <item name="colorBackground">@color/white</item>
         <item name="colorTitle">@color/dark</item>
-        <item name="colorText">@color/dark</item>
-        <item name="colorButton">@color/white</item>
+        <item name="colorTextPrimary">@color/dark</item>
+        <item name="colorIcon">@color/text_gray</item>
     </style>
 
     <style name="Search.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-        <item name="android:background">@color/white</item>
+        <item name="colorBackground">@color/white</item>
+        <item name="colorTitle">@color/dark</item>
+        <item name="colorEditText">@color/light_gray</item>
+        <item name="colorIcon">@color/text_gray</item>
+        <item name="colorTextPrimary">@color/black</item>
+        <item name="colorTextSecondary">@color/text_gray</item>
     </style>
 </resources>

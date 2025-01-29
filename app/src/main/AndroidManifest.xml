@@ -19,16 +19,16 @@
             android:name=".SearchActivity"
             android:exported="false"
             android:theme="@style/Search.Theme.PlaylistMaker" />
-        <!--<activity
-            android:name=".SearchActivity"
-            android:exported="true"
-            android:theme="@style/Search.Theme.PlaylistMaker">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--        <activity-->
+<!--            android:name=".SearchActivity"-->
+<!--            android:exported="true"-->
+<!--            android:theme="@style/Search.Theme.PlaylistMaker">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
         <activity
             android:name=".MediaActivity"
@@ -48,10 +48,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--<activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:theme="@style/Main.Theme.PlaylistMaker" />-->
+<!--        <activity-->
+<!--            android:name=".MainActivity"-->
+<!--            android:exported="false"-->
+<!--            android:theme="@style/Main.Theme.PlaylistMaker" />-->
 
     </application>
 

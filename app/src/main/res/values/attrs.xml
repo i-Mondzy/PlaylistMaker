@@ -3,17 +3,10 @@
 
     <attr name="colorBackground" format="color" />
     <attr name="colorTitle" format="color" />
-    <attr name="colorText" format="color" />
+    <attr name="colorTextPrimary" format="color" />
+    <attr name="colorTextSecondary" format="color" />
     <attr name="colorButton" format="color" />
     <attr name="colorIcon" format="color" />
-
-<!--    <attr name="colorTextSettings" format="color" />-->
-<!--    <attr name="colorButtonMain" format="color" />-->
-<!--    <attr name="colorIconSettings" format="color" />-->
-    <!--    <attr name="colorTextSettingsButton" format="color" />-->
+    <attr name="colorEditText" format="color" />
 
 </resources>
-
-<!--<declare-styleable name="CustomAttributes">-->
-<!--    <attr name="colorTitle" format="color" />-->
-<!--</declare-styleable>-->
