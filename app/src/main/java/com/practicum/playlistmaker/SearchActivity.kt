@@ -2,6 +2,8 @@ package com.practicum.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,16 +13,19 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class SearchActivity : AppCompatActivity() {
     var inputText = STRING_DEF
+    private lateinit var networkStateReceiver: NetworkStateReceiver
+    private lateinit var trackAdapter: TrackAdapter
 
     companion object {
         const val SEARCH_STRING = "SEARCH_STRING"
@@ -74,7 +79,7 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
 //      Обработчик "Скрытия клавиатуры"
-        val rootLayout = findViewById<FrameLayout>(R.id.main)
+        val rootLayout = findViewById<LinearLayout>(R.id.main)
         rootLayout.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 hideKeyboardIfNeeded()
@@ -94,8 +99,9 @@ class SearchActivity : AppCompatActivity() {
         )
 
 //      Отображение песен
+        trackAdapter = TrackAdapter(trackList)
         val recyclerView = findViewById<RecyclerView>(R.id.trackRecyclerView)
-        recyclerView.adapter = TrackAdapter(trackList)
+        recyclerView.adapter = trackAdapter
         recyclerView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 hideKeyboardIfNeeded()
@@ -103,6 +109,30 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
+//      Мониторинг состояния сети
+        networkStateReceiver = NetworkStateReceiver(this) {
+            runOnUiThread {
+                updateImages()
+            }
+        }
+        registerReceiver(networkStateReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+
+    }
+
+//  Метод для обновления изображений
+    private fun updateImages() {
+        val updatedTrackList = trackAdapter.track.map { track ->
+            track.copy(
+                artworkUrl100 = track.artworkUrl100
+            )
+        }
+
+        trackAdapter.updateTrackList(updatedTrackList)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(networkStateReceiver)
     }
 
 //  Метод для видимости кнопки "Очистить текст"

@@ -11,17 +11,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-
-//class TrackViewHolder(itemView: ViewGroup): ViewHolder(
-////    itemView
-//    LayoutInflater.from(itemView.context).inflate(R.layout.track_list, itemView, false)
-//) {
-//
-//    private val trackName: TextView
-//    private val artistName: TextView
-//    private val trackTime: TextView
-//    private val artworkUrl100: ImageView
+import com.bumptech.glide.signature.ObjectKey
 
 class TrackViewHolder(parent: ViewGroup) : ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.track_list, parent, false)
@@ -47,6 +39,8 @@ class TrackViewHolder(parent: ViewGroup) : ViewHolder(
         Glide.with(itemView.context)
             .load(model.artworkUrl100)
             .placeholder(R.drawable.plug_artwork)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
             .centerCrop()
             .transform(RoundedCorners(dpToPx(2f, itemView.context)))
             .into(artworkUrl100)

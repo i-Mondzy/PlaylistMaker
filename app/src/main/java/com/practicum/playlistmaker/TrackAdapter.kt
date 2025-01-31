@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import java.util.zip.Inflater
 
-class TrackAdapter(private val track: List<Track>): Adapter<TrackViewHolder>() {
+class TrackAdapter(var track: List<Track>): Adapter<TrackViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         return TrackViewHolder(parent)
@@ -17,6 +17,12 @@ class TrackAdapter(private val track: List<Track>): Adapter<TrackViewHolder>() {
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(track[position])
+    }
+
+//  Метод для обновления списка треков
+    fun updateTrackList(newTrackList: List<Track>) {
+        track = newTrackList
+        notifyDataSetChanged()
     }
 
 }
