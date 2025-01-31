@@ -6,18 +6,25 @@
     </style>
 
     <style name="Main.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-        <item name="android:background">@color/dark</item>
+        <item name="colorBackground">@color/dark</item>
+        <item name="colorTitle">@color/white</item>
+        <item name="colorTextPrimary">@color/dark</item>
+        <item name="colorButton">@color/white</item>
     </style>
 
     <style name="Settings.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-        <item name="android:background">@color/dark</item>
-        <item name="android:textColor">@color/white</item>
-<!--        <item name="android:backgroundTint">@color/dark</item>-->
+        <item name="colorBackground">@color/dark</item>
+        <item name="colorTitle">@color/white</item>
+        <item name="colorTextPrimary">@color/white</item>
+        <item name="colorIcon">@color/white</item>
     </style>
 
     <style name="Search.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-        <item name="android:background">@color/dark</item>
-        <item name="android:textColor">@color/white</item>
-<!--        <item name="android:backgroundTint">@color/dark</item>-->
+        <item name="colorBackground">@color/dark</item>
+        <item name="colorTitle">@color/white</item>
+        <item name="colorEditText">@color/white</item>
+        <item name="colorIcon">@color/dark</item>
+        <item name="colorTextPrimary">@color/white</item>
+        <item name="colorTextSecondary">@color/white</item>
     </style>
 </resources>

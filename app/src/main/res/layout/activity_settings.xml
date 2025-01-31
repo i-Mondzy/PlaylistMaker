@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    style="@style/Settings.Theme.PlaylistMaker">
+    android:background="?attr/colorBackground">
 
     <LinearLayout
         style="@style/ToolBarLinearLayout">
@@ -30,7 +31,9 @@
         android:orientation="vertical">
 
         <FrameLayout
-            style="@style/SettingsFrameLayoutStyle">
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -38,10 +41,10 @@
                 android:layout_marginVertical="@dimen/settings_button_padding"
                 android:layout_gravity="center|start"
                 android:text="@string/theme"
+                android:textColor="?attr/colorTextPrimary"
                 android:fontFamily="@font/ys_display_regular"
                 android:textFontWeight="400"
-                android:textSize="@dimen/default_text_size"
-                style="@style/Settings.Theme.PlaylistMaker"/>
+                android:textSize="@dimen/default_text_size"/>
 
             <Switch
                 android:id="@+id/switch_theme"
@@ -49,50 +52,35 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|end"
                 tools:ignore="UseSwitchCompatOrMaterialXml"
-                android:thumb="@drawable/switch_thumb"
+                android:thumb="@drawable/custom_switch_thumb"
                 android:thumbTint="@color/switch_thumb_color"
                 android:thumbTintMode="src_over"
-                app:track="@drawable/switch_track"
+                app:track="@drawable/custom_switch_track"
                 android:trackTint="@color/switch_track_color"
                 android:trackTintMode="src_over"
                 android:checked="false"/>
 
         </FrameLayout>
 
-        <FrameLayout
-            style="@style/SettingsFrameLayoutStyle">
+        <Button
+            android:id="@+id/share"
+            android:paddingEnd="2dp"
+            android:text="@string/share"
+            app:icon="@drawable/ic_share"
+            style="@style/SettingsButtonStyle"/>
 
-            <Button
-                android:id="@+id/share"
-                android:paddingEnd="2dp"
-                android:text="@string/share"
-                app:icon="@drawable/share"
-                style="@style/SettingsButtonStyle"/>
+        <Button
+            android:id="@+id/support"
+            android:text="@string/support"
+            app:icon="@drawable/ic_support"
+            style="@style/SettingsButtonStyle"/>
 
-        </FrameLayout>
-
-        <FrameLayout
-            style="@style/SettingsFrameLayoutStyle">
-
-            <Button
-                android:id="@+id/support"
-                android:text="@string/support"
-                app:icon="@drawable/support"
-                style="@style/SettingsButtonStyle"/>
-
-        </FrameLayout>
-
-        <FrameLayout
-            style="@style/SettingsFrameLayoutStyle">
-
-            <Button
-                android:id="@+id/user_agreement"
-                android:paddingEnd="6dp"
-                android:text="@string/user_agreement"
-                app:icon="@drawable/user_agreement"
-                style="@style/SettingsButtonStyle"/>
-
-        </FrameLayout>
+        <Button
+            android:id="@+id/user_agreement"
+            android:paddingEnd="6dp"
+            android:text="@string/user_agreement"
+            app:icon="@drawable/ic_user_agreement"
+            style="@style/SettingsButtonStyle"/>
 
     </LinearLayout>
 

@@ -2,8 +2,13 @@
 <resources>
     <dimen name="primary_text_size">22sp</dimen>
     <dimen name="default_text_size">16sp</dimen>
-    <dimen name="zero_padding">0dp</dimen>
+    <dimen name="small_text_size">11sp</dimen>
+
+
+
     <dimen name="default_padding">16dp</dimen>
+
     <dimen name="main_icon_padding">10dp</dimen>
-    <dimen name="settings_button_padding">21dp</dimen>
+
+    <dimen name="settings_button_padding">20dp</dimen>
 </resources>
