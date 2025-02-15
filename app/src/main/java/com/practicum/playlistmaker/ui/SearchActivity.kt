@@ -1,13 +1,10 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -20,12 +17,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.Track
+import com.practicum.playlistmaker.TrackAdapter
 
 class SearchActivity : AppCompatActivity() {
     var inputText = STRING_DEF
-    private lateinit var networkStateReceiver: NetworkStateReceiver
-    private lateinit var trackAdapter: TrackAdapter
 
     companion object {
         const val SEARCH_STRING = "SEARCH_STRING"
@@ -90,7 +87,7 @@ class SearchActivity : AppCompatActivity() {
 
 
 //      Список песен
-        var trackList = listOf(
+        val trackList = listOf(
             Track("Smells Like Teen Spirit", "Nirvana", "5:01","https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"),
             Track("Billie Jean", "Michael Jackson", "4:35", "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"),
             Track("Stayin' Alive", "Bee Gees", "4:10", "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"),
@@ -99,9 +96,8 @@ class SearchActivity : AppCompatActivity() {
         )
 
 //      Отображение песен
-        trackAdapter = TrackAdapter(trackList)
         val recyclerView = findViewById<RecyclerView>(R.id.trackRecyclerView)
-        recyclerView.adapter = trackAdapter
+        recyclerView.adapter = TrackAdapter(trackList)
         recyclerView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 hideKeyboardIfNeeded()
@@ -109,30 +105,6 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
-//      Мониторинг состояния сети
-        networkStateReceiver = NetworkStateReceiver(this) {
-            runOnUiThread {
-                updateImages()
-            }
-        }
-        registerReceiver(networkStateReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-
-    }
-
-//  Метод для обновления изображений
-    private fun updateImages() {
-        val updatedTrackList = trackAdapter.track.map { track ->
-            track.copy(
-                artworkUrl100 = track.artworkUrl100
-            )
-        }
-
-        trackAdapter.updateTrackList(updatedTrackList)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(networkStateReceiver)
     }
 
 //  Метод для видимости кнопки "Очистить текст"

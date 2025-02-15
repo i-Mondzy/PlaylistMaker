@@ -1,9 +1,7 @@
 package com.practicum.playlistmaker
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
-import java.util.zip.Inflater
 
 class TrackAdapter(var track: List<Track>): Adapter<TrackViewHolder>() {
 
@@ -19,10 +17,10 @@ class TrackAdapter(var track: List<Track>): Adapter<TrackViewHolder>() {
         holder.bind(track[position])
     }
 
-//  Метод для обновления списка треков
+/*//  Метод для обновления списка треков
     fun updateTrackList(newTrackList: List<Track>) {
         track = newTrackList
         notifyDataSetChanged()
-    }
+    }*/
 
 }

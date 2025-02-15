@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.RoundedCorner
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -13,24 +11,15 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.signature.ObjectKey
 
 class TrackViewHolder(parent: ViewGroup) : ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.track_list, parent, false)
 ) {
 
-    private val trackName: TextView
-    private val artistName: TextView
-    private val trackTime: TextView
-    private val artworkUrl100: ImageView
-
-
-    init {
-        trackName = itemView.findViewById(R.id.trackName)
-        artistName = itemView.findViewById(R.id.artistName)
-        trackTime = itemView.findViewById(R.id.trackTime)
-        artworkUrl100 = itemView.findViewById(R.id.artwork)
-    }
+    private val trackName: TextView = itemView.findViewById(R.id.trackName)
+    private val artistName: TextView = itemView.findViewById(R.id.artistName)
+    private val trackTime: TextView = itemView.findViewById(R.id.trackTime)
+    private val artworkUrl100: ImageView = itemView.findViewById(R.id.artwork)
 
     fun bind(model: Track) {
         trackName.text = model.trackName
