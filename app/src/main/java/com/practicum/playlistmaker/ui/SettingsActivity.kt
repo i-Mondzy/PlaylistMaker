@@ -28,8 +28,7 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
-
-
+//      Обводка свитча при переключении
         val switch = findViewById<Switch>(R.id.switch_theme)
         switch.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {

@@ -3,18 +3,20 @@ package com.practicum.playlistmaker
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 
-class TrackAdapter(var track: List<Track>): Adapter<TrackViewHolder>() {
+class TrackAdapter(): Adapter<TrackViewHolder>() {
+
+    var tracks = ArrayList<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         return TrackViewHolder(parent)
     }
 
     override fun getItemCount(): Int {
-        return track.size
+        return tracks.size
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        holder.bind(track[position])
+        holder.bind(tracks[position])
     }
 
 /*//  Метод для обновления списка треков
