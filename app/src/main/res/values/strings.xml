@@ -7,6 +7,9 @@
     <string name="temp_track_name">Название трека</string>
     <string name="temp_artist_name">Название исполнителя</string>
     <string name="temp_time">2:55</string>
+    <string name="nothing_found">Ничего не нашлось</string>
+    <string name="no_internet">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="update">Обновить</string>
 
     <string name="theme">Темная тема</string>
     <string name="share">Поделиться приложением</string>

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,8 +28,7 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
-
-
+//      Обводка свитча при переключении
         val switch = findViewById<Switch>(R.id.switch_theme)
         switch.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {

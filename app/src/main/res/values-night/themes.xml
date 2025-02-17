@@ -22,9 +22,12 @@
     <style name="Search.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
         <item name="colorBackground">@color/dark</item>
         <item name="colorTitle">@color/white</item>
+        <item name="colorTitleReverse">@color/dark</item>
         <item name="colorEditText">@color/white</item>
         <item name="colorIcon">@color/dark</item>
         <item name="colorTextPrimary">@color/white</item>
         <item name="colorTextSecondary">@color/white</item>
+        <item name="drawable_nothing_found">@drawable/plug_nothing_found_night</item>
+        <item name="drawable_no_internet">@drawable/plug_something_wrong_night</item>
     </style>
 </resources>
