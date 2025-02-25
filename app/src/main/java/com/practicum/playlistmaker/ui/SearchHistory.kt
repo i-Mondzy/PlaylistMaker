@@ -1,12 +1,10 @@
 package com.practicum.playlistmaker.ui
 
-import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.core.content.ContextCompat.getSystemService
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.data.recycler.Track
@@ -15,8 +13,6 @@ import com.practicum.playlistmaker.data.recycler.TrackAdapter
 
 const val SEARCH_HISTORY = "search_history"
 const val HISTORY_KEY = "key_history"
-
-//val historyTrackList = TrackAdapter(null)
 
 class SearchHistory(private val context: Context, private val editText: EditText?, private val sharedPrefs: SharedPreferences) {
 

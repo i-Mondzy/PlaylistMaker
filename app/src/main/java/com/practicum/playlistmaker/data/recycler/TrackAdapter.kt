@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.data.recycler
 
-import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 
