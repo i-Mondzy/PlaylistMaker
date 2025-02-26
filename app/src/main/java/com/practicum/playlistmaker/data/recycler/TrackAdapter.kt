@@ -1,9 +1,9 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.data.recycler
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 
-class TrackAdapter(): Adapter<TrackViewHolder>() {
+class TrackAdapter(private val clickListener: TrackClickListener?): Adapter<TrackViewHolder>() {
 
     var tracks = ArrayList<Track>()
 
@@ -17,6 +17,11 @@ class TrackAdapter(): Adapter<TrackViewHolder>() {
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(tracks[position])
+        holder.itemView.setOnClickListener{ clickListener?.onTrackListener(tracks[position]) }
+    }
+
+    fun interface TrackClickListener {
+        fun onTrackListener(track: Track)
     }
 
 /*//  Метод для обновления списка треков

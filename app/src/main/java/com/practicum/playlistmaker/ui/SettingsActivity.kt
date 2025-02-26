@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
@@ -23,21 +24,27 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
+//      Кнопка "Назад"
         val btnBack = findViewById<Button>(R.id.btn_back)
         btnBack.setOnClickListener{
             finish()
         }
 
 //      Обводка свитча при переключении
-        val switch = findViewById<Switch>(R.id.switch_theme)
-        switch.setOnCheckedChangeListener { _, isChecked ->
-            if (!isChecked) {
+        val switch = findViewById<SwitchMaterial>(R.id.switch_theme)
+        val sharedPrefs = getSharedPreferences(LIGHT_DARK_THEME, MODE_PRIVATE)
+        switch.isChecked = sharedPrefs.getBoolean(THEME_KEY, false)
+        switch.setOnCheckedChangeListener { switcher, checked ->
+            if (!checked) {
                 switch.background = ContextCompat.getDrawable(this, R.drawable.custom_ripple_night)
             } else {
                 switch.background = ContextCompat.getDrawable(this, R.drawable.custom_ripple_day)
             }
+
+            (applicationContext as App).switchTheme(checked)
         }
 
+//      Кнопка "Поделиться приложением"
         val btnShare = findViewById<Button>(R.id.share)
         btnShare.setOnClickListener{
             val btnShareIntent = Intent(Intent.ACTION_SEND)
@@ -46,6 +53,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent.createChooser(btnShareIntent, "Поделиться через"))
         }
 
+//      Кнопка "Написать в поддержку
         val btnSupport = findViewById<Button>(R.id.support)
         btnSupport.setOnClickListener{
             val btnSupportIntent = Intent(Intent.ACTION_SENDTO)
@@ -56,6 +64,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(btnSupportIntent)
         }
 
+//      Кнопа "Пользовательское соглшанеие"
         val btnUserAgreement = findViewById<Button>(R.id.user_agreement)
         btnUserAgreement.setOnClickListener{
             val btnUserAgreementIntent = Intent(Intent.ACTION_VIEW)
