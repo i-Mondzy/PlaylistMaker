@@ -7,6 +7,7 @@
     <attr name="colorTextPrimary" format="color" />
     <attr name="colorTextSecondary" format="color" />
     <attr name="colorButton" format="color" />
+    <attr name="colorOtherButton" format="color" />
     <attr name="colorIcon" format="color" />
     <attr name="colorEditText" format="color" />
     <attr name="drawable_nothing_found" format="reference"/>

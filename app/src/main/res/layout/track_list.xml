@@ -14,7 +14,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginEnd="8dp"
-        tools:background="@drawable/plug_artwork" />
+        tools:background="@drawable/plug_artwork_low" />
 
     <LinearLayout
         android:layout_width="0dp"

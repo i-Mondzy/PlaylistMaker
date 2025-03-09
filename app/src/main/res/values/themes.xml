@@ -30,4 +30,11 @@
         <item name="drawable_nothing_found">@drawable/plug_nothing_found_day</item>
         <item name="drawable_no_internet">@drawable/plug_something_wrong_day</item>
     </style>
+
+    <style name="Player.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
+        <item name="colorBackground">@color/white</item>
+        <item name="colorTitle">@color/dark</item>
+        <item name="colorButton">@color/dark</item>
+        <item name="colorOtherButton">@color/dark</item>
+    </style>
 </resources>

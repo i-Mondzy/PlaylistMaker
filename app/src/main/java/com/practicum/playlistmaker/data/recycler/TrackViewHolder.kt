@@ -29,7 +29,7 @@ class TrackViewHolder(parent: ViewGroup) : ViewHolder(
         trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis.toLong())
         Glide.with(itemView.context)
             .load(model.artworkUrl100)
-            .placeholder(R.drawable.plug_artwork)
+            .placeholder(R.drawable.plug_artwork_low)
 //            .diskCacheStrategy(DiskCacheStrategy.NONE)
 //            .skipMemoryCache(true)
             .centerCrop()
