@@ -116,7 +116,7 @@
             app:layout_constraintEnd_toEndOf="@id/rightBorder"
             app:layout_constraintStart_toStartOf="@id/leftBorder"
             app:layout_constraintTop_toBottomOf="@id/artistName"
-            app:srcCompat="@drawable/ic_pause" />
+            app:srcCompat="@drawable/ic_play" />
 
         <TextView
             android:id="@+id/currentTrackTime"
@@ -124,7 +124,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/ys_display_medium"
-            android:text="0:29"
+            android:text="0:30"
             android:textColor="?attr/colorTitle"
             android:textFontWeight="500"
             android:textSize="14sp"
