@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
     <style name="MainButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
@@ -51,15 +52,45 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    android:id="@+id/clear_history"
-    android:text="@string/clear_history"
-
     <style name="SearchErrorLinearLayout">
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:paddingTop">86dp</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="PlayerText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">8dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">?attr/colorTitle</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
+
+    <style name="PlayerOtherText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/text_gray</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="PlayerOtherTextValue">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:gravity">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">?attr/colorTitle</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">13sp</item>
     </style>
 
     <style name="SettingsButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
@@ -85,17 +116,17 @@
     </style>
 
     <style name="BackButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
-        <item name="android:backgroundTint">?attr/colorBackground</item>
-        <item name="iconTint">?attr/colorTitle</item>
         <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:backgroundTint">?attr/colorBackground</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:outlineProvider">none</item>
         <item name="android:padding">@dimen/default_padding</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:outlineProvider">none</item>
         <item name="icon">@drawable/ic_back</item>
+        <item name="iconTint">?attr/colorTitle</item>
     </style>
-    
+
     <style name="ToolBarTextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>

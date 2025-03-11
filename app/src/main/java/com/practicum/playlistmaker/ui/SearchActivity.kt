@@ -2,6 +2,8 @@ package com.practicum.playlistmaker.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -30,6 +32,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.Locale
 
 class SearchActivity : AppCompatActivity() {
     var inputText = STRING_DEF
@@ -51,8 +54,22 @@ class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchHistory: SearchHistory
 
-    private val searchTrackList = TrackAdapter{ searchHistory.saveTrack(it) }
-    private var tracks = ArrayList<Track>()
+    private val searchTrackList = TrackAdapter{ track ->
+        searchHistory.saveTrack(track)
+        startActivity(
+            Intent(this, PlayerActivity::class.java).apply {
+                putExtra("TRACK_ARTWORK", track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
+                putExtra("TRACK_NAME", track.trackName)
+                putExtra("ARTIST_NAME", track.artistName)
+                putExtra("TRACK_TIME", SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()))
+                putExtra("COLLECTION_NAME", track.collectionName)
+                putExtra("RELEASE_DATE", SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)))
+                putExtra("PRIMARY_GENRE_NAME", track.primaryGenreName)
+                putExtra("COUNTRY", track.country)
+            }
+        )
+    }
+    var tracks = ArrayList<Track>()
 
     private val baseUrl = "https://itunes.apple.com"
     private val retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).build()

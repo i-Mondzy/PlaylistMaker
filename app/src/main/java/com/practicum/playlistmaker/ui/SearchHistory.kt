@@ -1,7 +1,9 @@
 package com.practicum.playlistmaker.ui
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.icu.text.SimpleDateFormat
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -9,6 +11,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.data.recycler.Track
 import com.practicum.playlistmaker.data.recycler.TrackAdapter
+import java.util.Locale
 
 
 const val SEARCH_HISTORY = "search_history"
@@ -16,12 +19,24 @@ const val HISTORY_KEY = "key_history"
 
 class SearchHistory(private val context: Context, private val editText: EditText?, private val sharedPrefs: SharedPreferences) {
 
-    val historyTrackList = TrackAdapter { saveTrack(it) }
+    val historyTrackList = TrackAdapter { track ->
+        saveTrack(track)
+        context.startActivity(Intent(context, PlayerActivity::class.java).apply {
+            putExtra("TRACK_ARTWORK", track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
+            putExtra("TRACK_NAME", track.trackName)
+            putExtra("ARTIST_NAME", track.artistName)
+            putExtra("TRACK_TIME", SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()))
+            putExtra("COLLECTION_NAME", track.collectionName)
+            putExtra("RELEASE_DATE", SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)))
+            putExtra("PRIMARY_GENRE_NAME", track.primaryGenreName)
+            putExtra("COUNTRY", track.country)
+        }
+        )
+    }
 
     fun getHistory(): ArrayList<Track> {
         val json = sharedPrefs.getString(HISTORY_KEY, "")
         if (!json.isNullOrEmpty()) {
-            Log.d("GetHH", "${createTrackFromJson(json)}")
             return createTrackFromJson(json)
         }
         return ArrayList()
@@ -41,7 +56,6 @@ class SearchHistory(private val context: Context, private val editText: EditText
             .edit()
             .putString(HISTORY_KEY, createJsonFromTrack(historyTrackList.tracks))
             .apply()
-        Log.d("Save", historyTrackList.tracks.toString())
     }
 
     fun clearHistory() {
@@ -50,7 +64,6 @@ class SearchHistory(private val context: Context, private val editText: EditText
             .edit()
             .clear()
             .apply()
-        Log.d("Clear", historyTrackList.tracks.toString())
     }
 
     private fun createJsonFromTrack(tracks: ArrayList<Track>): String {

@@ -98,8 +98,8 @@
                 android:text="@string/no_internet" />
 
             <Button
-                style="@style/SearchButton"
                 android:id="@+id/update_btn"
+                style="@style/SearchButton"
                 android:text="@string/update" />
 
         </LinearLayout>
@@ -134,8 +134,8 @@
                 android:layout_weight="1" />
 
             <Button
-                style="@style/SearchButton"
                 android:id="@+id/clear_history"
+                style="@style/SearchButton"
                 android:text="@string/clear_history" />
 
         </LinearLayout>
