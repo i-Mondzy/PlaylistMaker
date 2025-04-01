@@ -67,6 +67,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="124dp"
+            android:layout_gravity="center_horizontal"
+            android:indeterminateTint="@color/blue"
+            tools:visibility="visible"/>
+
         <LinearLayout
             android:id="@+id/placeholder_nothing_found"
             style="@style/SearchErrorLinearLayout"
@@ -86,7 +95,7 @@
         <LinearLayout
             android:id="@+id/placeholder_no_internet"
             style="@style/SearchErrorLinearLayout"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -115,7 +124,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <TextView
                 style="@style/SearchTextView"
