@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -91,9 +92,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:background="?attr/colorBackground"
-            app:layout_constraintBottom_toBottomOf="@id/pauseButton"
+            app:layout_constraintBottom_toBottomOf="@id/playButton"
             app:layout_constraintStart_toStartOf="@id/leftBorder"
-            app:layout_constraintTop_toTopOf="@id/pauseButton"
+            app:layout_constraintTop_toTopOf="@id/playButton"
             app:srcCompat="@drawable/ic_add_to_playlist" />
 
         <ImageButton
@@ -102,13 +103,13 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:background="?attr/colorBackground"
-            app:layout_constraintBottom_toBottomOf="@id/pauseButton"
+            app:layout_constraintBottom_toBottomOf="@id/playButton"
             app:layout_constraintEnd_toEndOf="@id/rightBorder"
-            app:layout_constraintTop_toTopOf="@id/pauseButton"
+            app:layout_constraintTop_toTopOf="@id/playButton"
             app:srcCompat="@drawable/ic_add_to_favorite" />
 
         <ImageButton
-            android:id="@+id/pauseButton"
+            android:id="@+id/playButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
@@ -120,17 +121,16 @@
 
         <TextView
             android:id="@+id/currentTrackTime"
-            android:layout_width="wrap_content"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/ys_display_medium"
-            android:text="0:30"
             android:textColor="?attr/colorTitle"
             android:textFontWeight="500"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pauseButton" />
+            app:layout_constraintTop_toBottomOf="@id/playButton" />
 
         <TextView
             android:id="@+id/trackTime"

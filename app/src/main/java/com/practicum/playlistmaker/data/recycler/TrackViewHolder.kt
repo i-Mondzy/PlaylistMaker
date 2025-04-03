@@ -43,7 +43,7 @@ class TrackViewHolder(parent: ViewGroup) : ViewHolder(
             dp,
             context.resources.displayMetrics).toInt()
 
-        Log.d("dpToPX", "Пиксели равны: $px")
+//        Log.d("dpToPX", "Пиксели равны: $px")
 
         return px
     }
