@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.ui
+package com.practicum.playlistmaker.ui.media
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

@@ -1,10 +1,9 @@
-package com.practicum.playlistmaker.ui
+package com.practicum.playlistmaker.ui.settings
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
-import android.widget.Switch
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -12,6 +11,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.ui.App
+import com.practicum.playlistmaker.ui.LIGHT_DARK_THEME
+import com.practicum.playlistmaker.ui.THEME_KEY
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

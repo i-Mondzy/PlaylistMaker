@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.ui
+package com.practicum.playlistmaker.ui.search
 
 import android.content.Context
 import android.content.Intent
@@ -6,13 +6,12 @@ import android.content.SharedPreferences
 import android.icu.text.SimpleDateFormat
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.data.recycler.Track
-import com.practicum.playlistmaker.data.recycler.TrackAdapter
+import com.practicum.playlistmaker.domain.model.Track
+import com.practicum.playlistmaker.ui.player.PlayerActivity
 import java.util.Locale
 
 

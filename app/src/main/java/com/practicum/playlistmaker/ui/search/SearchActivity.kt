@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.ui
+package com.practicum.playlistmaker.ui.search
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,7 +9,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -27,10 +26,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.data.TimingInterceptor
-import com.practicum.playlistmaker.data.recycler.Track
-import com.practicum.playlistmaker.data.recycler.TrackAdapter
+import com.practicum.playlistmaker.domain.model.Track
 import com.practicum.playlistmaker.data.network.TrackApi
-import com.practicum.playlistmaker.data.network.TracksResponse
+import com.practicum.playlistmaker.data.dto.TracksSearchResponse
+import com.practicum.playlistmaker.ui.player.PlayerActivity
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -91,10 +90,10 @@ class SearchActivity : AppCompatActivity() {
         val query = queryInput.text.toString()
 
         trackService.search(query)
-            .enqueue(object : Callback<TracksResponse> {
+            .enqueue(object : Callback<TracksSearchResponse> {
                 override fun onResponse(
-                    call: Call<TracksResponse>,
-                    response: Response<TracksResponse>
+                    call: Call<TracksSearchResponse>,
+                    response: Response<TracksSearchResponse>
                 ) {
                     when (response.code()) {
                         200 -> {
@@ -152,7 +151,7 @@ class SearchActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                override fun onFailure(call: Call<TracksSearchResponse>, t: Throwable) {
                     if (query.isNotEmpty()) {
                         tracks.clear()
                         searchTrackList.notifyDataSetChanged()
