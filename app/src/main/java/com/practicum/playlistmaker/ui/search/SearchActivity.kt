@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -25,10 +26,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.data.TimingInterceptor
+import com.practicum.playlistmaker.data.dto.NetworkResponse
 import com.practicum.playlistmaker.domain.model.Track
 import com.practicum.playlistmaker.data.network.TrackApi
 import com.practicum.playlistmaker.data.dto.TracksSearchResponse
+import com.practicum.playlistmaker.domain.api.TracksInteractor
+import com.practicum.playlistmaker.domain.model.Resource
 import com.practicum.playlistmaker.ui.player.PlayerActivity
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -40,6 +45,8 @@ import java.util.Locale
 
 class SearchActivity : AppCompatActivity() {
     var inputText = STRING_DEF
+
+    val getTracksInteractor = Creator.provideTracksInteractor()
 
     companion object {
         const val SEARCH_STRING = "SEARCH_STRING"
@@ -60,7 +67,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistory: SearchHistory
 
     private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { showTracks() }
+    private var searchRunnable: Runnable? = null
 
     private val searchTrackList = TrackAdapter { track ->
         searchHistory.saveTrack(track)
@@ -87,7 +94,46 @@ class SearchActivity : AppCompatActivity() {
 
     //  Метод для отображения треков
     private fun showTracks() {
-        val query = queryInput.text.toString()
+
+        getTracksInteractor.searchTracks(
+            text = queryInput.text.toString(),
+            consumer = object : TracksInteractor.TracksConsumer{
+                override fun consume(foundTracks: Resource<List<Track>>) {
+
+                    val currentRunnable = searchRunnable
+                    if (currentRunnable != null) {
+                        handler.removeCallbacks(currentRunnable)
+                    }
+
+                    val newSearchRunnable = Runnable {
+                        when (foundTracks) {
+                            is Resource.Success -> {
+                                if (foundTracks.data.isNotEmpty() && queryInput.text.toString().isNotEmpty()) {
+                                    showSearchTracks(foundTracks.data)
+                                } else if (queryInput.text.toString().isNotEmpty()) {
+                                    showMessageNothingFound()
+                                } else {
+                                    showHistoryTracks()
+                                }
+                            }
+                            else -> {
+                                if (queryInput.text.toString().isNotEmpty()) {
+                                    showMessageNoInternet()
+                                } else {
+                                    showHistoryTracks()
+                                }
+                            }
+                        }
+                    }
+
+                    searchRunnable = newSearchRunnable
+                    handler.post(newSearchRunnable)
+                }
+
+            }
+        )
+
+        /*val query = queryInput.text.toString()
 
         trackService.search(query)
             .enqueue(object : Callback<TracksSearchResponse> {
@@ -98,54 +144,20 @@ class SearchActivity : AppCompatActivity() {
                     when (response.code()) {
                         200 -> {
                             if (response.body()?.results?.isNotEmpty() == true && query.isNotEmpty()) {
-                                tracks.clear()
-                                tracks.addAll(response.body()!!.results)
-                                searchTrackList.notifyDataSetChanged()
-                                searchTracksListRV.visibility = View.VISIBLE
-                                placeholderMessageNoInternet.visibility = View.GONE
-                                placeholderMessageNothingFound.visibility = View.GONE
-                                history.visibility = View.GONE
-                                progressBar.visibility = View.GONE
+                                val foundTracks = response.body()!!.results
+                                showSearchTracks(foundTracks)
                             } else if (query.isNotEmpty()) {
-                                tracks.clear()
-                                searchTrackList.notifyDataSetChanged()
-                                placeholderMessageNothingFound.visibility = View.VISIBLE
-                                placeholderMessageNoInternet.visibility = View.GONE
-                                history.visibility = View.GONE
-                                progressBar.visibility = View.GONE
+                                showMessageNothingFound()
                             } else {
-                                tracks.clear()
-                                searchTrackList.notifyDataSetChanged()
-                                placeholderMessageNothingFound.visibility = View.GONE
-                                placeholderMessageNoInternet.visibility = View.GONE
-                                progressBar.visibility = View.GONE
-                                if (searchHistory.getHistory().isEmpty()) {
-                                    history.visibility = View.GONE
-                                } else {
-                                    history.visibility = View.VISIBLE
-                                }
+                                showHistoryTracks()
                             }
                         }
 
                         else -> {
                             if (query.isNotEmpty()) {
-                                tracks.clear()
-                                searchTrackList.notifyDataSetChanged()
-                                placeholderMessageNothingFound.visibility = View.GONE
-                                placeholderMessageNoInternet.visibility = View.VISIBLE
-                                history.visibility = View.GONE
-                                progressBar.visibility = View.GONE
+                                showMessageNoInternet()
                             } else {
-                                tracks.clear()
-                                searchTrackList.notifyDataSetChanged()
-                                placeholderMessageNothingFound.visibility = View.GONE
-                                placeholderMessageNoInternet.visibility = View.GONE
-                                progressBar.visibility = View.GONE
-                                if (searchHistory.getHistory().isEmpty()) {
-                                    history.visibility = View.GONE
-                                } else {
-                                    history.visibility = View.VISIBLE
-                                }
+                                showHistoryTracks()
                             }
                         }
                     }
@@ -153,27 +165,55 @@ class SearchActivity : AppCompatActivity() {
 
                 override fun onFailure(call: Call<TracksSearchResponse>, t: Throwable) {
                     if (query.isNotEmpty()) {
-                        tracks.clear()
-                        searchTrackList.notifyDataSetChanged()
-                        placeholderMessageNothingFound.visibility = View.GONE
-                        placeholderMessageNoInternet.visibility = View.VISIBLE
-                        history.visibility = View.GONE
-                        progressBar.visibility = View.GONE
+                        showMessageNoInternet()
                     } else {
-                        tracks.clear()
-                        searchTrackList.notifyDataSetChanged()
-                        placeholderMessageNothingFound.visibility = View.GONE
-                        placeholderMessageNoInternet.visibility = View.GONE
-                        progressBar.visibility = View.GONE
-                        if (searchHistory.getHistory().isEmpty()) {
-                            history.visibility = View.GONE
-                        } else {
-                            history.visibility = View.VISIBLE
-                        }
+                        showHistoryTracks()
                     }
                 }
 
-            })
+            })*/
+    }
+
+    private fun showSearchTracks(foundTracks: List<Track>) {
+        tracks.clear()
+        tracks.addAll(foundTracks)
+        searchTrackList.notifyDataSetChanged()
+        searchTracksListRV.visibility = View.VISIBLE
+        placeholderMessageNoInternet.visibility = View.GONE
+        placeholderMessageNothingFound.visibility = View.GONE
+        history.visibility = View.GONE
+        progressBar.visibility = View.GONE
+    }
+
+    private fun showHistoryTracks() {
+        tracks.clear()
+        searchTrackList.notifyDataSetChanged()
+        placeholderMessageNothingFound.visibility = View.GONE
+        placeholderMessageNoInternet.visibility = View.GONE
+        progressBar.visibility = View.GONE
+        if (searchHistory.getHistory().isEmpty()) {
+            history.visibility = View.GONE
+        } else {
+            history.visibility = View.VISIBLE
+        }
+    }
+
+    private fun showMessageNothingFound() {
+        tracks.clear()
+        searchTrackList.notifyDataSetChanged()
+        placeholderMessageNothingFound.visibility = View.VISIBLE
+        placeholderMessageNoInternet.visibility = View.GONE
+        history.visibility = View.GONE
+        progressBar.visibility = View.GONE
+    }
+
+    private fun showMessageNoInternet() {
+        tracks.clear()
+        searchTrackList.notifyDataSetChanged()
+        placeholderMessageNothingFound.visibility = View.GONE
+        placeholderMessageNoInternet.visibility = View.VISIBLE
+        history.visibility = View.GONE
+        progressBar.visibility = View.GONE
     }
 
     // Метод для обновления списка "Поиск"
@@ -192,11 +232,11 @@ class SearchActivity : AppCompatActivity() {
         placeholderMessageNoInternet.visibility = View.GONE
 
         if (s.isNullOrEmpty()) {
-            handler.removeCallbacks(searchRunnable)
+//            handler.removeCallbacks(searchRunnable)
             handler.post { showTracks() }
         } else {
-            handler.removeCallbacks(searchRunnable)
-            handler.postDelayed(searchRunnable, 2000L)
+//            handler.removeCallbacks(searchRunnable)
+            handler.postDelayed({showTracks()}, 2000L)
         }
 
         return if (s.isNullOrEmpty()) {
@@ -398,6 +438,10 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
+    }
+
+    private fun listToString(list: ArrayList<Track>): String {
+        return list.joinToString(", ")
     }
 
 }
