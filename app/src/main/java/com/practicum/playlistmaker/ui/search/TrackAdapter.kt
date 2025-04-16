@@ -26,8 +26,9 @@ class TrackAdapter(private val clickListener: TrackClickListener?): Adapter<Trac
     }
 
 /*//  Метод для обновления списка треков
-    fun updateTrackList(newTrackList: List<Track>) {
-        track = newTrackList
+    fun updateTrackList(newTrackList: ArrayList<Track>) {
+        tracks.clear()
+        tracks = newTrackList
         notifyDataSetChanged()
     }*/
 

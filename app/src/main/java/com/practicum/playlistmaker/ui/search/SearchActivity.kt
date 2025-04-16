@@ -46,7 +46,7 @@ import java.util.Locale
 class SearchActivity : AppCompatActivity() {
     var inputText = STRING_DEF
 
-    val getTracksInteractor = Creator.provideTracksInteractor()
+    lateinit var getTracksInteractor: TracksInteractor
 
     companion object {
         const val SEARCH_STRING = "SEARCH_STRING"
@@ -70,7 +70,9 @@ class SearchActivity : AppCompatActivity() {
     private var searchRunnable: Runnable? = null
 
     private val searchTrackList = TrackAdapter { track ->
-        searchHistory.saveTrack(track)
+//        searchHistory.saveTrack(track)
+        hideKeyboardIfNeeded()
+        getTracksInteractor.saveTrack(track)
         startActivity(
             Intent(this, PlayerActivity::class.java).apply {
                 putExtra("TRACK_ARTWORK", track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
@@ -89,8 +91,8 @@ class SearchActivity : AppCompatActivity() {
 
     private val baseUrl = "https://itunes.apple.com"
     private val client = OkHttpClient.Builder().addInterceptor(TimingInterceptor()).build()
-    private val retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).client(client).build()
-    private val trackService = retrofit.create(TrackApi::class.java)
+    /*private val retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).client(client).build()
+    private val trackService = retrofit.create(TrackApi::class.java)*/
 
     //  Метод для отображения треков
     private fun showTracks() {
@@ -191,7 +193,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderMessageNothingFound.visibility = View.GONE
         placeholderMessageNoInternet.visibility = View.GONE
         progressBar.visibility = View.GONE
-        if (searchHistory.getHistory().isEmpty()) {
+        if (/*searchHistory.getHistory().isEmpty()*/ getTracksInteractor.getTracks().isEmpty()) {
             history.visibility = View.GONE
         } else {
             history.visibility = View.VISIBLE
@@ -338,21 +340,23 @@ class SearchActivity : AppCompatActivity() {
         history.visibility = View.GONE
         progressBar.visibility = View.GONE
 
-        val sharedPrefs = getSharedPreferences(SEARCH_HISTORY, MODE_PRIVATE)
-        searchHistory = SearchHistory(this, queryInput, sharedPrefs)
+        getTracksInteractor = Creator.provideTracksInteractor(this)
+
+        /*val sharedPrefs = getSharedPreferences(SEARCH_HISTORY, MODE_PRIVATE)*/
+        searchHistory = SearchHistory(this, queryInput, getTracksInteractor)
         historyTracksListRV.adapter = searchHistory.historyTrackList
         historyTracksListRV.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
 //      Отобразить историю при запуске
-        if (searchHistory.getHistory().isNotEmpty()) {
-            searchHistory.historyTrackList.tracks = searchHistory.getHistory()
+        if (/*searchHistory.getHistory().isNotEmpty()*/ getTracksInteractor.getTracks().isNotEmpty()) {
+            searchHistory.historyTrackList.tracks = getTracksInteractor.getTracks().toMutableList() as ArrayList<Track>
             searchHistory.historyTrackList.notifyItemInserted(0)
             history.visibility = View.VISIBLE
         }
 
 //      Очистить историю
         clearHistoryBtn.setOnClickListener {
-            searchHistory.clearHistory()
+            getTracksInteractor.clearTracks()
             searchHistory.historyTrackList.notifyDataSetChanged()
             history.visibility = View.GONE
         }
@@ -429,7 +433,7 @@ class SearchActivity : AppCompatActivity() {
 
 //      Кнопка "Поиск" на клавиатуре
         queryInput.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE && queryInput.text.isNotEmpty() || actionId == EditorInfo.IME_ACTION_DONE && searchHistory.getHistory().isEmpty()) {
+            if (actionId == EditorInfo.IME_ACTION_DONE && queryInput.text.isNotEmpty() || actionId == EditorInfo.IME_ACTION_DONE && /*searchHistory.getHistory().isEmpty()*/ getTracksInteractor.getTracks().isEmpty()) {
                 // ВЫПОЛНЯЙТЕ ПОИСКОВЫЙ ЗАПРОС ЗДЕСЬ
                 showTracks()
                 true

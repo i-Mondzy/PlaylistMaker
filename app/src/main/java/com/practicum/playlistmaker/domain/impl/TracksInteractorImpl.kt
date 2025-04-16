@@ -2,7 +2,7 @@ package com.practicum.playlistmaker.domain.impl
 
 import com.practicum.playlistmaker.domain.api.TracksInteractor
 import com.practicum.playlistmaker.domain.api.TracksRepository
-import com.practicum.playlistmaker.domain.model.Resource
+import com.practicum.playlistmaker.domain.model.Track
 import java.util.concurrent.Executors
 
 class TracksInteractorImpl(private val repository: TracksRepository) : TracksInteractor {
@@ -15,6 +15,18 @@ class TracksInteractorImpl(private val repository: TracksRepository) : TracksInt
             consumer.consume(repository.searchTracks(text))
 
         }
+    }
+
+    override fun saveTrack(track: Track) {
+        repository.saveTrack(track)
+    }
+
+    override fun getTracks(): List<Track> {
+        return repository.getTracks()
+    }
+
+    override fun clearTracks() {
+        repository.clearTracks()
     }
 
 }
