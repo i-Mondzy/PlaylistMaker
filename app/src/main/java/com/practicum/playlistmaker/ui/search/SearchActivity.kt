@@ -44,9 +44,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Locale
 
 class SearchActivity : AppCompatActivity() {
-    var inputText = STRING_DEF
-
-    lateinit var getTracksInteractor: TracksInteractor
 
     companion object {
         const val SEARCH_STRING = "SEARCH_STRING"
@@ -64,15 +61,20 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearHistoryBtn: Button
     private lateinit var progressBar: ProgressBar
 
+    private lateinit var getTracksInteractor: TracksInteractor
+
     private lateinit var searchHistory: SearchHistory
 
+    private var inputText = STRING_DEF
+    private val tracks = ArrayList<Track>()
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
+    private val client = OkHttpClient.Builder().addInterceptor(TimingInterceptor()).build()
 
     private val searchTrackList = TrackAdapter { track ->
-//        searchHistory.saveTrack(track)
         hideKeyboardIfNeeded()
         getTracksInteractor.saveTrack(track)
+        searchHistory.updateHistory(getTracksInteractor.getTracks())
         startActivity(
             Intent(this, PlayerActivity::class.java).apply {
                 putExtra("TRACK_ARTWORK", track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
@@ -87,16 +89,9 @@ class SearchActivity : AppCompatActivity() {
             }
         )
     }
-    private val tracks = ArrayList<Track>()
-
-    private val baseUrl = "https://itunes.apple.com"
-    private val client = OkHttpClient.Builder().addInterceptor(TimingInterceptor()).build()
-    /*private val retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).client(client).build()
-    private val trackService = retrofit.create(TrackApi::class.java)*/
 
     //  Метод для отображения треков
     private fun showTracks() {
-
         getTracksInteractor.searchTracks(
             text = queryInput.text.toString(),
             consumer = object : TracksInteractor.TracksConsumer{
@@ -134,46 +129,6 @@ class SearchActivity : AppCompatActivity() {
 
             }
         )
-
-        /*val query = queryInput.text.toString()
-
-        trackService.search(query)
-            .enqueue(object : Callback<TracksSearchResponse> {
-                override fun onResponse(
-                    call: Call<TracksSearchResponse>,
-                    response: Response<TracksSearchResponse>
-                ) {
-                    when (response.code()) {
-                        200 -> {
-                            if (response.body()?.results?.isNotEmpty() == true && query.isNotEmpty()) {
-                                val foundTracks = response.body()!!.results
-                                showSearchTracks(foundTracks)
-                            } else if (query.isNotEmpty()) {
-                                showMessageNothingFound()
-                            } else {
-                                showHistoryTracks()
-                            }
-                        }
-
-                        else -> {
-                            if (query.isNotEmpty()) {
-                                showMessageNoInternet()
-                            } else {
-                                showHistoryTracks()
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<TracksSearchResponse>, t: Throwable) {
-                    if (query.isNotEmpty()) {
-                        showMessageNoInternet()
-                    } else {
-                        showHistoryTracks()
-                    }
-                }
-
-            })*/
     }
 
     private fun showSearchTracks(foundTracks: List<Track>) {
@@ -193,7 +148,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderMessageNothingFound.visibility = View.GONE
         placeholderMessageNoInternet.visibility = View.GONE
         progressBar.visibility = View.GONE
-        if (/*searchHistory.getHistory().isEmpty()*/ getTracksInteractor.getTracks().isEmpty()) {
+        if (getTracksInteractor.getTracks().isEmpty()) {
             history.visibility = View.GONE
         } else {
             history.visibility = View.VISIBLE
@@ -238,7 +193,7 @@ class SearchActivity : AppCompatActivity() {
             handler.post { showTracks() }
         } else {
 //            handler.removeCallbacks(searchRunnable)
-            handler.postDelayed({showTracks()}, 2000L)
+            handler.postDelayed({ showTracks() }, 2000L)
         }
 
         return if (s.isNullOrEmpty()) {
@@ -342,15 +297,13 @@ class SearchActivity : AppCompatActivity() {
 
         getTracksInteractor = Creator.provideTracksInteractor(this)
 
-        /*val sharedPrefs = getSharedPreferences(SEARCH_HISTORY, MODE_PRIVATE)*/
         searchHistory = SearchHistory(this, queryInput, getTracksInteractor)
         historyTracksListRV.adapter = searchHistory.historyTrackList
         historyTracksListRV.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
 //      Отобразить историю при запуске
-        if (/*searchHistory.getHistory().isNotEmpty()*/ getTracksInteractor.getTracks().isNotEmpty()) {
+        if (getTracksInteractor.getTracks().isNotEmpty()) {
             searchHistory.historyTrackList.tracks = getTracksInteractor.getTracks().toMutableList() as ArrayList<Track>
-            searchHistory.historyTrackList.notifyItemInserted(0)
             history.visibility = View.VISIBLE
         }
 
@@ -379,11 +332,6 @@ class SearchActivity : AppCompatActivity() {
             queryInput.setText("")
             queryInput.clearFocus()
 
-            /*tracks.clear()
-            searchTrackList.notifyDataSetChanged()
-            placeholderMessageNothingFound.visibility = View.GONE
-            placeholderMessageNoInternet.visibility = View.GONE*/
-
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             val currentView = currentFocus ?: window.decorView
             inputMethodManager?.hideSoftInputFromWindow(currentView.windowToken, 0)
@@ -403,12 +351,6 @@ class SearchActivity : AppCompatActivity() {
                     placeholderMessageNothingFound.visibility = View.GONE
                     placeholderMessageNoInternet.visibility = View.GONE
                 }
-
-                /*if (s?.isEmpty() == true && searchHistory.getHistory().isNotEmpty()) {
-                    searchHistory.historyTrackList.tracks = searchHistory.getHistory()
-                    Log.d("Get", searchHistory.historyTrackList.tracks.toString())
-                    history.visibility = View.VISIBLE
-                }*/
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -442,6 +384,15 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
+    }
+
+    override fun onDestroy() {
+        val currentRunnable = searchRunnable
+        if (currentRunnable != null) {
+            handler.removeCallbacks(currentRunnable)
+        }
+
+        super.onDestroy()
     }
 
     private fun listToString(list: ArrayList<Track>): String {

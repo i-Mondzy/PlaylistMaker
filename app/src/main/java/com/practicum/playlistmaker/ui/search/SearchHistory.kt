@@ -16,10 +16,6 @@ import com.practicum.playlistmaker.domain.model.Track
 import com.practicum.playlistmaker.ui.player.PlayerActivity
 import java.util.Locale
 
-
-const val SEARCH_HISTORY = "search_history"
-const val HISTORY_KEY = "key_history"
-
 class SearchHistory(private val context: Context, private val editText: EditText?, private var getTracksInteractor: TracksInteractor) {
 
     private val handler = Handler(Looper.getMainLooper())
@@ -51,47 +47,7 @@ class SearchHistory(private val context: Context, private val editText: EditText
         )
     }
 
-    /*fun getHistory(): ArrayList<Track> {
-        val json = sharedPrefs.getString(HISTORY_KEY, "")
-        if (!json.isNullOrEmpty()) {
-            return createTrackFromJson(json)
-        }
-        return ArrayList()
-    }
-
-    fun saveTrack(track: Track) {
-        hideKeyboardAndClearFocus()
-        historyTrackList.tracks.removeAll{it.trackId == track.trackId}
-        historyTrackList.tracks.add(0, track)
-        historyTrackList.notifyDataSetChanged()
-
-        if (historyTrackList.tracks.size > 10) {
-            historyTrackList.tracks.removeAt(historyTrackList.tracks.lastIndex)
-        }
-
-        sharedPrefs
-            .edit()
-            .putString(HISTORY_KEY, createJsonFromTrack(historyTrackList.tracks))
-            .apply()
-    }*/
-
-    /*fun clearHistory() {
-        historyTrackList.tracks.clear()
-        sharedPrefs
-            .edit()
-            .clear()
-            .apply()
-    }*/
-
-    /*private fun createJsonFromTrack(tracks: ArrayList<Track>): String {
-        return Gson().toJson(tracks)
-    }
-
-    private fun createTrackFromJson(json: String): ArrayList<Track> {
-        return Gson().fromJson(json, object : TypeToken<ArrayList<Track>>() {}.type)
-    }*/
-
-    private fun updateHistory(tracks: List<Track>) {
+    fun updateHistory(tracks: List<Track>) {
         hideKeyboardAndClearFocus()
         historyTrackList.tracks = tracks.toMutableList() as ArrayList
         historyTrackList.notifyDataSetChanged()
