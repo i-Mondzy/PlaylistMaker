@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker.data.network
 
-import com.practicum.playlistmaker.data.local.TracksManager
+import com.practicum.playlistmaker.data.local.track.TracksManager
 import com.practicum.playlistmaker.data.TracksNetworkClient
 import com.practicum.playlistmaker.data.dto.TracksSearchResponse
 import com.practicum.playlistmaker.domain.api.TracksRepository

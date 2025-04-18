@@ -125,7 +125,7 @@ class PlayerActivity : AppCompatActivity() {
                 val trackTimeLocation = IntArray(2)
                 currentTrackTime.getLocationOnScreen(trackTimeLocation)
                 val trackTimeY = trackTimeLocation[1]
-                Log.d("list", listToString(trackTimeLocation))
+//                Log.d("list", listToString(trackTimeLocation))
                 val screenHeight = resources.displayMetrics.heightPixels
 
                 if (trackTimeY + currentTrackTime.height > screenHeight) {
@@ -172,13 +172,13 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         mediaPlayer.setOnCompletionListener{
-            currentTrackTime.text = String.format("%02d:%02d", 0, 0)
+            currentTrackTime.text = String.format("%02d:%02d", 0, seconds)
+            if (seconds == 1) currentTrackTime.text = String.format("%02d:%02d", 0, 0)
             playBtn.setImageDrawable(getDrawable(R.drawable.ic_play))
             remainingMillis = 1000L
             seconds = 30
             handler.removeCallbacks(playRunnable)
             playerState = STATE_PREPARED
-
         }
     }
 

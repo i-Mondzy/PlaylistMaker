@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.data.local
+package com.practicum.playlistmaker.data.local.track
 
 import android.content.Context
 import com.google.gson.Gson
