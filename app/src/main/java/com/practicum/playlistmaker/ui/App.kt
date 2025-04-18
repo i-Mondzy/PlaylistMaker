@@ -15,18 +15,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        switchTheme(getThemeInteractor.getTheme())
+        getThemeInteractor.switchTheme(getThemeInteractor.getTheme())
 
-    }
-
-    fun switchTheme(darkThemeEnabled: Boolean) {
-
-        AppCompatDelegate.setDefaultNightMode(
-            if (darkThemeEnabled) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
-            }
-        )
     }
 }

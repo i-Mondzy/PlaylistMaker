@@ -47,7 +47,7 @@ class SettingsActivity : AppCompatActivity() {
             }
 
             getThemeInteractor.saveTheme(checked)
-            (applicationContext as App).switchTheme(checked)
+            getThemeInteractor.switchTheme(checked)
         }
 
 //      Кнопка "Поделиться приложением"

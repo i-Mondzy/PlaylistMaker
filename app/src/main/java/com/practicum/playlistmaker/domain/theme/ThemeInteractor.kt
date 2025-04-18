@@ -6,4 +6,6 @@ interface ThemeInteractor {
 
     fun getTheme(): Boolean
 
+    fun switchTheme(darkThemeEnabled: Boolean)
+
 }

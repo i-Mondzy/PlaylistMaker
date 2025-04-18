@@ -6,4 +6,6 @@ interface ThemeRepository {
 
     fun getTheme(): Boolean
 
+    fun switchTheme(darkThemeEnabled: Boolean)
+
 }

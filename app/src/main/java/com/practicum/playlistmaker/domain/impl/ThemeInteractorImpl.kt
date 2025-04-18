@@ -13,4 +13,8 @@ class ThemeInteractorImpl(private val repository: ThemeRepository) : ThemeIntera
         return repository.getTheme()
     }
 
+    override fun switchTheme(darkThemeEnabled: Boolean) {
+        repository.switchTheme(darkThemeEnabled)
+    }
+
 }
