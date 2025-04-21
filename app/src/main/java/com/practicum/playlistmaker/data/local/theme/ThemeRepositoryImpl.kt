@@ -14,7 +14,13 @@ class ThemeRepositoryImpl(private val themeManager: ThemeManager) : ThemeReposit
     }
 
     override fun switchTheme(darkThemeEnabled: Boolean) {
-        themeManager.switchTheme(darkThemeEnabled)
+        AppCompatDelegate.setDefaultNightMode(
+            if (darkThemeEnabled) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+        )
     }
 
 }

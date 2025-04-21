@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.ui
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
 import com.practicum.playlistmaker.creator.Creator
 
 

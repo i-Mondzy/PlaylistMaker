@@ -3,7 +3,6 @@ package com.practicum.playlistmaker.data.local.theme
 import android.app.Application.MODE_PRIVATE
 import android.content.Context
 import android.util.Log
-import androidx.appcompat.app.AppCompatDelegate
 
 class ThemeManager(private val context: Context) {
 
@@ -29,17 +28,6 @@ class ThemeManager(private val context: Context) {
 
         return sharedPrefs.getBoolean(THEME_KEY, false)
 
-    }
-
-    fun switchTheme(darkThemeEnabled: Boolean) {
-
-        AppCompatDelegate.setDefaultNightMode(
-            if (darkThemeEnabled) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
-            }
-        )
     }
 
 }
