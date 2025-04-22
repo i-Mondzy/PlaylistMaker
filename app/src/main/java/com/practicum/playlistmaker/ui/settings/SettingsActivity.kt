@@ -1,10 +1,9 @@
-package com.practicum.playlistmaker.ui
+package com.practicum.playlistmaker.ui.settings
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
-import android.widget.Switch
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -12,8 +11,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.domain.theme.ThemeInteractor
+import com.practicum.playlistmaker.ui.App
 
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var getThemeInteractor: ThemeInteractor
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,8 +37,8 @@ class SettingsActivity : AppCompatActivity() {
 
 //      Обводка свитча при переключении
         val switch = findViewById<SwitchMaterial>(R.id.switch_theme)
-        val sharedPrefs = getSharedPreferences(LIGHT_DARK_THEME, MODE_PRIVATE)
-        switch.isChecked = sharedPrefs.getBoolean(THEME_KEY, false)
+        getThemeInteractor = Creator.provideThemeInterator(this)
+        switch.isChecked = getThemeInteractor.getTheme()
         switch.setOnCheckedChangeListener { switcher, checked ->
             if (!checked) {
                 switch.background = ContextCompat.getDrawable(this, R.drawable.custom_ripple_night)
@@ -41,7 +46,8 @@ class SettingsActivity : AppCompatActivity() {
                 switch.background = ContextCompat.getDrawable(this, R.drawable.custom_ripple_day)
             }
 
-            (applicationContext as App).switchTheme(checked)
+            getThemeInteractor.saveTheme(checked)
+            getThemeInteractor.switchTheme(checked)
         }
 
 //      Кнопка "Поделиться приложением"

@@ -1,8 +1,7 @@
-package com.practicum.playlistmaker.data.recycler
+package com.practicum.playlistmaker.ui.search
 
 import android.content.Context
 import android.icu.text.SimpleDateFormat
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.model.Track
 import java.util.Locale
 
 class TrackViewHolder(parent: ViewGroup) : ViewHolder(
