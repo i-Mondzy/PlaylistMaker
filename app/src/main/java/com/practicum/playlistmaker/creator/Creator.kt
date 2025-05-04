@@ -1,17 +1,21 @@
 package com.practicum.playlistmaker.creator
 
 import android.content.Context
-import com.practicum.playlistmaker.data.local.theme.ThemeManager
-import com.practicum.playlistmaker.data.local.theme.ThemeRepositoryImpl
-import com.practicum.playlistmaker.data.local.track.TracksManager
-import com.practicum.playlistmaker.data.network.TracksRepositoryImpl
-import com.practicum.playlistmaker.data.network.TracksRetrofitNetworkClient
-import com.practicum.playlistmaker.domain.api.TracksInteractor
-import com.practicum.playlistmaker.domain.api.TracksRepository
-import com.practicum.playlistmaker.domain.impl.ThemeInteractorImpl
-import com.practicum.playlistmaker.domain.impl.TracksInteractorImpl
-import com.practicum.playlistmaker.domain.theme.ThemeInteractor
-import com.practicum.playlistmaker.domain.theme.ThemeRepository
+import com.practicum.playlistmaker.settings.data.theme.ThemeManager
+import com.practicum.playlistmaker.settings.data.theme.SettingsRepositoryImpl
+import com.practicum.playlistmaker.search.data.local.track.TracksManager
+import com.practicum.playlistmaker.search.data.network.TracksRepositoryImpl
+import com.practicum.playlistmaker.search.data.network.TracksRetrofitNetworkClient
+import com.practicum.playlistmaker.search.domain.api.TracksInteractor
+import com.practicum.playlistmaker.search.domain.api.TracksRepository
+import com.practicum.playlistmaker.settings.domain.impl.SettingsInteractorImpl
+import com.practicum.playlistmaker.search.domain.impl.TracksInteractorImpl
+import com.practicum.playlistmaker.settings.domain.SettingsInteractor
+import com.practicum.playlistmaker.settings.domain.SettingsRepository
+import com.practicum.playlistmaker.share.data.impl.ExternalNavigatorImpl
+import com.practicum.playlistmaker.share.domain.ExternalNavigator
+import com.practicum.playlistmaker.share.domain.ShareInteractor
+import com.practicum.playlistmaker.share.domain.impl.ShareInteractorImpl
 
 object Creator {
     /*private fun getTracksManager(context: Context) : TracksManager {
@@ -26,12 +30,20 @@ object Creator {
         return TracksInteractorImpl(getTracksRepository(context))
     }
 
-    private fun getThemeRepository(context: Context) : ThemeRepository {
-        return ThemeRepositoryImpl(ThemeManager(context))
+    private fun getSettingsRepository(context: Context) : SettingsRepository {
+        return SettingsRepositoryImpl(ThemeManager(context))
     }
 
-    fun provideThemeInterator(context: Context) : ThemeInteractor {
-        return ThemeInteractorImpl(getThemeRepository(context))
+    fun provideSettingsInterator(context: Context) : SettingsInteractor {
+        return SettingsInteractorImpl(getSettingsRepository(context))
+    }
+
+    private fun getExternalNavigator(context: Context) : ExternalNavigator {
+        return ExternalNavigatorImpl(context)
+    }
+
+    fun provideShareInteractor(context: Context) : ShareInteractor {
+        return ShareInteractorImpl(getExternalNavigator(context))
     }
 
 }
