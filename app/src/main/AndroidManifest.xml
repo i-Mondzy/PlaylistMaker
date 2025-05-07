@@ -35,8 +35,8 @@
         <activity
             android:name=".search.ui.activity.SearchActivity"
             android:exported="false"
-            android:theme="@style/Search.Theme.PlaylistMaker"
-            android:screenOrientation="portrait" />
+            android:theme="@style/Search.Theme.PlaylistMaker" />
+<!--        android:screenOrientation="portrait"-->
 <!--        <activity
             android:name=".ui.SearchActivity"
             android:exported="true"

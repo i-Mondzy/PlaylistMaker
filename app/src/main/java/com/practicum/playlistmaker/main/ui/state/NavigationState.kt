@@ -1,7 +1,7 @@
 package com.practicum.playlistmaker.main.ui.state
 
 sealed interface NavigationState {
-    object Search : NavigationState
-    object Media : NavigationState
-    object Settings : NavigationState
+    data object Search : NavigationState
+    data object Media : NavigationState
+    data object Settings : NavigationState
 }

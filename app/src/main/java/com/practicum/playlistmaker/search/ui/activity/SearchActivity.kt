@@ -11,48 +11,42 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.search.data.TimingInterceptor
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.api.TracksInteractor
-import com.practicum.playlistmaker.search.domain.model.Resource
 import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
+import com.practicum.playlistmaker.search.ui.state.TracksState
+import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import okhttp3.OkHttpClient
 import java.util.Locale
 
 class SearchActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivitySearchBinding
+    private val viewModel by lazy {
+        ViewModelProvider(this, SearchViewModel.getViewModelFactory())[SearchViewModel::class.java]
+    }
 
     companion object {
         const val SEARCH_STRING = "SEARCH_STRING"
         const val STRING_DEF = ""
     }
 
-    private lateinit var queryInput: EditText
-    private lateinit var clearButton: ImageView
-    private lateinit var placeholderMessageNothingFound: LinearLayout
-    private lateinit var placeholderMessageNoInternet: LinearLayout
-    private lateinit var history: LinearLayout
-    private lateinit var searchTracksListRV: RecyclerView
-    private lateinit var historyTracksListRV: RecyclerView
-    private lateinit var updateBtn: Button
-    private lateinit var clearHistoryBtn: Button
-    private lateinit var progressBar: ProgressBar
-
     private lateinit var getTracksInteractor: TracksInteractor
+    private lateinit var simpleTextWatcher: TextWatcher
 
     private lateinit var searchHistory: SearchHistory
 
@@ -64,8 +58,7 @@ class SearchActivity : AppCompatActivity() {
 
     private val searchTrackList = TrackAdapter { track ->
         hideKeyboardIfNeeded()
-        getTracksInteractor.saveTrack(track)
-        searchHistory.updateHistory(getTracksInteractor.getTracks())
+        viewModel.saveTrack(track)
         startActivity(
             Intent(this, PlayerActivity::class.java).apply {
                 putExtra("TRACK_ARTWORK", track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
@@ -81,8 +74,8 @@ class SearchActivity : AppCompatActivity() {
         )
     }
 
-    //  Метод для отображения треков
-    private fun showTracks() {
+    //  Метод для поиска треков
+    /*private fun searchRequest() {
         getTracksInteractor.searchTracks(
             text = queryInput.text.toString(),
             consumer = object : TracksInteractor.TracksConsumer{
@@ -120,87 +113,76 @@ class SearchActivity : AppCompatActivity() {
 
             }
         )
-    }
+    }*/
 
-    private fun showSearchTracks(foundTracks: List<Track>) {
-        tracks.clear()
-        tracks.addAll(foundTracks)
-        searchTrackList.notifyDataSetChanged()
-        searchTracksListRV.visibility = View.VISIBLE
-        placeholderMessageNoInternet.visibility = View.GONE
-        placeholderMessageNothingFound.visibility = View.GONE
-        history.visibility = View.GONE
-        progressBar.visibility = View.GONE
-    }
-
-    private fun showHistoryTracks() {
-        tracks.clear()
-        searchTrackList.notifyDataSetChanged()
-        placeholderMessageNothingFound.visibility = View.GONE
-        placeholderMessageNoInternet.visibility = View.GONE
-        progressBar.visibility = View.GONE
-        if (getTracksInteractor.getTracks().isEmpty()) {
-            history.visibility = View.GONE
-        } else {
-            history.visibility = View.VISIBLE
+    private fun render(state: TracksState) {
+        when(state) {
+            is TracksState.Content -> showSearchTracks(state.tracks)
+            is TracksState.History -> showHistoryTracks(state.tracks)
+            TracksState.Empty -> showMessageNothingFound()
+            TracksState.Error -> showMessageNoInternet()
+            TracksState.Loading -> showProgressBar()
         }
+    }
+
+    private fun showSearchTracks(tracks: List<Track>) {
+        searchTrackList.tracks.clear()
+        searchTrackList.tracks.addAll(tracks)
+        searchTrackList.notifyDataSetChanged()
+
+        binding.trackFound.isVisible = true
+        binding.placeholderNoInternet.isVisible = false
+        binding.placeholderNothingFound.isVisible = false
+        binding.history.isVisible = false
+        binding.progressBar.isVisible = false
+    }
+
+    private fun showHistoryTracks(tracks: List<Track>) {
+        searchHistory.historyTrackList.tracks.clear()
+        searchHistory.historyTrackList.tracks.addAll(tracks)
+        searchHistory.historyTrackList.notifyDataSetChanged()
+
+        binding.placeholderNothingFound.isVisible = false
+        binding.placeholderNoInternet.isVisible = false
+        binding.progressBar.isVisible = false
+        binding.history.isVisible = tracks.isNotEmpty()
     }
 
     private fun showMessageNothingFound() {
-        tracks.clear()
+        searchTrackList.tracks.clear()
         searchTrackList.notifyDataSetChanged()
-        placeholderMessageNothingFound.visibility = View.VISIBLE
-        placeholderMessageNoInternet.visibility = View.GONE
-        history.visibility = View.GONE
-        progressBar.visibility = View.GONE
+
+        binding.placeholderNothingFound.isVisible = true
+        binding.placeholderNoInternet.isVisible = false
+        binding.history.isVisible = false
+        binding.progressBar.isVisible = false
     }
 
     private fun showMessageNoInternet() {
-        tracks.clear()
+        searchTrackList.tracks.clear()
         searchTrackList.notifyDataSetChanged()
-        placeholderMessageNothingFound.visibility = View.GONE
-        placeholderMessageNoInternet.visibility = View.VISIBLE
-        history.visibility = View.GONE
-        progressBar.visibility = View.GONE
+
+        binding.placeholderNothingFound.isVisible = false
+        binding.placeholderNoInternet.isVisible = true
+        binding.history.isVisible = false
+        binding.progressBar.isVisible = false
     }
 
     // Метод для обновления списка "Поиск"
-    private fun update() {
-        updateBtn.setOnClickListener {
-            showTracks()
+    /*private fun update(changedText: String) {
+        binding.updateBtn.setOnClickListener {
+            viewModel.searchDebounce(changedText)
             hideKeyboardIfNeeded()
         }
-    }
+    }*/
 
     // Метод для видимости "Прогресс бара"
-    private fun progressBarVisibility(s: CharSequence?): Int {
-        history.visibility = View.GONE
-        searchTracksListRV.visibility = View.GONE
-        placeholderMessageNothingFound.visibility = View.GONE
-        placeholderMessageNoInternet.visibility = View.GONE
-
-        if (s.isNullOrEmpty()) {
-//            handler.removeCallbacks(searchRunnable)
-            handler.post { showTracks() }
-        } else {
-//            handler.removeCallbacks(searchRunnable)
-            handler.postDelayed({ showTracks() }, 2000L)
-        }
-
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
-    }
-
-    //  Метод для видимости кнопки "Очистить текст"
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
+    private fun showProgressBar() {
+        binding.history.isVisible = false
+        binding.trackFound.isVisible = false
+        binding.placeholderNothingFound.isVisible = false
+        binding.placeholderNoInternet.isVisible = false
+        binding.progressBar.isVisible = true
     }
 
     //  Метод для "Скрытия клавиатуры"
@@ -223,15 +205,15 @@ class SearchActivity : AppCompatActivity() {
         // Сохранить список
         outState.putParcelableArrayList("adapter_data", ArrayList(tracks))
 
-        val layoutManager = searchTracksListRV.layoutManager as LinearLayoutManager
+        val layoutManager = binding.trackFound.layoutManager as LinearLayoutManager
         outState.putInt("scroll_position", layoutManager.findFirstVisibleItemPosition())
         layoutManager.findViewByPosition(layoutManager.findFirstVisibleItemPosition())
             ?.let { view ->
                 outState.putInt("scroll_offset", view.top - layoutManager.paddingTop)
             }
 
-        outState.putInt("placeholder_nothing_found_visibility", placeholderMessageNothingFound.visibility)
-        outState.putInt("placeholder_no_internet_visibility", placeholderMessageNoInternet.visibility)
+        outState.putInt("placeholder_nothing_found_visibility", binding.placeholderNothingFound.visibility)
+        outState.putInt("placeholder_no_internet_visibility", binding.placeholderNoInternet.visibility)
     }
 
     //  Метод для "Воостановления"
@@ -255,7 +237,7 @@ class SearchActivity : AppCompatActivity() {
 
         val scrollPosition = savedInstanceState.getInt("scroll_position", 0)
         val scrollOffset = savedInstanceState.getInt("scroll_offset", 0)
-        val layoutManager = searchTracksListRV.layoutManager as LinearLayoutManager
+        val layoutManager = binding.trackFound.layoutManager as LinearLayoutManager
         layoutManager.scrollToPositionWithOffset(scrollPosition, scrollOffset)
     }
 
@@ -263,65 +245,54 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_search)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        queryInput = findViewById(R.id.input_text)
-        clearButton = findViewById(R.id.clear_text)
-        placeholderMessageNothingFound = findViewById(R.id.placeholder_nothing_found)
-        placeholderMessageNoInternet = findViewById(R.id.placeholder_no_internet)
-        history = findViewById(R.id.history)
-        searchTracksListRV = findViewById(R.id.track_found)
-        historyTracksListRV = findViewById(R.id.track_history)
-        updateBtn = findViewById(R.id.update_btn)
-        clearHistoryBtn = findViewById(R.id.clear_history)
-        progressBar = findViewById(R.id.progressBar)
-
-        placeholderMessageNothingFound.visibility = View.GONE
-        placeholderMessageNoInternet.visibility = View.GONE
-        history.visibility = View.GONE
-        progressBar.visibility = View.GONE
+        binding.placeholderNothingFound.isVisible = false
+        binding.placeholderNoInternet.isVisible = false
+        binding.history.isVisible = false
+        binding.progressBar.isVisible = false
 
         getTracksInteractor = Creator.provideTracksInteractor(this)
 
-        searchHistory = SearchHistory(this, queryInput, getTracksInteractor)
-        historyTracksListRV.adapter = searchHistory.historyTrackList
-        historyTracksListRV.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        searchHistory = SearchHistory(this, binding.inputText, getTracksInteractor)
+        binding.trackHistory.adapter = searchHistory.historyTrackList
+        binding.trackHistory.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-//      Отобразить историю при запуске
-        if (getTracksInteractor.getTracks().isNotEmpty()) {
-            searchHistory.historyTrackList.tracks = getTracksInteractor.getTracks().toMutableList() as ArrayList<Track>
-            history.visibility = View.VISIBLE
+        viewModel.observerState().observe(this){
+            render(it)
         }
 
+//      Отобразить историю при запуске
+        /*render(TracksState.History(viewModel.getTracksHistory()))*/
+
 //      Очистить историю
-        clearHistoryBtn.setOnClickListener {
+        binding.clearHistory.setOnClickListener {
             getTracksInteractor.clearTracks()
             searchHistory.historyTrackList.notifyDataSetChanged()
-            history.visibility = View.GONE
+            binding.history.isVisible = false
         }
 
         // Восстановление видимости
         savedInstanceState?.let {
-            placeholderMessageNothingFound.visibility = it.getInt("placeholder_nothing_found_visibility", View.GONE)
-            placeholderMessageNoInternet.visibility = it.getInt("placeholder_no_internet_visibility", View.GONE)
+            binding.placeholderNothingFound.visibility = it.getInt("placeholder_nothing_found_visibility", View.GONE)
+            binding.placeholderNoInternet.visibility = it.getInt("placeholder_no_internet_visibility", View.GONE)
         }
-        update()
 
 //      Обработчик кнопки "Назад"
-        val btnBack = findViewById<Button>(R.id.btn_back)
-        btnBack.setOnClickListener {
+        binding.btnBack.setOnClickListener {
             finish()
         }
 
 //      Обработчик кнопки "Очистить текст" в поиске
-        clearButton.setOnClickListener {
-            queryInput.setText("")
-            queryInput.clearFocus()
+        binding.clearBtn.setOnClickListener {
+            binding.inputText.setText("")
+            binding.inputText.clearFocus()
 
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             val currentView = currentFocus ?: window.decorView
@@ -329,18 +300,18 @@ class SearchActivity : AppCompatActivity() {
         }
 
 //      Работа с полем EditText
-        val simpleTextWatcher = object : TextWatcher {
+        simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.visibility = clearButtonVisibility(s)
-                progressBar.visibility = progressBarVisibility(s)
+                binding.clearBtn.isVisible = !s.isNullOrEmpty()
+                viewModel.searchDebounce(s.toString())
 
                 if (s?.isEmpty() == true) {
                     tracks.clear()
                     searchTrackList.notifyDataSetChanged()
-                    placeholderMessageNothingFound.visibility = View.GONE
-                    placeholderMessageNoInternet.visibility = View.GONE
+                    binding.placeholderNothingFound.isVisible = false
+                    binding.placeholderNoInternet.isVisible = false
                 }
             }
 
@@ -348,7 +319,11 @@ class SearchActivity : AppCompatActivity() {
                 inputText = s.toString()
             }
         }
-        queryInput.addTextChangedListener(simpleTextWatcher)
+        binding.inputText.addTextChangedListener(simpleTextWatcher)
+        binding.updateBtn.setOnClickListener{
+            viewModel.updateList()
+        }
+
 
 //      Обработчик "Скрытия клавиатуры"
         val rootLayout = findViewById<LinearLayout>(R.id.main)
@@ -360,20 +335,20 @@ class SearchActivity : AppCompatActivity() {
         }
 
 //      Отображение песен
-        searchTracksListRV.adapter = searchTrackList
-        searchTracksListRV.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.trackFound.adapter = searchTrackList
+        binding.trackFound.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         searchTrackList.tracks = tracks
 
 //      Кнопка "Поиск" на клавиатуре
-        queryInput.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE && queryInput.text.isNotEmpty() || actionId == EditorInfo.IME_ACTION_DONE && /*searchHistory.getHistory().isEmpty()*/ getTracksInteractor.getTracks().isEmpty()) {
+/*        queryInput.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE && queryInput.text.isNotEmpty() || actionId == EditorInfo.IME_ACTION_DONE && searchHistory.getHistory().isEmpty() getTracksInteractor.getTracks().isEmpty()) {
                 // ВЫПОЛНЯЙТЕ ПОИСКОВЫЙ ЗАПРОС ЗДЕСЬ
-                showTracks()
+                searchRequest()
                 true
             }
             hideKeyboardIfNeeded()
             false
-        }
+        }*/
 
     }
 
