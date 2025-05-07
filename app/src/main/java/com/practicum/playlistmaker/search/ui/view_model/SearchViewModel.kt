@@ -30,8 +30,8 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         searchRequest(newSearchText)
     }
 
-    private val stateLaveData = MutableLiveData<TracksState>()
-    fun observerState(): LiveData<TracksState> = stateLaveData
+    private val stateLiveData = MutableLiveData<TracksState>()
+    fun observerState(): LiveData<TracksState> = stateLiveData
 
     init {
         renderState(TracksState.History(tracksInteractor.getTracks()))
@@ -84,33 +84,41 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         if (lastSearchText == changedText) return
 
         lastSearchText = changedText
-        if (lastSearchText.isNullOrEmpty()) {
-            handler.removeCallbacks(searchRunnable)
-            handler.post(searchRunnable)
-        } else {
-            renderState(TracksState.Loading)
-            handler.removeCallbacks(searchRunnable)
-            handler.postDelayed(searchRunnable, 2000)
-        }
+        executeSearch()
     }
 
-    fun updateList() {
-        if (lastSearchText.isNullOrEmpty()) {
-            handler.removeCallbacks(searchRunnable)
-            handler.post(searchRunnable)
-        } else {
-            renderState(TracksState.Loading)
-            handler.removeCallbacks(searchRunnable)
-            handler.postDelayed(searchRunnable, 2000)
-        }
+    fun updateSearch() {
+        executeSearch()
+    }
+
+    fun updateHistory() {
+        handler.postDelayed(
+            { renderState(TracksState.History(tracksInteractor.getTracks())) },
+            1000
+        )
+    }
+
+    fun clearHistory() {
+        tracksInteractor.clearTracks()
+        renderState(TracksState.History(tracksInteractor.getTracks()))
     }
 
     fun saveTrack(track: Track) {
         tracksInteractor.saveTrack(track)
     }
 
+    private fun executeSearch() {
+        handler.removeCallbacks(searchRunnable)
+        if (lastSearchText.isNullOrEmpty()) {
+            handler.post(searchRunnable)
+        } else {
+            renderState(TracksState.Loading)
+            handler.postDelayed(searchRunnable, 2000)
+        }
+    }
+
     private fun renderState(state: TracksState) {
-        stateLaveData.postValue(state)
+        stateLiveData.postValue(state)
     }
 
     override fun onCleared() {
