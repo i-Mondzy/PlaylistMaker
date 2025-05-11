@@ -15,13 +15,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
 import com.practicum.playlistmaker.search.ui.state.TracksState
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
-import java.util.Locale
 
 class SearchActivity : AppCompatActivity() {
 
@@ -49,15 +47,7 @@ class SearchActivity : AppCompatActivity() {
     private fun openPlayer(track: Track) {
         startActivity(
             Intent(this, PlayerActivity::class.java).apply {
-                putExtra("TRACK_ARTWORK", track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
-                putExtra("TRACK_NAME", track.trackName)
-                putExtra("ARTIST_NAME", track.artistName)
-                putExtra("TRACK_TIME", SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()))
-                putExtra("COLLECTION_NAME", track.collectionName)
-                putExtra("RELEASE_DATE", SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)))
-                putExtra("PRIMARY_GENRE_NAME", track.primaryGenreName)
-                putExtra("COUNTRY", track.country)
-                putExtra("PREVIEW", track.previewUrl)
+                putExtra("TRACK", track)
             }
         )
     }
@@ -140,7 +130,7 @@ class SearchActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets

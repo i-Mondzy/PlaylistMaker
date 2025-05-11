@@ -13,11 +13,10 @@ import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivitySettingsBinding
     private val viewModel by lazy {
         ViewModelProvider(this, SettingsViewModel.getViewModelFactory())[SettingsViewModel::class.java]
     }
-
-    private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,8 +28,6 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-
 
 //      Кнопка "Назад"
         binding.btnBack.setOnClickListener{
@@ -70,11 +67,11 @@ class SettingsActivity : AppCompatActivity() {
     private fun switchTheme(checked: Boolean) {
         binding.switchTheme.isChecked = checked
 
-        if (!checked) {
+        /*if (!checked) {
             binding.switchTheme.background = ContextCompat.getDrawable(this, R.drawable.custom_ripple_night)
         } else {
             binding.switchTheme.background = ContextCompat.getDrawable(this, R.drawable.custom_ripple_day)
-        }
+        }*/
     }
 
 }
