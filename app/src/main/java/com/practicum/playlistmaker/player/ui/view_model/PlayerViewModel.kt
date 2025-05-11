@@ -5,13 +5,16 @@ import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.practicum.playlistmaker.player.ui.CombinedData
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.model.TrackUi
+import com.practicum.playlistmaker.player.ui.state.PlayerState
 import java.util.Locale
 
 class PlayerViewModel : ViewModel() {
@@ -27,6 +30,52 @@ class PlayerViewModel : ViewModel() {
 
     private val isPlayButtonEnabled = MutableLiveData<Boolean>()
     fun getIsPlayButtonEnabled(): LiveData<Boolean> = isPlayButtonEnabled
+
+    private val playerStateUi = MutableLiveData<PlayerState>()
+
+    private val mediatorLiveData = MediatorLiveData<CombinedData>().also { livedata ->
+
+        livedata.addSource(trackLiveData) { track ->
+            livedata.value = combinedLiveData(
+                track = track,
+                currentTime = livedata.value?.currentTrackTime,
+                isPlaying = livedata.value?.isPlaying,
+                isPlayButtonEnabled = livedata.value?.isPlayButtonEnabled
+            )
+        }
+        livedata.addSource(currentTrackTimeLiveData) { time ->
+            livedata.value = combinedLiveData(
+                track = livedata.value?.track,
+                currentTime = time,
+                isPlaying = livedata.value?.isPlaying,
+                isPlayButtonEnabled = livedata.value?.isPlayButtonEnabled
+            )
+        }
+        livedata.addSource(isPlaying) { isPlaying ->
+            livedata.value = combinedLiveData(
+                track = livedata.value?.track,
+                currentTime = livedata.value?.currentTrackTime,
+                isPlaying = isPlaying,
+                isPlayButtonEnabled = livedata.value?.isPlayButtonEnabled
+            )
+        }
+        livedata.addSource(isPlayButtonEnabled) { isPlayButtonEnabled ->
+            livedata.value = combinedLiveData(
+                track = livedata.value?.track,
+                currentTime = livedata.value?.currentTrackTime,
+                isPlaying = livedata.value?.isPlaying,
+                isPlayButtonEnabled = isPlayButtonEnabled
+            )
+        }
+
+    }
+    fun getMediatorLiveData(): LiveData<CombinedData> {
+        return mediatorLiveData
+    }
+
+    private fun combinedLiveData(track: TrackUi?, currentTime: String?, isPlaying: Boolean?, isPlayButtonEnabled: Boolean?): CombinedData {
+        return CombinedData(track, currentTime, isPlaying, isPlayButtonEnabled)
+    }
 
 
     private val mediaPlayer = MediaPlayer()
@@ -88,6 +137,7 @@ class PlayerViewModel : ViewModel() {
         mediaPlayer.start()
         isPlaying.value = true
         playerState = STATE_PLAYING
+//        playerStateUi.value = PlayerState.Play(isPlaying.value, currentTrackTimeLiveData.value)
 
         startTime = System.currentTimeMillis()
 
