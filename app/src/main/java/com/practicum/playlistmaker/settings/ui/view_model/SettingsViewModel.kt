@@ -1,20 +1,20 @@
 package com.practicum.playlistmaker.settings.ui.view_model
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.App
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.main.ui.utils.SingleEventLiveData
+import com.practicum.playlistmaker.settings.domain.SettingsInteractor
+import com.practicum.playlistmaker.share.domain.ShareInteractor
 
-class SettingsViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val settingsInteractor = Creator.provideSettingsInterator(getApplication())
-    private val shareInteractor = Creator.provideShareInteractor(getApplication())
+class SettingsViewModel(
+    private val settingsInteractor: SettingsInteractor,
+    private val shareInteractor: ShareInteractor
+) : ViewModel() {
 
     private val themeLiveData = SingleEventLiveData<Boolean>()
     fun observeTheme(): LiveData<Boolean> = themeLiveData
@@ -26,7 +26,10 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     companion object {
         fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                SettingsViewModel(this[APPLICATION_KEY] as App)
+                SettingsViewModel(
+                    (this[APPLICATION_KEY] as App).creator.provideSettingsInterator(),
+                    (this[APPLICATION_KEY] as App).creator.provideShareInteractor()
+                )
             }
         }
     }

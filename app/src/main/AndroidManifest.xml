@@ -19,8 +19,8 @@
         <activity
             android:name=".player.ui.activity.PlayerActivity"
             android:exported="false"
-            android:theme="@style/Player.Theme.PlaylistMaker"
-            android:screenOrientation="portrait" />
+            android:theme="@style/Player.Theme.PlaylistMaker" />
+<!--        android:screenOrientation="portrait"-->
 <!--        <activity
             android:name=".ui.PlayerActivity"
             android:exported="true"

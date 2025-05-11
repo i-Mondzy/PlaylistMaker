@@ -17,33 +17,30 @@ import com.practicum.playlistmaker.share.domain.ExternalNavigator
 import com.practicum.playlistmaker.share.domain.ShareInteractor
 import com.practicum.playlistmaker.share.domain.impl.ShareInteractorImpl
 
-object Creator {
-    /*private fun getTracksManager(context: Context) : TracksManager {
-        return TracksManager(context)
-    }*/
+class Creator(private val context: Context)  {
 
-    private fun getTracksRepository(context: Context): TracksRepository {
+    private fun getTracksRepository(): TracksRepository {
         return TracksRepositoryImpl(TracksRetrofitNetworkClient(), TracksManager(context))
     }
 
-    fun provideTracksInteractor(context: Context): TracksInteractor {
-        return TracksInteractorImpl(getTracksRepository(context))
+    fun provideTracksInteractor(): TracksInteractor {
+        return TracksInteractorImpl(getTracksRepository())
     }
 
-    private fun getSettingsRepository(context: Context) : SettingsRepository {
+    private fun getSettingsRepository() : SettingsRepository {
         return SettingsRepositoryImpl(ThemeManager(context))
     }
 
-    fun provideSettingsInterator(context: Context) : SettingsInteractor {
-        return SettingsInteractorImpl(getSettingsRepository(context))
+    fun provideSettingsInterator() : SettingsInteractor {
+        return SettingsInteractorImpl(getSettingsRepository())
     }
 
-    private fun getExternalNavigator(context: Context) : ExternalNavigator {
+    private fun getExternalNavigator() : ExternalNavigator {
         return ExternalNavigatorImpl(context)
     }
 
-    fun provideShareInteractor(context: Context) : ShareInteractor {
-        return ShareInteractorImpl(getExternalNavigator(context))
+    fun provideShareInteractor() : ShareInteractor {
+        return ShareInteractorImpl(getExternalNavigator())
     }
 
 }

@@ -3,7 +3,6 @@ package com.practicum.playlistmaker.settings.ui.activity
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
@@ -66,12 +65,6 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun switchTheme(checked: Boolean) {
         binding.switchTheme.isChecked = checked
-
-        /*if (!checked) {
-            binding.switchTheme.background = ContextCompat.getDrawable(this, R.drawable.custom_ripple_night)
-        } else {
-            binding.switchTheme.background = ContextCompat.getDrawable(this, R.drawable.custom_ripple_day)
-        }*/
     }
 
 }
