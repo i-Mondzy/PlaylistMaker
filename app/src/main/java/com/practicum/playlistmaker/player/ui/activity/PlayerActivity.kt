@@ -15,7 +15,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.player.ui.model.TrackUi
-import com.practicum.playlistmaker.player.ui.state.PlayerState
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlin.math.max
@@ -23,7 +22,9 @@ import kotlin.math.max
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlayerBinding
-    private lateinit var viewModel: PlayerViewModel
+    private val viewModel by lazy {
+        ViewModelProvider(this, PlayerViewModel.getViewModelFactory())[PlayerViewModel::class.java]
+    }
 
     private fun setUi(track: TrackUi) {
         Glide.with(this)
@@ -35,7 +36,6 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.trackName.text = track.trackName
         binding.artistName.text = track.artistName
-        binding.currentTrackTime.text = track.currentTrackTime
         binding.trackTimeValue.text = track.trackTimeMillis
         binding.collectionNameValue.text = track.collectionName
         binding.releaseDateValue.text = track.releaseDate
@@ -52,17 +52,6 @@ class PlayerActivity : AppCompatActivity() {
         when (isPlaying) {
             true -> binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_pause))
             false -> binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
-        }
-    }
-
-    private fun render(state: PlayerState) {
-        when (state) {
-            PlayerState.Pause -> binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
-            is PlayerState.Play -> {
-                binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_pause))
-                binding.currentTrackTime.text = state.currentTime
-            }
-            PlayerState.Stop -> binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
         }
     }
 
@@ -86,12 +75,6 @@ class PlayerActivity : AppCompatActivity() {
             insets
         }
 
-        val track = intent.getParcelableExtra<Track>("TRACK")
-        if (track != null) {
-            viewModel = ViewModelProvider(this, PlayerViewModel.getViewModelFactory(track))[PlayerViewModel::class.java]
-        }
-
-
 //      Уменьшить обложку если маленький экран
         binding.currentTrackTime.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -109,34 +92,18 @@ class PlayerActivity : AppCompatActivity() {
             }
         })
 
-
         binding.playButton.setOnClickListener{
             viewModel.playbackControl()
         }
 
-        /*intent.getParcelableExtra<Track>("TRACK")?.let { viewModel.setTrack(it) }
-        viewModel.getTrackLiveData().observe(this) { track ->
-            setUi(track)
-        }
+        intent.getParcelableExtra<Track>("TRACK")?.let { viewModel.setTrack(it) }
+        viewModel.getMediatorLiveData().observe(this) { livedata ->
 
-        viewModel.getIsPlayButtonEnabled().observe(this) { enabled ->
-            binding.playButton.isEnabled = enabled
-        }
+            livedata.track?.let { setUi(it) }
+            livedata.currentTrackTime?.let { binding.currentTrackTime.text = it }
+            livedata.isPlaying?.let { changePlayBtn(it) }
+            livedata.isPlayButtonEnabled?.let { binding.playButton.isEnabled = it }
 
-        viewModel.getCurrentTrackTimeLiveData().observe(this) { time ->
-            binding.currentTrackTime.text = time
-        }
-
-        viewModel.getIsPlaying().observe(this) { isPlaying ->
-            changePlayBtn(isPlaying)
-        }*/
-
-        viewModel.getTrackLiveData().observe(this) {
-            setUi(it)
-        }
-
-        viewModel.getStatePlayerLiveData().observe(this) {
-            render(it)
         }
 
         binding.backBtn.setOnClickListener {

@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.player.ui.view_model
 
-import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
 import android.os.Handler
@@ -12,27 +11,63 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.practicum.playlistmaker.main.ui.utils.SingleEventLiveData
+import com.practicum.playlistmaker.player.ui.CombinedData
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerState
 import java.util.Locale
 
-class PlayerViewModel(private val track: Track) : ViewModel() {
-
-    /*private val isPlaying = MutableLiveData<Boolean>()
-    fun getIsPlaying(): LiveData<Boolean> = isPlaying
-
-    private val isPlayButtonEnabled = MutableLiveData<Boolean>()
-    fun getIsPlayButtonEnabled(): LiveData<Boolean> = isPlayButtonEnabled*/
-
-    /*private val currentTrackTimeLiveData = MutableLiveData<String>()
-    fun getCurrentTrackTimeLiveData(): LiveData<String> = currentTrackTimeLiveData*/
+class PlayerViewModel : ViewModel() {
 
     private val trackLiveData = MutableLiveData<TrackUi>()
-    fun getTrackLiveData(): LiveData<TrackUi> = trackLiveData
+    private val currentTrackTimeLiveData = MutableLiveData<String>()
+    private val isPlaying = MutableLiveData<Boolean>()
+    private val isPlayButtonEnabled = MutableLiveData<Boolean>()
 
-    private val statePlayerLiveData = MutableLiveData<PlayerState>()
-    fun getStatePlayerLiveData(): LiveData<PlayerState> = statePlayerLiveData
+    private val mediatorLiveData = MediatorLiveData<CombinedData>().also { livedata ->
+
+        livedata.addSource(trackLiveData) { track ->
+            livedata.value = combinedLiveData(
+                track = track,
+                currentTime = livedata.value?.currentTrackTime,
+                isPlaying = livedata.value?.isPlaying,
+                isPlayButtonEnabled = livedata.value?.isPlayButtonEnabled
+            )
+        }
+        livedata.addSource(currentTrackTimeLiveData) { time ->
+            livedata.value = combinedLiveData(
+                track = livedata.value?.track,
+                currentTime = time,
+                isPlaying = livedata.value?.isPlaying,
+                isPlayButtonEnabled = livedata.value?.isPlayButtonEnabled
+            )
+        }
+        livedata.addSource(isPlaying) { isPlaying ->
+            livedata.value = combinedLiveData(
+                track = livedata.value?.track,
+                currentTime = livedata.value?.currentTrackTime,
+                isPlaying = isPlaying,
+                isPlayButtonEnabled = livedata.value?.isPlayButtonEnabled
+            )
+        }
+        livedata.addSource(isPlayButtonEnabled) { isPlayButtonEnabled ->
+            livedata.value = combinedLiveData(
+                track = livedata.value?.track,
+                currentTime = livedata.value?.currentTrackTime,
+                isPlaying = livedata.value?.isPlaying,
+                isPlayButtonEnabled = isPlayButtonEnabled
+            )
+        }
+
+    }
+    fun getMediatorLiveData(): LiveData<CombinedData> {
+        return mediatorLiveData
+    }
+
+    private fun combinedLiveData(track: TrackUi?, currentTime: String?, isPlaying: Boolean?, isPlayButtonEnabled: Boolean?): CombinedData {
+        return CombinedData(track, currentTime, isPlaying, isPlayButtonEnabled)
+    }
 
 
     private val mediaPlayer = MediaPlayer()
@@ -50,15 +85,10 @@ class PlayerViewModel(private val track: Track) : ViewModel() {
             startTime = System.currentTimeMillis()
 
             seconds -= 1
-            /*currentTrackTimeLiveData.value = formatTime(seconds)*/
+            currentTrackTimeLiveData.value = formatTime(seconds)
 
-            renderState(PlayerState.Play(formatTime(seconds)))
             handler.postDelayed(this, 1000L)
         }
-    }
-
-    init {
-        setTrack(track)
     }
 
     companion object {
@@ -69,67 +99,70 @@ class PlayerViewModel(private val track: Track) : ViewModel() {
 
         private const val DEF_TIME = 30L
 
-        fun getViewModelFactory(track: Track): ViewModelProvider.Factory = viewModelFactory {
+        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                PlayerViewModel(track)
+                PlayerViewModel()
             }
         }
     }
 
-    private fun renderState(state: PlayerState) {
-        statePlayerLiveData.value = state
-    }
-
-    private fun setTrack(track: Track) {
+    fun setTrack(track: Track) {
         if (trackLiveData.value != null) return
 
         val trackUi = TrackUi(
+            trackId = track.trackId,
             trackName = track.trackName,
             artistName = track.artistName,
-            currentTrackTime = formatTime(seconds),
-            trackTimeMillis = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()),
+            trackTimeMillis = SimpleDateFormat(
+                "mm:ss",
+                Locale.getDefault()
+            ).format(track.trackTimeMillis.toLong()),
             artworkUrl100 = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
             collectionName = track.collectionName,
-            releaseDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)),
+            releaseDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(
+                SimpleDateFormat(
+                    "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                    Locale.getDefault()
+                ).parse(track.releaseDate)
+            ),
             primaryGenreName = track.primaryGenreName,
             country = track.country,
             previewUrl = track.previewUrl
         )
 
         trackLiveData.value = trackUi
-
         preparePlayer(trackUi.previewUrl)
     }
 
     private fun play() {
         mediaPlayer.start()
-        /*isPlaying.value = true*/
+        isPlaying.value = true
         playerState = STATE_PLAYING
 
         startTime = System.currentTimeMillis()
 
-        /*if (seconds == 30) currentTrackTimeLiveData.value = formatTime(DEF_TIME.toInt())*/
-        if (seconds == 30) renderState(PlayerState.Play(formatTime(DEF_TIME.toInt())))
+        if (seconds == 30) currentTrackTimeLiveData.value = formatTime(DEF_TIME.toInt())
 
         handler.postDelayed(playRunnable, remainingMillis)
     }
 
     fun pause() {
-        mediaPlayer.pause()
-        /*isPlaying.value = false*/
-        renderState(PlayerState.Pause)
-        playerState = STATE_PAUSED
+        if (playerState == STATE_PLAYING) {
+            mediaPlayer.pause()
+            isPlaying.value = false
+            playerState = STATE_PAUSED
 
-        pauseTime = System.currentTimeMillis()
+            pauseTime = System.currentTimeMillis()
 
-        if (pauseSeconds != seconds) {
-            remainingMillis = 1000L - (pauseTime - startTime)
-        } else {
-            remainingMillis -= (pauseTime - startTime)
+            if (pauseSeconds != seconds) {
+                remainingMillis = 1000L - (pauseTime - startTime)
+            } else {
+                remainingMillis -= (pauseTime - startTime)
+            }
+
+            pauseSeconds = seconds
+            handler.removeCallbacks(playRunnable)
         }
-
-        pauseSeconds = seconds
-        handler.removeCallbacks(playRunnable)
     }
 
     fun playbackControl() {
@@ -149,24 +182,19 @@ class PlayerViewModel(private val track: Track) : ViewModel() {
     }
 
     private fun preparePlayer(previewUrl: String) {
+        mediaPlayer.reset()
         mediaPlayer.setDataSource(previewUrl)
         mediaPlayer.prepareAsync()
-        /*currentTrackTimeLiveData.value = formatTime(DEF_TIME.toInt())*/
-        renderState(PlayerState.Stop)
-//        isPlaying.value = false
-
+        currentTrackTimeLiveData.value = formatTime(seconds.toInt())
         mediaPlayer.setOnPreparedListener {
-            /*isPlayButtonEnabled.value = true*/
+            isPlayButtonEnabled.value = true
             playerState = STATE_PREPARED
         }
 
         mediaPlayer.setOnCompletionListener {
-            /*currentTrackTimeLiveData.value = formatTime(seconds)*/
-            renderState(PlayerState.Play(formatTime(seconds)))
-            /*if (seconds == 1) currentTrackTimeLiveData.value = formatTime(0)*/
-            if (seconds == 1) renderState(PlayerState.Play(formatTime(0)))
-            /*isPlaying.value = false*/
-            renderState(PlayerState.Stop)
+            currentTrackTimeLiveData.value = formatTime(seconds)
+            if (seconds == 1) currentTrackTimeLiveData.value = formatTime(0)
+            isPlaying.value = false
             remainingMillis = 1000L
             seconds = 30
             handler.removeCallbacks(playRunnable)

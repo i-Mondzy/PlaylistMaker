@@ -37,8 +37,8 @@
             android:exported="false"
             android:theme="@style/Search.Theme.PlaylistMaker" />
 <!--        android:screenOrientation="portrait"-->
-<!--        <activity
-            android:name=".ui.SearchActivity"
+        <!--<activity
+            android:name=".search.ui.activity.SearchActivity"
             android:exported="true"
             android:theme="@style/Search.Theme.PlaylistMaker"
             android:screenOrientation="portrait">
@@ -72,7 +72,7 @@
             </intent-filter>
         </activity>
         <!--<activity
-            android:name=".ui.MainActivity"
+            android:name=".main.ui.activity.MainActivity"
             android:exported="false"
             android:theme="@style/Main.Theme.PlaylistMaker"
             android:screenOrientation="portrait" />-->
