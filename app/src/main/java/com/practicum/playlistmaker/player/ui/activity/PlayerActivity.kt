@@ -23,11 +23,9 @@ import kotlin.math.max
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlayerBinding
-    private val viewModel by lazy {
-        ViewModelProvider(this, PlayerViewModel.getViewModelFactory())[PlayerViewModel::class.java]
-    }
+    private lateinit var viewModel: PlayerViewModel
 
-    private fun setUi(track: TrackUi, btnEnabled: Boolean) {
+    private fun setUi(track: TrackUi) {
         Glide.with(this)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.plug_artwork_high)
@@ -37,13 +35,12 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.trackName.text = track.trackName
         binding.artistName.text = track.artistName
+        binding.currentTrackTime.text = track.currentTrackTime
         binding.trackTimeValue.text = track.trackTimeMillis
         binding.collectionNameValue.text = track.collectionName
         binding.releaseDateValue.text = track.releaseDate
         binding.primaryGenreNameValue.text = track.primaryGenreName
         binding.countryValue.text = track.country
-
-        binding.playButton.isEnabled = btnEnabled
 
         when (binding.collectionNameValue.text) {
             "" -> binding.collectionGroup.isVisible = false
@@ -55,6 +52,17 @@ class PlayerActivity : AppCompatActivity() {
         when (isPlaying) {
             true -> binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_pause))
             false -> binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
+        }
+    }
+
+    private fun render(state: PlayerState) {
+        when (state) {
+            PlayerState.Pause -> binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
+            is PlayerState.Play -> {
+                binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_pause))
+                binding.currentTrackTime.text = state.currentTime
+            }
+            PlayerState.Stop -> binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
         }
     }
 
@@ -78,6 +86,12 @@ class PlayerActivity : AppCompatActivity() {
             insets
         }
 
+        val track = intent.getParcelableExtra<Track>("TRACK")
+        if (track != null) {
+            viewModel = ViewModelProvider(this, PlayerViewModel.getViewModelFactory(track))[PlayerViewModel::class.java]
+        }
+
+
 //      Уменьшить обложку если маленький экран
         binding.currentTrackTime.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -95,27 +109,17 @@ class PlayerActivity : AppCompatActivity() {
             }
         })
 
+
         binding.playButton.setOnClickListener{
             viewModel.playbackControl()
         }
 
-        @Suppress("DEPRECATION")
-        intent.getParcelableExtra<Track>("TRACK")?.let { viewModel.setTrack(it) }
-        viewModel.getPlayerStateUi().observe(this) { state ->
-            when (state) {
-                is PlayerState.Content -> setUi(state.track, state.btnEnabled)
-                is PlayerState.Pause -> {
-                    binding.currentTrackTime.text = state.time
-                    binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
-                }
-                is PlayerState.Play -> {
-                    binding.currentTrackTime.text = state.time
-                    binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_pause))
-                }
-            }
+        /*intent.getParcelableExtra<Track>("TRACK")?.let { viewModel.setTrack(it) }
+        viewModel.getTrackLiveData().observe(this) { track ->
+            setUi(track)
         }
 
-        /*viewModel.getIsPlayButtonEnabled().observe(this) { enabled ->
+        viewModel.getIsPlayButtonEnabled().observe(this) { enabled ->
             binding.playButton.isEnabled = enabled
         }
 
@@ -126,6 +130,14 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.getIsPlaying().observe(this) { isPlaying ->
             changePlayBtn(isPlaying)
         }*/
+
+        viewModel.getTrackLiveData().observe(this) {
+            setUi(it)
+        }
+
+        viewModel.getStatePlayerLiveData().observe(this) {
+            render(it)
+        }
 
         binding.backBtn.setOnClickListener {
             finish()
