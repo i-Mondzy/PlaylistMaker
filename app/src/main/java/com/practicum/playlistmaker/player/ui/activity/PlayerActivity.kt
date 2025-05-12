@@ -15,6 +15,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.player.ui.model.TrackUi
+import com.practicum.playlistmaker.player.ui.state.PlayerState
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlin.math.max
@@ -26,32 +27,29 @@ class PlayerActivity : AppCompatActivity() {
         ViewModelProvider(this, PlayerViewModel.getViewModelFactory())[PlayerViewModel::class.java]
     }
 
-    private fun setUi(track: TrackUi) {
-        Glide.with(this)
-            .load(track.artworkUrl100)
-            .placeholder(R.drawable.plug_artwork_high)
-            .centerCrop()
-            .transform(RoundedCorners(dpToPx(8f, this)))
-            .into(binding.artwork)
+    private fun setUi(track: TrackUi?) {
 
-        binding.trackName.text = track.trackName
-        binding.artistName.text = track.artistName
-        binding.trackTimeValue.text = track.trackTimeMillis
-        binding.collectionNameValue.text = track.collectionName
-        binding.releaseDateValue.text = track.releaseDate
-        binding.primaryGenreNameValue.text = track.primaryGenreName
-        binding.countryValue.text = track.country
+        if (track != null) {
+            Glide.with(this)
+                .load(track.artworkUrl100)
+                .placeholder(R.drawable.plug_artwork_high)
+                .centerCrop()
+                .transform(RoundedCorners(dpToPx(8f, this)))
+                .into(binding.artwork)
 
-        when (binding.collectionNameValue.text) {
-            "" -> binding.collectionGroup.isVisible = false
-            else -> binding.collectionGroup.isVisible = true
-        }
-    }
+            binding.trackName.text = track.trackName
+            binding.artistName.text = track.artistName
+            binding.currentTrackTime.text = track.currentTime
+            binding.trackTimeValue.text = track.trackTimeMillis
+            binding.collectionNameValue.text = track.collectionName
+            binding.releaseDateValue.text = track.releaseDate
+            binding.primaryGenreNameValue.text = track.primaryGenreName
+            binding.countryValue.text = track.country
 
-    private fun changePlayBtn(isPlaying: Boolean) {
-        when (isPlaying) {
-            true -> binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_pause))
-            false -> binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
+            when (binding.collectionNameValue.text) {
+                "" -> binding.collectionGroup.isVisible = false
+                else -> binding.collectionGroup.isVisible = true
+            }
         }
     }
 
@@ -62,6 +60,29 @@ class PlayerActivity : AppCompatActivity() {
             context.resources.displayMetrics).toInt()
 
         return px
+    }
+
+    private fun showPlay(state: PlayerState) {
+        binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_pause))
+        binding.currentTrackTime.text = (state as? PlayerState.Play)?.time
+    }
+
+    private fun showPause() {
+        binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
+    }
+
+    private fun showStop(state: PlayerState) {
+        binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
+        binding.currentTrackTime.text = (state as? PlayerState.Stop)?.time
+    }
+
+    private fun render(state: PlayerState) {
+        when (state) {
+            is PlayerState.Content -> setUi(state.track)
+            is PlayerState.Play -> showPlay(state)
+            PlayerState.Pause -> showPause()
+            is PlayerState.Stop -> showStop(state)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,13 +118,8 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         intent.getParcelableExtra<Track>("TRACK")?.let { viewModel.setTrack(it) }
-        viewModel.getMediatorLiveData().observe(this) { livedata ->
-
-            livedata.track?.let { setUi(it) }
-            livedata.currentTrackTime?.let { binding.currentTrackTime.text = it }
-            livedata.isPlaying?.let { changePlayBtn(it) }
-            livedata.isPlayButtonEnabled?.let { binding.playButton.isEnabled = it }
-
+        viewModel.getStateLiveData().observe(this) { state ->
+            render(state)
         }
 
         binding.backBtn.setOnClickListener {

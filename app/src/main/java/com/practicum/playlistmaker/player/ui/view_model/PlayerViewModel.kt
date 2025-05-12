@@ -11,8 +11,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.main.ui.utils.SingleEventLiveData
-import com.practicum.playlistmaker.player.ui.CombinedData
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerState
@@ -20,55 +18,19 @@ import java.util.Locale
 
 class PlayerViewModel : ViewModel() {
 
-    private val trackLiveData = MutableLiveData<TrackUi>()
-    private val currentTrackTimeLiveData = MutableLiveData<String>()
-    private val isPlaying = MutableLiveData<Boolean>()
-    private val isPlayButtonEnabled = MutableLiveData<Boolean>()
+    private val stateLiveData = MutableLiveData<PlayerState>()
+    fun getStateLiveData(): LiveData<PlayerState> = mediatorLiveData
 
-    private val mediatorLiveData = MediatorLiveData<CombinedData>().also { livedata ->
-
-        livedata.addSource(trackLiveData) { track ->
-            livedata.value = combinedLiveData(
-                track = track,
-                currentTime = livedata.value?.currentTrackTime,
-                isPlaying = livedata.value?.isPlaying,
-                isPlayButtonEnabled = livedata.value?.isPlayButtonEnabled
-            )
+    private val mediatorLiveData = MediatorLiveData<PlayerState>().also { livedata ->
+        livedata.addSource(stateLiveData) { state ->
+            livedata.value = when (state) {
+                is PlayerState.Content -> PlayerState.Content(trackUi?.copy(currentTime = formatTime(seconds)))
+                PlayerState.Pause -> state
+                is PlayerState.Play -> state
+                is PlayerState.Stop -> state
+            }
         }
-        livedata.addSource(currentTrackTimeLiveData) { time ->
-            livedata.value = combinedLiveData(
-                track = livedata.value?.track,
-                currentTime = time,
-                isPlaying = livedata.value?.isPlaying,
-                isPlayButtonEnabled = livedata.value?.isPlayButtonEnabled
-            )
-        }
-        livedata.addSource(isPlaying) { isPlaying ->
-            livedata.value = combinedLiveData(
-                track = livedata.value?.track,
-                currentTime = livedata.value?.currentTrackTime,
-                isPlaying = isPlaying,
-                isPlayButtonEnabled = livedata.value?.isPlayButtonEnabled
-            )
-        }
-        livedata.addSource(isPlayButtonEnabled) { isPlayButtonEnabled ->
-            livedata.value = combinedLiveData(
-                track = livedata.value?.track,
-                currentTime = livedata.value?.currentTrackTime,
-                isPlaying = livedata.value?.isPlaying,
-                isPlayButtonEnabled = isPlayButtonEnabled
-            )
-        }
-
     }
-    fun getMediatorLiveData(): LiveData<CombinedData> {
-        return mediatorLiveData
-    }
-
-    private fun combinedLiveData(track: TrackUi?, currentTime: String?, isPlaying: Boolean?, isPlayButtonEnabled: Boolean?): CombinedData {
-        return CombinedData(track, currentTime, isPlaying, isPlayButtonEnabled)
-    }
-
 
     private val mediaPlayer = MediaPlayer()
     private var playerState = STATE_DEFAULT
@@ -79,13 +41,14 @@ class PlayerViewModel : ViewModel() {
     private var startTime = 0L
     private var pauseTime = 0L
     private var remainingMillis = 1000L
+    private var trackUi: TrackUi? = null
 
     private val playRunnable = object : Runnable {
         override fun run() {
             startTime = System.currentTimeMillis()
 
             seconds -= 1
-            currentTrackTimeLiveData.value = formatTime(seconds)
+            renderState(PlayerState.Play(formatTime(seconds)))
 
             handler.postDelayed(this, 1000L)
         }
@@ -97,8 +60,6 @@ class PlayerViewModel : ViewModel() {
         private const val STATE_PLAYING = 3
         private const val STATE_PAUSED = 4
 
-        private const val DEF_TIME = 30L
-
         fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 PlayerViewModel()
@@ -107,41 +68,37 @@ class PlayerViewModel : ViewModel() {
     }
 
     fun setTrack(track: Track) {
-        if (trackLiveData.value != null) return
+        if (trackUi == null) {
+            trackUi = TrackUi(
+                trackId = track.trackId,
+                trackName = track.trackName,
+                artistName = track.artistName,
+                currentTime = formatTime(seconds),
+                trackTimeMillis = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()),
+                artworkUrl100 = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
+                collectionName = track.collectionName,
+                releaseDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)),
+                primaryGenreName = track.primaryGenreName,
+                country = track.country,
+                previewUrl = track.previewUrl
+            )
 
-        val trackUi = TrackUi(
-            trackId = track.trackId,
-            trackName = track.trackName,
-            artistName = track.artistName,
-            trackTimeMillis = SimpleDateFormat(
-                "mm:ss",
-                Locale.getDefault()
-            ).format(track.trackTimeMillis.toLong()),
-            artworkUrl100 = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
-            collectionName = track.collectionName,
-            releaseDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(
-                SimpleDateFormat(
-                    "yyyy-MM-dd'T'HH:mm:ss'Z'",
-                    Locale.getDefault()
-                ).parse(track.releaseDate)
-            ),
-            primaryGenreName = track.primaryGenreName,
-            country = track.country,
-            previewUrl = track.previewUrl
-        )
+            renderState(PlayerState.Content(trackUi))
 
-        trackLiveData.value = trackUi
-        preparePlayer(trackUi.previewUrl)
+            preparePlayer(trackUi!!.previewUrl)
+
+            return
+        }
+
+        renderState(PlayerState.Content(trackUi))
     }
 
     private fun play() {
         mediaPlayer.start()
-        isPlaying.value = true
+        renderState(PlayerState.Play(formatTime(seconds)))
         playerState = STATE_PLAYING
 
         startTime = System.currentTimeMillis()
-
-        if (seconds == 30) currentTrackTimeLiveData.value = formatTime(DEF_TIME.toInt())
 
         handler.postDelayed(playRunnable, remainingMillis)
     }
@@ -149,7 +106,7 @@ class PlayerViewModel : ViewModel() {
     fun pause() {
         if (playerState == STATE_PLAYING) {
             mediaPlayer.pause()
-            isPlaying.value = false
+            renderState(PlayerState.Pause)
             playerState = STATE_PAUSED
 
             pauseTime = System.currentTimeMillis()
@@ -185,16 +142,15 @@ class PlayerViewModel : ViewModel() {
         mediaPlayer.reset()
         mediaPlayer.setDataSource(previewUrl)
         mediaPlayer.prepareAsync()
-        currentTrackTimeLiveData.value = formatTime(seconds.toInt())
+
         mediaPlayer.setOnPreparedListener {
-            isPlayButtonEnabled.value = true
+            renderState(PlayerState.Stop(formatTime(seconds)))
             playerState = STATE_PREPARED
         }
 
         mediaPlayer.setOnCompletionListener {
-            currentTrackTimeLiveData.value = formatTime(seconds)
-            if (seconds == 1) currentTrackTimeLiveData.value = formatTime(0)
-            isPlaying.value = false
+            renderState(PlayerState.Stop(formatTime(seconds)))
+            if (seconds == 1) renderState(PlayerState.Stop(formatTime(0)))
             remainingMillis = 1000L
             seconds = 30
             handler.removeCallbacks(playRunnable)
@@ -204,6 +160,10 @@ class PlayerViewModel : ViewModel() {
 
     private fun formatTime(seconds: Int): String {
         return String.format("%02d:%02d", seconds / 60, seconds)
+    }
+
+    private fun renderState(state: PlayerState) {
+        stateLiveData.value = state
     }
 
     override fun onCleared() {
