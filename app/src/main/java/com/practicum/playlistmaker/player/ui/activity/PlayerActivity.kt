@@ -15,6 +15,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.player.ui.model.TrackUi
+import com.practicum.playlistmaker.player.ui.state.PlayerState
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlin.math.max
@@ -26,7 +27,7 @@ class PlayerActivity : AppCompatActivity() {
         ViewModelProvider(this, PlayerViewModel.getViewModelFactory())[PlayerViewModel::class.java]
     }
 
-    private fun setUi(track: TrackUi) {
+    private fun setUi(track: TrackUi, btnEnabled: Boolean) {
         Glide.with(this)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.plug_artwork_high)
@@ -41,6 +42,8 @@ class PlayerActivity : AppCompatActivity() {
         binding.releaseDateValue.text = track.releaseDate
         binding.primaryGenreNameValue.text = track.primaryGenreName
         binding.countryValue.text = track.country
+
+        binding.playButton.isEnabled = btnEnabled
 
         when (binding.collectionNameValue.text) {
             "" -> binding.collectionGroup.isVisible = false
@@ -96,12 +99,23 @@ class PlayerActivity : AppCompatActivity() {
             viewModel.playbackControl()
         }
 
+        @Suppress("DEPRECATION")
         intent.getParcelableExtra<Track>("TRACK")?.let { viewModel.setTrack(it) }
-        viewModel.getTrackLiveData().observe(this) { track ->
-            setUi(track)
+        viewModel.getPlayerStateUi().observe(this) { state ->
+            when (state) {
+                is PlayerState.Content -> setUi(state.track, state.btnEnabled)
+                is PlayerState.Pause -> {
+                    binding.currentTrackTime.text = state.time
+                    binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
+                }
+                is PlayerState.Play -> {
+                    binding.currentTrackTime.text = state.time
+                    binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_pause))
+                }
+            }
         }
 
-        viewModel.getIsPlayButtonEnabled().observe(this) { enabled ->
+        /*viewModel.getIsPlayButtonEnabled().observe(this) { enabled ->
             binding.playButton.isEnabled = enabled
         }
 
@@ -111,7 +125,7 @@ class PlayerActivity : AppCompatActivity() {
 
         viewModel.getIsPlaying().observe(this) { isPlaying ->
             changePlayBtn(isPlaying)
-        }
+        }*/
 
         binding.backBtn.setOnClickListener {
             finish()

@@ -1,8 +1,9 @@
 package com.practicum.playlistmaker.player.ui.state
 
-sealed class PlayerState(val isPlaying: Boolean, val time: String? = null) {
+import com.practicum.playlistmaker.player.ui.model.TrackUi
 
-    class Play(time: String) : PlayerState(isPlaying = true, time = time)
-    class Pause(time: String) : PlayerState(isPlaying = false, time = time)
-
+sealed interface PlayerState {
+    data class Content(val track: TrackUi, val btnEnabled: Boolean): PlayerState
+    data class Play(val time: String): PlayerState
+    data class Pause(val time: String): PlayerState
 }
