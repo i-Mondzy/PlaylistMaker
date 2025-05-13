@@ -41,6 +41,7 @@
 
             <TextView
                 android:id="@+id/artistName"
+                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -49,7 +50,7 @@
                 android:textColor="?attr/colorTextSecondary"
                 android:textFontWeight="400"
                 android:textSize="@dimen/small_text_size"
-                tools:text="@string/temp_artist_name" />
+                tools:text="gbhnfgjknbgfjbngfjnbjgkfnngbjfnbgjfnbgjfnbgjfnbjgkfnbfjg" />
 
             <ImageView
                 android:layout_width="wrap_content"
