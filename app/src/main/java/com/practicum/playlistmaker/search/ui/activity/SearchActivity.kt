@@ -66,6 +66,7 @@ class SearchActivity : AppCompatActivity() {
         searchTrackList.tracks.clear()
         searchTrackList.tracks.addAll(tracks)
         searchTrackList.notifyDataSetChanged()
+        binding.trackFound.scrollToPosition(0)
 
         binding.trackFound.isVisible = true
         binding.history.isVisible = false
@@ -78,6 +79,7 @@ class SearchActivity : AppCompatActivity() {
         historyTrackList.tracks.clear()
         historyTrackList.tracks.addAll(tracks)
         historyTrackList.notifyDataSetChanged()
+        binding.trackFound.scrollToPosition(0)
 
         binding.trackFound.isVisible = false
         binding.history.isVisible = tracks.isNotEmpty()
