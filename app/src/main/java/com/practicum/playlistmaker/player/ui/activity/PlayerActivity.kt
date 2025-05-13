@@ -28,28 +28,27 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setUi(track: TrackUi?) {
+        if (track == null) return
 
-        if (track != null) {
-            Glide.with(this)
-                .load(track.artworkUrl100)
-                .placeholder(R.drawable.plug_artwork_high)
-                .centerCrop()
-                .transform(RoundedCorners(dpToPx(8f, this)))
-                .into(binding.artwork)
+        Glide.with(this)
+            .load(track.artworkUrl100)
+            .placeholder(R.drawable.plug_artwork_high)
+            .centerCrop()
+            .transform(RoundedCorners(dpToPx(8f, this)))
+            .into(binding.artwork)
 
-            binding.trackName.text = track.trackName
-            binding.artistName.text = track.artistName
-            binding.currentTrackTime.text = track.currentTime
-            binding.trackTimeValue.text = track.trackTimeMillis
-            binding.collectionNameValue.text = track.collectionName
-            binding.releaseDateValue.text = track.releaseDate
-            binding.primaryGenreNameValue.text = track.primaryGenreName
-            binding.countryValue.text = track.country
+        binding.trackName.text = track.trackName
+        binding.artistName.text = track.artistName
+        binding.currentTrackTime.text = track.currentTime
+        binding.trackTimeValue.text = track.trackTimeMillis
+        binding.collectionNameValue.text = track.collectionName
+        binding.releaseDateValue.text = track.releaseDate
+        binding.primaryGenreNameValue.text = track.primaryGenreName
+        binding.countryValue.text = track.country
 
-            when (binding.collectionNameValue.text) {
-                "" -> binding.collectionGroup.isVisible = false
-                else -> binding.collectionGroup.isVisible = true
-            }
+        when (binding.collectionNameValue.text) {
+            "" -> binding.collectionGroup.isVisible = false
+            else -> binding.collectionGroup.isVisible = true
         }
     }
 

@@ -6,14 +6,14 @@ import com.practicum.playlistmaker.settings.domain.SettingsInteractor
 
 class App : Application() {
 
-    lateinit var creator: Creator
     private lateinit var getThemeInteractor: SettingsInteractor
 
     override fun onCreate() {
         super.onCreate()
 
-        creator = Creator(applicationContext)
-        getThemeInteractor = creator.provideSettingsInterator()
+        Creator.init(this)
+
+        getThemeInteractor = Creator.provideSettingsInterator()
 
         getThemeInteractor.switchTheme(getThemeInteractor.getTheme())
 

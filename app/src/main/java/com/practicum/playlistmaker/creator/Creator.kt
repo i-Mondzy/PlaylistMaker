@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.creator
 
+import android.app.Application
 import android.content.Context
 import com.practicum.playlistmaker.settings.data.theme.ThemeManager
 import com.practicum.playlistmaker.settings.data.theme.SettingsRepositoryImpl
@@ -17,7 +18,13 @@ import com.practicum.playlistmaker.share.domain.ExternalNavigator
 import com.practicum.playlistmaker.share.domain.ShareInteractor
 import com.practicum.playlistmaker.share.domain.impl.ShareInteractorImpl
 
-class Creator(private val context: Context)  {
+object Creator {
+
+    private lateinit var context: Application
+
+    fun init(context: Context) {
+        this.context = context.applicationContext as Application
+    }
 
     private fun getTracksRepository(): TracksRepository {
         return TracksRepositoryImpl(TracksRetrofitNetworkClient(), TracksManager(context))
@@ -27,19 +34,19 @@ class Creator(private val context: Context)  {
         return TracksInteractorImpl(getTracksRepository())
     }
 
-    private fun getSettingsRepository() : SettingsRepository {
+    private fun getSettingsRepository(): SettingsRepository {
         return SettingsRepositoryImpl(ThemeManager(context))
     }
 
-    fun provideSettingsInterator() : SettingsInteractor {
+    fun provideSettingsInterator(): SettingsInteractor {
         return SettingsInteractorImpl(getSettingsRepository())
     }
 
-    private fun getExternalNavigator() : ExternalNavigator {
+    private fun getExternalNavigator(): ExternalNavigator {
         return ExternalNavigatorImpl(context)
     }
 
-    fun provideShareInteractor() : ShareInteractor {
+    fun provideShareInteractor(): ShareInteractor {
         return ShareInteractorImpl(getExternalNavigator())
     }
 
