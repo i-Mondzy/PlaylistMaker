@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.creator
 
 import android.app.Application
-import android.content.Context
 import com.practicum.playlistmaker.settings.data.theme.ThemeManager
 import com.practicum.playlistmaker.settings.data.theme.SettingsRepositoryImpl
 import com.practicum.playlistmaker.search.data.local.track.TracksManager
@@ -22,8 +21,8 @@ object Creator {
 
     private lateinit var context: Application
 
-    fun init(context: Context) {
-        this.context = context.applicationContext as Application
+    fun init(context: Application) {
+        this.context = context
     }
 
     private fun getTracksRepository(): TracksRepository {
