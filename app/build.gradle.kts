@@ -47,7 +47,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-//    implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -61,4 +61,6 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
 
     implementation("androidx.activity:activity-ktx:1.10.1")
+
+    implementation("io.insert-koin:koin-android:4.0.4")
 }
