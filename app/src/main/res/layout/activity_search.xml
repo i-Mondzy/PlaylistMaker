@@ -52,7 +52,7 @@
             android:textSize="@dimen/default_text_size" />
 
         <ImageView
-            android:id="@+id/clear_text"
+            android:id="@+id/clearBtn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center|end"
