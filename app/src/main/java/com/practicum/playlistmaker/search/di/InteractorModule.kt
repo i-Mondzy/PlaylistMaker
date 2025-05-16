@@ -1,0 +1,23 @@
+package com.practicum.playlistmaker.search.di
+
+import com.practicum.playlistmaker.search.domain.api.TracksInteractor
+import com.practicum.playlistmaker.search.domain.impl.TracksInteractorImpl
+import org.koin.dsl.module
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
+
+class InteractorModule {
+
+    val interactorModule = module {
+
+        single<Executor> {
+            Executors.newCachedThreadPool()
+        }
+
+        single<TracksInteractor> {
+            TracksInteractorImpl(get(), get())
+        }
+
+    }
+
+}
