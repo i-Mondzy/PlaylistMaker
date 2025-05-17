@@ -6,7 +6,7 @@ import org.koin.dsl.module
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-val interactorModule = module {
+val searchInteractorModule = module {
 
     single<Executor> {
         Executors.newCachedThreadPool()

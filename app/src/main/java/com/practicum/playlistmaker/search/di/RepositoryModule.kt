@@ -4,7 +4,7 @@ import com.practicum.playlistmaker.search.data.network.TracksRepositoryImpl
 import com.practicum.playlistmaker.search.domain.api.TracksRepository
 import org.koin.dsl.module
 
-val repositoryModule = module {
+val searchRepositoryModule = module {
     single<TracksRepository> {
         TracksRepositoryImpl(get(), get())
     }
