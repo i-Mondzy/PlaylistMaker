@@ -20,12 +20,10 @@
             android:name=".player.ui.activity.PlayerActivity"
             android:exported="false"
             android:theme="@style/Player.Theme.PlaylistMaker" />
-<!--        android:screenOrientation="portrait"-->
 <!--        <activity
             android:name=".ui.PlayerActivity"
             android:exported="true"
-            android:theme="@style/Player.Theme.PlaylistMaker"
-            android:screenOrientation="portrait">
+            android:theme="@style/Player.Theme.PlaylistMaker">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                  <category android:name="android.intent.category.LAUNCHER" />
@@ -36,18 +34,16 @@
             android:name=".search.ui.activity.SearchActivity"
             android:exported="false"
             android:theme="@style/Search.Theme.PlaylistMaker" />
-<!--        android:screenOrientation="portrait"-->
-<!--        <activity
-            android:name=".ui.SearchActivity"
-            android:exported="true"
-            android:theme="@style/Search.Theme.PlaylistMaker"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--        <activity-->
+<!--            android:name=".search.ui.activity.SearchActivity"-->
+<!--            android:exported="true"-->
+<!--            android:theme="@style/Search.Theme.PlaylistMaker">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
         <activity
             android:name=".MediaActivity"
@@ -71,11 +67,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--<activity
-            android:name=".ui.MainActivity"
-            android:exported="false"
-            android:theme="@style/Main.Theme.PlaylistMaker"
-            android:screenOrientation="portrait" />-->
+<!--        <activity-->
+<!--            android:name=".main.ui.activity.MainActivity"-->
+<!--            android:exported="false"-->
+<!--            android:theme="@style/Main.Theme.PlaylistMaker"-->
+<!--            android:screenOrientation="portrait" />-->
 
     </application>
 

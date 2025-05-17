@@ -5,11 +5,11 @@ import com.practicum.playlistmaker.search.data.dto.NetworkResponse
 import com.practicum.playlistmaker.search.data.TracksNetworkClient
 
 
-class TracksRetrofitNetworkClient : TracksNetworkClient {
+class TracksRetrofitNetworkClient(private val trackApi: TrackApi) : TracksNetworkClient {
 
     override fun doRequest(text: String): NetworkResponse {
         return try {
-            val response = RetrofitClient.api.search(text).execute()
+            val response = trackApi.search(text).execute()
             val networkResponse = response.body() ?: NetworkResponse()
 
             Log.d("resultCode", "${response.code()}")

@@ -13,20 +13,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
 import com.practicum.playlistmaker.search.ui.state.TracksState
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchBinding
-    private val viewModel by lazy {
-        ViewModelProvider(this, SearchViewModel.getViewModelFactory())[SearchViewModel::class.java]
-    }
+
+    private val viewModel by viewModel<SearchViewModel>()
 
     private lateinit var simpleTextWatcher: TextWatcher
     /*private val client = OkHttpClient.Builder().addInterceptor(TimingInterceptor()).build()*/
