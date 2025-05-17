@@ -11,37 +11,33 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class DataModule {
+val dataModule = module {
 
-    val dataModule = module {
+    // TracksManager
+    single {
+        androidContext().getSharedPreferences("search_history", Context.MODE_PRIVATE)
+    }
 
-        // TracksManager
-        single {
-            androidContext().getSharedPreferences("search_history", Context.MODE_PRIVATE)
-        }
+    factory {
+        Gson()
+    }
 
-        factory {
-            Gson()
-        }
-
-        single {
-            TracksManager(get(), get())
-        }
+    single {
+        TracksManager(get(), get())
+    }
 
 
-        // TracksRetrofitNetworkClient
-        single<TrackApi> {
-            Retrofit.Builder()
-                .baseUrl("https://itunes.apple.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(TrackApi::class.java)
-        }
+    // TracksRetrofitNetworkClient
+    single<TrackApi> {
+        Retrofit.Builder()
+            .baseUrl("https://itunes.apple.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(TrackApi::class.java)
+    }
 
-        single<TracksNetworkClient> {
-            TracksRetrofitNetworkClient(get())
-        }
-
+    single<TracksNetworkClient> {
+        TracksRetrofitNetworkClient(get())
     }
 
 }

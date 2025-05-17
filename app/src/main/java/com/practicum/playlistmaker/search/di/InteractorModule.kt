@@ -6,18 +6,14 @@ import org.koin.dsl.module
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-class InteractorModule {
+val interactorModule = module {
 
-    val interactorModule = module {
+    single<Executor> {
+        Executors.newCachedThreadPool()
+    }
 
-        single<Executor> {
-            Executors.newCachedThreadPool()
-        }
-
-        single<TracksInteractor> {
-            TracksInteractorImpl(get(), get())
-        }
-
+    single<TracksInteractor> {
+        TracksInteractorImpl(get(), get())
     }
 
 }
