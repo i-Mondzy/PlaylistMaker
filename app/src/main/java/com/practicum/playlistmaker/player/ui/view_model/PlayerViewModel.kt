@@ -13,7 +13,7 @@ import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerState
 import java.util.Locale
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<PlayerState>()
     fun getStateLiveData(): LiveData<PlayerState> = mediatorLiveData
@@ -29,7 +29,6 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
-    private val mediaPlayer = MediaPlayer()
     private var playerState = STATE_DEFAULT
     private val handler = Handler(Looper.getMainLooper())
 

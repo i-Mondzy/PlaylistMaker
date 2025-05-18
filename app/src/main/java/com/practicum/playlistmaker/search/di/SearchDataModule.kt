@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.search.di
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.Gson
 import com.practicum.playlistmaker.search.data.TracksNetworkClient
 import com.practicum.playlistmaker.search.data.local.track.TracksManager
@@ -13,10 +12,12 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+private const val TRACKS_HISTORY = "history_prefs"
+
 val searchDataModule = module {
 
     // TracksManager
-    single(named("history_prefs")) {
+    single(named(TRACKS_HISTORY)) {
         androidContext().getSharedPreferences("search_history", Context.MODE_PRIVATE)
     }
 
@@ -25,7 +26,7 @@ val searchDataModule = module {
     }
 
     single {
-        TracksManager(get(named("history_prefs")), get())
+        TracksManager(get(named(TRACKS_HISTORY)), get())
     }
 
 
