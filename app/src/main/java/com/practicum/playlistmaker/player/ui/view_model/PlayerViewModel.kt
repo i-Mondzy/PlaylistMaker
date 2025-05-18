@@ -8,15 +8,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerState
 import java.util.Locale
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<PlayerState>()
     fun getStateLiveData(): LiveData<PlayerState> = mediatorLiveData
@@ -32,7 +29,6 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
-    private val mediaPlayer = MediaPlayer()
     private var playerState = STATE_DEFAULT
     private val handler = Handler(Looper.getMainLooper())
 
@@ -59,12 +55,6 @@ class PlayerViewModel : ViewModel() {
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 3
         private const val STATE_PAUSED = 4
-
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel()
-            }
-        }
     }
 
     fun setTrack(track: Track) {

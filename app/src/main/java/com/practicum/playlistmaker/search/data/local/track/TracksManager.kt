@@ -1,23 +1,21 @@
 package com.practicum.playlistmaker.search.data.local.track
 
-import android.content.Context
+import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.search.domain.model.Track
 
-class TracksManager(private val context: Context) {
+class TracksManager(
+    private val sharedPrefs: SharedPreferences,
+    private val gson: Gson
+) {
 
     companion object {
-        const val SEARCH_HISTORY = "search_history"
         const val HISTORY_KEY = "key_history"
     }
 
-    private var tracksHistory = mutableListOf<Track>()
-    private val sharedPrefs = context.getSharedPreferences(SEARCH_HISTORY, Context.MODE_PRIVATE)
-    private val gson = Gson()
-
     fun saveTrack(track: Track) {
-        tracksHistory = getTracks().toMutableList()
+        val tracksHistory = getTracks().toMutableList()
         tracksHistory.removeAll{it.trackId == track.trackId}
         tracksHistory.add(0, track)
 
@@ -43,7 +41,6 @@ class TracksManager(private val context: Context) {
     }
 
     fun clearTracks() {
-        tracksHistory.clear()
         sharedPrefs
             .edit()
             .clear()
