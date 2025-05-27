@@ -45,19 +45,19 @@
 <!--            </intent-filter>-->
 <!--        </activity>-->
 
-<!--        <activity-->
-<!--            android:name=".media.ui.activity.MediaActivity"-->
-<!--            android:exported="false"-->
-<!--            android:theme="@style/Media.Theme.PlaylistMaker" />-->
         <activity
             android:name=".media.ui.activity.MediaActivity"
-            android:exported="true"
-            android:theme="@style/Media.Theme.PlaylistMaker">
-             <intent-filter>
-                 <action android:name="android.intent.action.MAIN" />
-                 <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
-         </activity>
+            android:exported="false"
+            android:theme="@style/Media.Theme.PlaylistMaker" />
+<!--        <activity-->
+<!--            android:name=".media.ui.activity.MediaActivity"-->
+<!--            android:exported="true"-->
+<!--            android:theme="@style/Media.Theme.PlaylistMaker">-->
+<!--             <intent-filter>-->
+<!--                 <action android:name="android.intent.action.MAIN" />-->
+<!--                 <category android:name="android.intent.category.LAUNCHER" />-->
+<!--             </intent-filter>-->
+<!--         </activity>-->
 
         <activity
             android:name=".settings.ui.activity.SettingsActivity"
