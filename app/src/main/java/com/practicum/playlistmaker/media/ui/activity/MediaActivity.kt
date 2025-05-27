@@ -1,14 +1,10 @@
 package com.practicum.playlistmaker.media.ui.activity
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
 import com.google.android.material.tabs.TabLayoutMediator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityMediaBinding
@@ -30,20 +26,19 @@ class MediaActivity : AppCompatActivity() {
             insets
         }
 
+        binding.backBtn.setOnClickListener{
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         binding.viewPager.adapter = MediaViewPagerAdapter(supportFragmentManager, lifecycle)
 
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
 
-            val customTab = LayoutInflater.from(this).inflate(R.layout.custom_tab, null)
-            val textView = customTab.findViewById<TextView>(R.id.tab_text)
-
-            textView.text = when (position) {
-                0 -> "Избранное"
-                1 -> "Плейлисты"
-                else -> ""
+            when (position) {
+                0 -> tab.text = getString(R.string.tabFavorite)
+                1 -> tab.text = getString(R.string.tabPlaylists)
             }
 
-            tab.customView = customTab
         }
         tabMediator.attach()
 
