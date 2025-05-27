@@ -143,8 +143,8 @@
             app:layout_constraintVertical_chainStyle="spread_inside" />
 
         <TextView
-            style="@style/PlayerOtherTextValue"
             android:id="@+id/trackTimeValue"
+            style="@style/PlayerOtherTextValue"
             app:layout_constraintBottom_toBottomOf="@id/trackTime"
             app:layout_constraintEnd_toEndOf="@id/rightBorder"
             app:layout_constraintStart_toStartOf="@id/centerVerticalBorder"
@@ -167,8 +167,8 @@
             app:layout_constraintTop_toBottomOf="@id/trackTime" />
 
         <TextView
-            style="@style/PlayerOtherTextValue"
             android:id="@+id/collectionNameValue"
+            style="@style/PlayerOtherTextValue"
             app:layout_constraintBottom_toBottomOf="@id/collectionName"
             app:layout_constraintEnd_toEndOf="@id/rightBorder"
             app:layout_constraintStart_toStartOf="@id/centerVerticalBorder"
@@ -184,8 +184,8 @@
             app:layout_constraintTop_toBottomOf="@id/collectionName" />
 
         <TextView
-            style="@style/PlayerOtherTextValue"
             android:id="@+id/releaseDateValue"
+            style="@style/PlayerOtherTextValue"
             app:layout_constraintBottom_toBottomOf="@id/releaseDate"
             app:layout_constraintEnd_toEndOf="@id/rightBorder"
             app:layout_constraintStart_toStartOf="@id/centerVerticalBorder"
@@ -193,16 +193,16 @@
             tools:text="1965" />
 
         <TextView
-            style="@style/PlayerOtherText"
             android:id="@+id/primaryGenreName"
+            style="@style/PlayerOtherText"
             android:text="Жанр"
             app:layout_constraintBottom_toTopOf="@id/country"
             app:layout_constraintStart_toStartOf="@id/leftBorder"
             app:layout_constraintTop_toBottomOf="@id/releaseDate" />
 
         <TextView
-            style="@style/PlayerOtherTextValue"
             android:id="@+id/primaryGenreNameValue"
+            style="@style/PlayerOtherTextValue"
             app:layout_constraintBottom_toBottomOf="@id/primaryGenreName"
             app:layout_constraintEnd_toEndOf="@id/rightBorder"
             app:layout_constraintStart_toStartOf="@id/centerVerticalBorder"
@@ -210,8 +210,8 @@
             tools:text="Rock" />
 
         <TextView
-            style="@style/PlayerOtherText"
             android:id="@+id/country"
+            style="@style/PlayerOtherText"
             android:layout_marginBottom="28dp"
             android:text="Страна"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -219,8 +219,8 @@
             app:layout_constraintTop_toBottomOf="@id/primaryGenreName" />
 
         <TextView
-            style="@style/PlayerOtherTextValue"
             android:id="@+id/countryValue"
+            style="@style/PlayerOtherTextValue"
             app:layout_constraintBottom_toBottomOf="@id/country"
             app:layout_constraintEnd_toEndOf="@id/rightBorder"
             app:layout_constraintStart_toStartOf="@id/centerVerticalBorder"

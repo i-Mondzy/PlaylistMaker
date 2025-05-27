@@ -37,4 +37,10 @@
         <item name="colorButton">@color/dark</item>
         <item name="colorOtherButton">@color/dark</item>
     </style>
+
+    <style name="Media.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
+        <item name="colorBackground">@color/white</item>
+        <item name="colorTitle">@color/dark</item>
+        <item name="drawable_nothing_found">@drawable/plug_nothing_found_day</item>
+    </style>
 </resources>

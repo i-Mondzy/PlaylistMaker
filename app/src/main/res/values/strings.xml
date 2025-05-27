@@ -23,4 +23,6 @@
     <string name="supportBodyMail">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="supportAddressMail">iMondzy@yandex.ru</string>
     <string name="userAgreementUrl">https://yandex.ru/legal/practicum_offer/</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
