@@ -6,7 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.practicum.playlistmaker.MediaActivity
+import com.practicum.playlistmaker.media.ui.activity.MediaActivity
 import com.practicum.playlistmaker.databinding.ActivityMainBinding
 import com.practicum.playlistmaker.main.ui.state.NavigationState
 import com.practicum.playlistmaker.main.ui.view_model.MainViewModel

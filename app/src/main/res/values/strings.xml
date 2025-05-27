@@ -13,6 +13,12 @@
     <string name="you_search">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
 
+    <string name="tabFavorite">Избранные треки</string>
+    <string name="tabPlaylists">Плейлисты</string>
+    <string name="newPlaylist">Новый плейлист</string>
+    <string name="emptyFavorite">Ваша медиатека пуста</string>
+    <string name="emptyPlaylist">Вы не создали\nни одного плейлиста</string>
+
     <string name="theme">Темная тема</string>
     <string name="share">Поделиться приложением</string>
     <string name="support">Написать в поддержку</string>

@@ -84,7 +84,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="?attr/drawable_nothing_found" />
+                android:src="?attr/drawable_nothing_found"/>
 
             <TextView
                 style="@style/SearchTextView"
@@ -95,7 +95,7 @@
         <LinearLayout
             android:id="@+id/placeholder_no_internet"
             style="@style/SearchErrorLinearLayout"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <ImageView
                 android:layout_width="wrap_content"
