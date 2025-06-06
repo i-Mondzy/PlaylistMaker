@@ -6,22 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorBackground"
-    tools:context=".media.ui.activity.MediaActivity">
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/backBtn"
-        style="@style/BackButtonStyle"
-        android:layout_margin="4dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    tools:context="com.practicum.playlistmaker.media.ui.fragment.MediaFragment">
 
     <TextView
         android:id="@+id/media"
         style="@style/ToolBarTextView"
+        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
         android:text="@string/media"
-        app:layout_constraintBottom_toBottomOf="@+id/backBtn"
-        app:layout_constraintStart_toEndOf="@+id/backBtn"
-        app:layout_constraintTop_toTopOf="@+id/backBtn" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
