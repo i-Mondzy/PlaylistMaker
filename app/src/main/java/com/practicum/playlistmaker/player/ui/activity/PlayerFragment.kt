@@ -3,27 +3,35 @@ package com.practicum.playlistmaker.player.ui.activity
 import android.content.Context
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
+import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerState
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.math.max
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
-    private lateinit var binding: ActivityPlayerBinding
     private val viewModel by viewModel<PlayerViewModel>()
+
+    companion object {
+        private const val ARGS_TRACK = "Track"
+
+        fun createArgs(trackId: Track): Bundle = bundleOf(ARGS_TRACK to trackId)
+    }
 
     private fun setUi(track: TrackUi?) {
         if (track == null) return
@@ -32,7 +40,7 @@ class PlayerActivity : AppCompatActivity() {
             .load(track.artworkUrl100)
             .placeholder(R.drawable.plug_artwork_high)
             .centerCrop()
-            .transform(RoundedCorners(dpToPx(8f, this)))
+            .transform(RoundedCorners(dpToPx(8f, requireContext())))
             .into(binding.artwork)
 
         binding.trackName.text = track.trackName
@@ -60,16 +68,16 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun showPlay(state: PlayerState) {
-        binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_pause))
+        binding.playButton.setImageDrawable(getDrawable(requireContext(), R.drawable.ic_pause))
         binding.currentTrackTime.text = (state as? PlayerState.Play)?.time
     }
 
     private fun showPause() {
-        binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
+        binding.playButton.setImageDrawable(getDrawable(requireContext(), R.drawable.ic_play))
     }
 
     private fun showStop(state: PlayerState) {
-        binding.playButton.setImageDrawable(getDrawable(R.drawable.ic_play))
+        binding.playButton.setImageDrawable(getDrawable(requireContext(), R.drawable.ic_play))
         binding.currentTrackTime.text = (state as? PlayerState.Stop)?.time
     }
 
@@ -82,15 +90,17 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivityPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentPlayerBinding {
+        return FragmentPlayerBinding.inflate(inflater, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+//        intent.getParcelableExtra<Track>("TRACK")?.let { viewModel.setTrack(requireArguments().getString(ARGS_TRACK)) }
+        requireArguments().getParcelable<Track>(ARGS_TRACK)?.let { viewModel.setTrack(it) }
+        viewModel.getStateLiveData().observe(viewLifecycleOwner) { state ->
+            render(state)
         }
 
 //      Уменьшить обложку если маленький экран
@@ -114,13 +124,9 @@ class PlayerActivity : AppCompatActivity() {
             viewModel.playbackControl()
         }
 
-        intent.getParcelableExtra<Track>("TRACK")?.let { viewModel.setTrack(it) }
-        viewModel.getStateLiveData().observe(this) { state ->
-            render(state)
-        }
 
         binding.backBtn.setOnClickListener {
-            finish()
+            findNavController().navigateUp()
         }
 
     }
@@ -131,17 +137,3 @@ class PlayerActivity : AppCompatActivity() {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -52,6 +52,10 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+//    Навигация
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+
     implementation("com.github.bumptech.glide:glide:4.14.2")
     annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
 
@@ -64,4 +68,6 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.10.1")
 
     implementation("io.insert-koin:koin-android:4.0.4")
+
+    implementation("androidx.fragment:fragment-ktx:1.8.7")
 }

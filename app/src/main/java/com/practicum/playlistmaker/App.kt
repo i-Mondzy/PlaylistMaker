@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker
 
 import android.app.Application
-import com.practicum.playlistmaker.main.di.mainViewModelModule
 import com.practicum.playlistmaker.media.di.mediaViewModelModule
 import com.practicum.playlistmaker.player.di.playerViewModelModule
 import com.practicum.playlistmaker.search.di.searchDataModule
@@ -34,7 +33,6 @@ class App : Application() {
             androidLogger(Level.DEBUG)
             androidContext(this@App)
             modules(
-                mainViewModelModule,
                 searchDataModule,
                 searchRepositoryModule,
                 searchInteractorModule,

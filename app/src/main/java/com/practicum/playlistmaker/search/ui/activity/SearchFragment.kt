@@ -1,33 +1,31 @@
 package com.practicum.playlistmaker.search.ui.activity
 
 import android.content.Context
-import android.content.Intent
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
+import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
 import com.practicum.playlistmaker.search.ui.state.TracksState
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
+import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivitySearchBinding
+class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private val viewModel by viewModel<SearchViewModel>()
 
-    private lateinit var simpleTextWatcher: TextWatcher
+    private var simpleTextWatcher: TextWatcher? = null
     /*private val client = OkHttpClient.Builder().addInterceptor(TimingInterceptor()).build()*/
 
     private val searchTrackList = TrackAdapter { track ->
@@ -44,11 +42,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun openPlayer(track: Track) {
-        startActivity(
-            Intent(this, PlayerActivity::class.java).apply {
-                putExtra("TRACK", track)
-            }
-        )
+        findNavController().navigate(R.id.action_searchFragment_to_playerFragment, PlayerFragment.createArgs(track))
     }
 
     private fun render(state: TracksState) {
@@ -120,22 +114,18 @@ class SearchActivity : AppCompatActivity() {
 
     //  Метод для "Скрытия клавиатуры"
     private fun hideKeyboard() {
-        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        val view = currentFocus ?: window.decorView
+        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        val view = requireActivity().currentFocus ?: requireActivity().window.decorView
         inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
-        currentFocus?.clearFocus()
+        requireActivity().currentFocus?.clearFocus()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSearchBinding {
+        return FragmentSearchBinding.inflate(inflater, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.placeholderNothingFound.isVisible = false
         binding.placeholderNoInternet.isVisible = false
@@ -144,13 +134,13 @@ class SearchActivity : AppCompatActivity() {
 
         // Список поиска
         binding.trackFound.adapter = searchTrackList
-        binding.trackFound.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.trackFound.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
         // Список истории
         binding.trackHistory.adapter = historyTrackList
-        binding.trackHistory.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.trackHistory.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
-        viewModel.observerState().observe(this){
+        viewModel.observerState().observe(viewLifecycleOwner){
             render(it)
         }
 
@@ -186,11 +176,6 @@ class SearchActivity : AppCompatActivity() {
 
         simpleTextWatcher.let { binding.inputText.addTextChangedListener(it) }
 
-//      Обработчик кнопки "Назад"
-        binding.btnBack.setOnClickListener {
-            finish()
-        }
-
 //      Кнопка "Поиск" на клавиатуре
         binding.inputText.setOnEditorActionListener { _, _, _ ->
             hideKeyboard()
@@ -207,9 +192,10 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         simpleTextWatcher.let { binding.inputText.removeTextChangedListener(it) }
+        simpleTextWatcher = null
     }
 
 }
