@@ -105,8 +105,8 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     // Метод для видимости "Прогресс бара"
     private fun showProgressBar() {
-        binding.history.isVisible = false
         binding.trackFound.isVisible = false
+        binding.history.isVisible = false
         binding.placeholderNothingFound.isVisible = false
         binding.placeholderNoInternet.isVisible = false
         binding.progressBar.isVisible = true

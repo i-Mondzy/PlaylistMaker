@@ -11,10 +11,6 @@
 
     <LinearLayout style="@style/ToolBarLinearLayout">
 
-        <!--<Button
-            android:id="@+id/btn_back"
-            style="@style/BackButtonStyle" />-->
-
         <TextView
             android:id="@+id/settings"
             style="@style/ToolBarTextView"

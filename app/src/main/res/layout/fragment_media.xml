@@ -12,7 +12,6 @@
         android:id="@+id/media"
         style="@style/ToolBarTextView"
         android:layout_margin="16dp"
-        android:layout_marginStart="16dp"
         android:text="@string/media"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
