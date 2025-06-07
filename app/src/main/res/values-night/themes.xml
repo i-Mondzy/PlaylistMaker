@@ -5,21 +5,7 @@
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
 
-    <style name="Main.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-        <item name="colorBackground">@color/dark</item>
-        <item name="colorTitle">@color/white</item>
-        <item name="colorTextPrimary">@color/dark</item>
-        <item name="colorButton">@color/white</item>
-    </style>
-
-    <style name="Settings.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-        <item name="colorBackground">@color/dark</item>
-        <item name="colorTitle">@color/white</item>
-        <item name="colorTextPrimary">@color/white</item>
-        <item name="colorIcon">@color/white</item>
-    </style>
-
-    <style name="Search.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
+    <style name="Root.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
         <item name="colorBackground">@color/dark</item>
         <item name="colorTitle">@color/white</item>
         <item name="colorTitleReverse">@color/dark</item>
@@ -29,19 +15,13 @@
         <item name="colorTextSecondary">@color/white</item>
         <item name="drawable_nothing_found">@drawable/plug_nothing_found_night</item>
         <item name="drawable_no_internet">@drawable/plug_something_wrong_night</item>
-    </style>
 
-    <style name="Player.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-        <item name="colorBackground">@color/dark</item>
-        <item name="colorTitle">@color/white</item>
-        <item name="colorButton">@color/white</item>
-        <item name="colorOtherButton">@color/white</item>
-    </style>
+<!--        Player-->
+        <item name="playerColorButton">@color/white</item>
+        <item name="playerColorOtherButton">@color/white</item>
 
-    <style name="Media.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-        <item name="colorBackground">@color/dark</item>
-        <item name="colorTitle">@color/white</item>
-        <item name="colorTitleReverse">@color/dark</item>
-        <item name="drawable_nothing_found">@drawable/plug_nothing_found_night</item>
+<!--        Settings-->
+        <item name="settingsColorTextPrimary">@color/white</item>
+        <item name="settingsColorIcon">@color/white</item>
     </style>
 </resources>

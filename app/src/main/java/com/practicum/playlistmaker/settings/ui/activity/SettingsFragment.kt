@@ -1,39 +1,32 @@
 package com.practicum.playlistmaker.settings.ui.activity
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
+import com.practicum.playlistmaker.databinding.FragmentSettingsBinding
 import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
+import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SettingsActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivitySettingsBinding
+class SettingsFragment : BindingFragment<FragmentSettingsBinding>() {
 
     private val viewModel by viewModel<SettingsViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    private fun switchTheme(checked: Boolean) {
+        binding.switchTheme.isChecked = checked
+    }
 
-//      Кнопка "Назад"
-        binding.btnBack.setOnClickListener{
-            finish()
-        }
+    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSettingsBinding {
+        return FragmentSettingsBinding.inflate(inflater, container, false)
+    }
 
-//      Переключатель темы "светлая-темная"
-        viewModel.observeTheme().observe(this) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //      Переключатель темы "светлая-темная"
+        viewModel.observeTheme().observe(viewLifecycleOwner) {
             switchTheme(it)
         }
 
@@ -60,10 +53,6 @@ class SettingsActivity : AppCompatActivity() {
             viewModel.renderUserAgreement(getString(R.string.userAgreementUrl))
         }
 
-    }
-
-    private fun switchTheme(checked: Boolean) {
-        binding.switchTheme.isChecked = checked
     }
 
 }

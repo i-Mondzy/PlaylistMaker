@@ -6,13 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorBackground"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.practicum.playlistmaker.search.ui.activity.SearchFragment">
 
     <LinearLayout style="@style/ToolBarLinearLayout">
-
-        <Button
-            android:id="@+id/btn_back"
-            style="@style/BackButtonStyle" />
 
         <TextView
             android:id="@+id/search"
@@ -124,7 +121,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <TextView
                 style="@style/SearchTextView"

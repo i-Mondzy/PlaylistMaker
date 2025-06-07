@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="MainButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+    <!--<style name="MainButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
@@ -9,7 +9,7 @@
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
-        <item name="android:backgroundTint">?attr/colorButton</item>
+        <item name="android:backgroundTint">?attr/playerColorButton</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textFontWeight">500</item>
         <item name="android:textColor">?attr/colorTextPrimary</item>
@@ -20,7 +20,7 @@
         <item name="iconSize">0dp</item>
         <item name="iconGravity">textStart</item>
         <item name="iconTint">?attr/colorTextPrimary</item>
-    </style>
+    </style>-->
 
     <style name="SearchTextView">
         <item name="android:layout_height">wrap_content</item>
@@ -105,14 +105,14 @@
         <item name="android:insetBottom">0dp</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>
-        <item name="android:textColor">?attr/colorTextPrimary</item>
+        <item name="android:textColor">?attr/settingsColorTextPrimary</item>
         <item name="android:textSize">@dimen/default_text_size</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
         <item name="android:gravity">start</item>
         <item name="iconSize">0dp</item>
         <item name="iconGravity">end</item>
-        <item name="iconTint">?attr/colorIcon</item>
+        <item name="iconTint">?attr/settingsColorIcon</item>
     </style>
 
     <style name="BackButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
@@ -151,6 +151,18 @@
         <item name="android:textSize">14sp</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textColor">?attr/colorTitle</item>
+    </style>
+
+    <style name="BottomNavActiveText" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
+
+    <style name="BottomNavInactiveText" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
     </style>
 
 </resources>
