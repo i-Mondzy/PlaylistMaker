@@ -3,14 +3,17 @@
 
     <item
         android:id="@+id/searchFragment"
+        android:icon="@drawable/ic_search"
         android:title="@string/search" />
 
     <item
         android:id="@+id/mediaFragment"
+        android:icon="@drawable/ic_media"
         android:title="@string/media" />
 
     <item
         android:id="@+id/settingsFragment"
+        android:icon="@drawable/ic_settings"
         android:title="@string/settings" />
 
 </menu>

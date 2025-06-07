@@ -29,15 +29,18 @@ class RootActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.rootFragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
 
+        binding.bottomNavigationView.setOnApplyWindowInsetsListener(null)
         binding.bottomNavigationView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.playerFragment -> {
                     binding.bottomNavigationView.visibility = View.GONE
+                    binding.separator.visibility = View.GONE
                 }
                 else -> {
                     binding.bottomNavigationView.visibility = View.VISIBLE
+                    binding.separator.visibility = View.VISIBLE
                 }
             }
         }
