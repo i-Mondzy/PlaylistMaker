@@ -70,4 +70,6 @@ dependencies {
     implementation("io.insert-koin:koin-android:4.0.4")
 
     implementation("androidx.fragment:fragment-ktx:1.8.7")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 }

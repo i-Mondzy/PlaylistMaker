@@ -72,8 +72,9 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         binding.currentTrackTime.text = (state as? PlayerState.Play)?.time
     }
 
-    private fun showPause() {
+    private fun showPause(state: PlayerState) {
         binding.playButton.setImageDrawable(getDrawable(requireContext(), R.drawable.ic_play))
+        binding.currentTrackTime.text = (state as? PlayerState.Pause)?.time
     }
 
     private fun showStop(state: PlayerState) {
@@ -85,7 +86,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         when (state) {
             is PlayerState.Content -> setUi(state.track)
             is PlayerState.Play -> showPlay(state)
-            PlayerState.Pause -> showPause()
+            is PlayerState.Pause -> showPause(state)
             is PlayerState.Stop -> showStop(state)
         }
     }
@@ -97,7 +98,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        intent.getParcelableExtra<Track>("TRACK")?.let { viewModel.setTrack(requireArguments().getString(ARGS_TRACK)) }
         requireArguments().getParcelable<Track>(ARGS_TRACK)?.let { viewModel.setTrack(it) }
         viewModel.getStateLiveData().observe(viewLifecycleOwner) { state ->
             render(state)

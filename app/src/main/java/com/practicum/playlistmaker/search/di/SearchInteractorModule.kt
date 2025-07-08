@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.search.di
 
-import android.util.Log
 import com.practicum.playlistmaker.search.domain.api.TracksInteractor
 import com.practicum.playlistmaker.search.domain.impl.TracksInteractorImpl
 import org.koin.dsl.module
@@ -14,7 +13,7 @@ val searchInteractorModule = module {
     }
 
     factory<TracksInteractor> {
-        TracksInteractorImpl(get(), get())
+        TracksInteractorImpl(get())
     }
 
 }

@@ -2,15 +2,17 @@ package com.practicum.playlistmaker.player.ui.view_model
 
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
@@ -21,8 +23,8 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
     private val mediatorLiveData = MediatorLiveData<PlayerState>().also { livedata ->
         livedata.addSource(stateLiveData) { state ->
             livedata.value = when (state) {
-                is PlayerState.Content -> PlayerState.Content(trackUi?.copy(currentTime = formatTime(seconds)))
-                PlayerState.Pause -> state
+                is PlayerState.Content -> PlayerState.Content(trackUi?.copy(currentTime = getCurrentPlayerPosition()))
+                is PlayerState.Pause -> state
                 is PlayerState.Play -> state
                 is PlayerState.Stop -> state
             }
@@ -30,25 +32,11 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
     }
 
     private var playerState = STATE_DEFAULT
-    private val handler = Handler(Looper.getMainLooper())
 
-    private var seconds = 30
-    private var pauseSeconds = 30
-    private var startTime = 0L
-    private var pauseTime = 0L
-    private var remainingMillis = 1000L
+    private var totalMillis = 30000
     private var trackUi: TrackUi? = null
 
-    private val playRunnable = object : Runnable {
-        override fun run() {
-            startTime = System.currentTimeMillis()
-
-            seconds -= 1
-            renderState(PlayerState.Play(formatTime(seconds)))
-
-            handler.postDelayed(this, 1000L)
-        }
-    }
+    private var timerJob: Job? = null
 
     companion object {
         private const val STATE_DEFAULT = 0
@@ -63,7 +51,7 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
                 trackId = track.trackId,
                 trackName = track.trackName,
                 artistName = track.artistName,
-                currentTime = formatTime(seconds),
+                currentTime = "00:30",
                 trackTimeMillis = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()),
                 artworkUrl100 = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
                 collectionName = track.collectionName,
@@ -85,31 +73,17 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
 
     private fun play() {
         mediaPlayer.start()
-        renderState(PlayerState.Play(formatTime(seconds)))
+        renderState(PlayerState.Play(getCurrentPlayerPosition()))
         playerState = STATE_PLAYING
 
-        startTime = System.currentTimeMillis()
-
-        handler.postDelayed(playRunnable, remainingMillis)
+        startTimer()
     }
 
     fun pause() {
-        if (playerState == STATE_PLAYING) {
-            mediaPlayer.pause()
-            renderState(PlayerState.Pause)
-            playerState = STATE_PAUSED
-
-            pauseTime = System.currentTimeMillis()
-
-            if (pauseSeconds != seconds) {
-                remainingMillis = 1000L - (pauseTime - startTime)
-            } else {
-                remainingMillis -= (pauseTime - startTime)
-            }
-
-            pauseSeconds = seconds
-            handler.removeCallbacks(playRunnable)
-        }
+        mediaPlayer.pause()
+        timerJob?.cancel()
+        renderState(PlayerState.Pause(getCurrentPlayerPosition()))
+        playerState = STATE_PAUSED
     }
 
     fun playbackControl() {
@@ -134,22 +108,28 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
         mediaPlayer.prepareAsync()
 
         mediaPlayer.setOnPreparedListener {
-            renderState(PlayerState.Stop(formatTime(seconds)))
+            renderState(PlayerState.Stop("00:30"))
             playerState = STATE_PREPARED
         }
 
         mediaPlayer.setOnCompletionListener {
-            renderState(PlayerState.Stop(formatTime(seconds)))
-            if (seconds == 1) renderState(PlayerState.Stop(formatTime(0)))
-            remainingMillis = 1000L
-            seconds = 30
-            handler.removeCallbacks(playRunnable)
+            timerJob?.cancel()
+            renderState(PlayerState.Stop("00:00"))
             playerState = STATE_PREPARED
         }
     }
 
-    private fun formatTime(seconds: Int): String {
-        return String.format("%02d:%02d", seconds / 60, seconds)
+    private fun startTimer() {
+        timerJob = viewModelScope.launch {
+            while (mediaPlayer.isPlaying) {
+                delay(300)
+                stateLiveData.postValue(PlayerState.Play(getCurrentPlayerPosition()))
+            }
+        }
+    }
+
+    private fun getCurrentPlayerPosition(): String {
+        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(totalMillis - mediaPlayer.currentPosition) ?: "00:00"
     }
 
     private fun renderState(state: PlayerState) {
