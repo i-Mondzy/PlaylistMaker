@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.search.data.network
 
+import com.practicum.playlistmaker.db.data.AppDataBase
 import com.practicum.playlistmaker.search.data.local.track.TracksManager
 import com.practicum.playlistmaker.search.data.TracksNetworkClient
 import com.practicum.playlistmaker.search.data.dto.TracksSearchResponse
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.flow
 
 class TracksRepositoryImpl(
     private val networkClient: TracksNetworkClient,
-    private val tracksManager: TracksManager
+    private val tracksManager: TracksManager,
+    private val appDatabase: AppDataBase
 ) : TracksRepository {
 
     override suspend fun searchTracks(text: String): Flow<Resource<List<Track>>> {
@@ -20,7 +22,7 @@ class TracksRepositoryImpl(
         return flow {
             when (response.resultCode) {
                 200 -> {
-                    val tracks = (response as TracksSearchResponse).results.map {
+                    val tracks = copyFavorites((response as TracksSearchResponse).results.map {
                         Track(
                             it.trackId,
                             it.trackName,
@@ -33,7 +35,7 @@ class TracksRepositoryImpl(
                             it.country,
                             it.previewUrl
                         )
-                    }
+                    })
                     emit(Resource.Success(tracks))
                 }
 
@@ -48,12 +50,19 @@ class TracksRepositoryImpl(
         tracksManager.saveTrack(track)
     }
 
-    override fun getTracks(): List<Track> {
-        return tracksManager.getTracks()
+    override suspend fun getTracks(): List<Track> {
+        return copyFavorites(tracksManager.getTracks())
     }
 
     override fun clearTracks() {
         tracksManager.clearTracks()
+    }
+
+    private suspend fun copyFavorites(tracks: List<Track>): List<Track> {
+        val tracksId = appDatabase.trackDao().getTracksId().map { it.toLong() }
+        return tracks.map { track ->
+            track.copy(isFavorite = track.trackId in tracksId)
+        }
     }
 
 }

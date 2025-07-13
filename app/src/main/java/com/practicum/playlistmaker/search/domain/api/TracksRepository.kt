@@ -9,7 +9,7 @@ interface TracksRepository {
 
     fun saveTrack(track: Track)
 
-    fun getTracks() : List<Track>
+    suspend fun getTracks() : List<Track>
 
     fun clearTracks()
 }

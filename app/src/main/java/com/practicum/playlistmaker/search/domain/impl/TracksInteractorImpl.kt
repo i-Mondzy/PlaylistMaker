@@ -24,7 +24,7 @@ class TracksInteractorImpl(
         repository.saveTrack(track)
     }
 
-    override fun getTracks(): List<Track> {
+    override suspend fun getTracks(): List<Track> {
         return repository.getTracks()
     }
 
