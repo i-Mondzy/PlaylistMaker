@@ -15,5 +15,6 @@ data class TrackUi(
     var releaseDate: String, // Год релиза трека
     var primaryGenreName: String, // Жанр трека
     var country: String, // Страна исполнителя
-    var previewUrl: String // Отрывок трека
+    var previewUrl: String, // Отрывок трека
+    var isFavorite: Boolean
 ) : Parcelable

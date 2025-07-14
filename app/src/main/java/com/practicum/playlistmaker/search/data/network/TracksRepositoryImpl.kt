@@ -16,10 +16,10 @@ class TracksRepositoryImpl(
     private val appDatabase: AppDataBase
 ) : TracksRepository {
 
-    override suspend fun searchTracks(text: String): Flow<Resource<List<Track>>> {
-        val response = networkClient.doRequest(text)
-
+    override fun searchTracks(text: String): Flow<Resource<List<Track>>> {
         return flow {
+            val response = networkClient.doRequest(text)
+
             when (response.resultCode) {
                 200 -> {
                     val tracks = copyFavorites((response as TracksSearchResponse).results.map {

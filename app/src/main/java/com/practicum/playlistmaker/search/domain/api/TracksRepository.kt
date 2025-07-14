@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
 
 interface TracksRepository {
-    suspend fun searchTracks(text: String): Flow<Resource<List<Track>>>
+    fun searchTracks(text: String): Flow<Resource<List<Track>>>
 
     fun saveTrack(track: Track)
 

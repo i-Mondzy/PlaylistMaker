@@ -8,7 +8,7 @@ import org.koin.dsl.module
 val mediaViewModelModule = module {
 
     viewModel {
-        FavoriteViewModule()
+        FavoriteViewModule(get())
     }
 
     viewModel {

@@ -7,15 +7,21 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.db.domain.FavoriteInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
-class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
+class PlayerViewModel(
+    private val mediaPlayer: MediaPlayer,
+    private val favoriteInteractor: FavoriteInteractor
+) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<PlayerState>()
     fun getStateLiveData(): LiveData<PlayerState> = mediatorLiveData
@@ -58,7 +64,8 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
                 releaseDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)),
                 primaryGenreName = track.primaryGenreName,
                 country = track.country,
-                previewUrl = track.previewUrl
+                previewUrl = track.previewUrl,
+                isFavorite = track.isFavorite
             )
 
             renderState(PlayerState.Content(trackUi))
@@ -69,6 +76,26 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
         }
 
         renderState(PlayerState.Content(trackUi))
+    }
+
+    fun onFavoriteClicked(track: Track) {
+        viewModelScope.launch {
+            val updatedTrack = withContext(Dispatchers.IO) {
+                if (!track.isFavorite) {
+                    favoriteInteractor.saveTrack(track)
+                    track.copy(isFavorite = true)
+                } else {
+                    favoriteInteractor.deleteTrack(track)
+                    track.copy(isFavorite = false)
+                }
+            }
+
+            stateLiveData.postValue(
+                PlayerState.Content(
+                    track = trackUi?.copy(isFavorite = updatedTrack.isFavorite)
+                )
+            )
+        }
     }
 
     private fun play() {

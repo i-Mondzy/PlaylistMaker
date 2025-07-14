@@ -11,7 +11,7 @@ class TracksInteractorImpl(
     private val repository: TracksRepository
 ) : TracksInteractor {
 
-    override suspend fun searchTracks(text: String): Flow<Resource<List<Track>>> {
+    override fun searchTracks(text: String): Flow<Resource<List<Track>>> {
         return repository.searchTracks(text).map { result ->
             when (result) {
                 is Resource.Success -> result
