@@ -31,7 +31,9 @@ class FavoriteViewModule(private val favoriteInteractor: FavoriteInteractor) : V
             if (tracks.isEmpty()) {
                 renderState(FavoriteState.Empty)
             } else {
-                renderState(FavoriteState.Content(tracks))
+                renderState(FavoriteState.Content(tracks.map { track ->
+                    track.copy(isFavorite = true)
+                }))
             }
         }
     }

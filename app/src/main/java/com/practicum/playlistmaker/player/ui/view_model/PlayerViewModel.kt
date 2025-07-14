@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.player.ui.view_model
 
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -26,10 +27,12 @@ class PlayerViewModel(
     private val stateLiveData = MutableLiveData<PlayerState>()
     fun getStateLiveData(): LiveData<PlayerState> = mediatorLiveData
 
-    private val mediatorLiveData = MediatorLiveData<PlayerState>().also { livedata ->
-        livedata.addSource(stateLiveData) { state ->
-            livedata.value = when (state) {
-                is PlayerState.Content -> PlayerState.Content(trackUi?.copy(currentTime = getCurrentPlayerPosition()))
+    private val mediatorLiveData = MediatorLiveData<PlayerState>().also { liveData ->
+        liveData.addSource(stateLiveData) { state ->
+            liveData.value = when (state) {
+                is PlayerState.Content -> PlayerState.Content(trackUi?.copy(
+                    currentTime = getCurrentPlayerPosition()
+                ))
                 is PlayerState.Pause -> state
                 is PlayerState.Play -> state
                 is PlayerState.Stop -> state
@@ -92,9 +95,11 @@ class PlayerViewModel(
 
             stateLiveData.postValue(
                 PlayerState.Content(
-                    track = trackUi?.copy(isFavorite = updatedTrack.isFavorite)
+                    track = trackUi?.copy(isFavorite = updatedTrack.isFavorite).also { trackUi = it }
                 )
             )
+
+            Log.d("favoriteClicked", "onFavoriteClicked: ${trackUi?.isFavorite}")
         }
     }
 

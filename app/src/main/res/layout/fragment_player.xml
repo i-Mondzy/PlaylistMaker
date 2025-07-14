@@ -106,7 +106,7 @@
             app:layout_constraintBottom_toBottomOf="@id/playButton"
             app:layout_constraintEnd_toEndOf="@id/rightBorder"
             app:layout_constraintTop_toTopOf="@id/playButton"
-            app:srcCompat="@drawable/ic_add_to_favorite" />
+            app:srcCompat="@drawable/ic_add_to_favorite_false" />
 
         <ImageButton
             android:id="@+id/playButton"
