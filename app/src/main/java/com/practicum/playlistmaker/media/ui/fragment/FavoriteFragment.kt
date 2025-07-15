@@ -1,7 +1,7 @@
 package com.practicum.playlistmaker.media.ui.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +21,11 @@ class FavoriteFragment : BindingFragment<FragmentFavoriteBinding>() {
 
     private val viewModel by viewModel<FavoriteViewModule>()
 
-    private val favoriteTracks = TrackAdapter{ track ->
+    private var trackIndex: Int? = null
+    private var init = false
+
+    private val favoriteTracks = TrackAdapter{ track, position ->
+        trackIndex = position
         openPlayer(track)
     }
 
@@ -31,8 +35,14 @@ class FavoriteFragment : BindingFragment<FragmentFavoriteBinding>() {
 
     private fun render(state: FavoriteState) {
         when(state) {
-            is FavoriteState.Content -> showFavoriteTracks(state.tracks)
-            FavoriteState.Empty -> showMessageEmpty()
+            is FavoriteState.Content -> {
+                init = true
+                showFavoriteTracks(state.tracks)
+            }
+            FavoriteState.Empty -> {
+                init = true
+                showMessageEmpty()
+            }
         }
     }
 
@@ -64,10 +74,40 @@ class FavoriteFragment : BindingFragment<FragmentFavoriteBinding>() {
         binding.favoriteTracks.adapter = favoriteTracks
         binding.favoriteTracks.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
+
         viewModel.observerState().observe(viewLifecycleOwner) {
             render(it)
         }
 
+        val upd = findNavController().currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Pair<Long, Boolean>>("update")
+        Log.d("FAVupd", "$upd")
+        upd
+            ?.observe(viewLifecycleOwner) { (trackId, isFavorite) ->
+                Log.d("FAVupdated", "${favoriteTracks.tracks.indexOfFirst { it.trackId == trackId }}")
+                trackIndex?.let { index ->
+                    if (binding.favoriteTracks.isVisible) {
+                        favoriteTracks.tracks[favoriteTracks.tracks.indexOfFirst { it.trackId == trackId }] = favoriteTracks.tracks[favoriteTracks.tracks.indexOfFirst { it.trackId == trackId }].copy(isFavorite = isFavorite)
+                        Log.d("FAVfav", "${favoriteTracks.tracks[favoriteTracks.tracks.indexOfFirst { it.trackId == trackId }].isFavorite}")
+                    }
+                    if (!favoriteTracks.tracks[favoriteTracks.tracks.indexOfFirst { it.trackId == trackId }].isFavorite) {
+                        favoriteTracks.tracks.removeAt(favoriteTracks.tracks.indexOfFirst { it.trackId == trackId })
+                        viewModel.updateFavorite(favoriteTracks.tracks)
+                    }
+                }
+                findNavController().currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.remove<Pair<Long, Boolean>>("update")
+            }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (init) {
+            viewModel.refreshFavorites()
+        }
     }
 
     companion object {

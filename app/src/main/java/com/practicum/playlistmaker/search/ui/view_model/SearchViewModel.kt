@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.search.ui.view_model
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +12,6 @@ import com.practicum.playlistmaker.utils.debounce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.also
 
 class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewModel() {
 
@@ -92,6 +90,12 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
     fun updateHistory() {
         viewModelScope.launch(Dispatchers.IO) {
             delay(1000)
+            renderState(TracksState.History(tracksInteractor.getTracks()))
+        }
+    }
+
+    fun refreshHistory() {
+        viewModelScope.launch(Dispatchers.IO) {
             renderState(TracksState.History(tracksInteractor.getTracks()))
         }
     }

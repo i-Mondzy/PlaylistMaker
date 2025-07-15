@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.media.ui.view_model
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,6 +18,25 @@ class FavoriteViewModule(private val favoriteInteractor: FavoriteInteractor) : V
     fun observerState(): LiveData<FavoriteState> = stateLiveData
 
     init {
+        showFavorite()
+        Log.d("init", "init")
+    }
+
+    fun updateFavorite(tracks: List<Track>) {
+        this.tracks.clear()
+        this.tracks.addAll(tracks)
+
+        if (this.tracks.isEmpty()) {
+            renderState(FavoriteState.Empty)
+        } else {
+            renderState(FavoriteState.Content(this.tracks.map { track ->
+                track.copy(isFavorite = true)
+            }))
+        }
+    }
+
+    fun refreshFavorites() {
+        tracks.clear()
         showFavorite()
     }
 

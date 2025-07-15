@@ -34,7 +34,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
         findNavController().previousBackStackEntry
             ?.savedStateHandle
-            ?.set("update", trackUi.isFavorite)
+            ?.set("update", trackUi.trackId to trackUi.isFavorite)
 
         this@PlayerFragment.trackUi = trackUi
 
