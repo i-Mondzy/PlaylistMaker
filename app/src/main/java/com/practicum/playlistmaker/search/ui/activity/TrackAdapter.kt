@@ -18,11 +18,11 @@ class TrackAdapter(private val clickListener: TrackClickListener?): Adapter<Trac
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(tracks[position])
-        holder.itemView.setOnClickListener{ clickListener?.onTrackListener(tracks[position]) }
+        holder.itemView.setOnClickListener{ clickListener?.onTrackListener(tracks[position], position) }
     }
 
     fun interface TrackClickListener {
-        fun onTrackListener(track: Track)
+        fun onTrackListener(track: Track, position: Int)
     }
 
 }

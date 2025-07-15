@@ -20,6 +20,7 @@ import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerState
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.search.ui.activity.SearchFragment
 import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.math.max
@@ -32,6 +33,11 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private fun setUi(trackUi: TrackUi?) {
         if (trackUi == null) return
+
+        Log.d("debug", "setting 'update' in savedStateHandle: ${trackUi.isFavorite}")
+        findNavController().previousBackStackEntry
+            ?.savedStateHandle
+            ?.set("update", trackUi.isFavorite)
 
         this@PlayerFragment.trackUi = trackUi
 
@@ -51,7 +57,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         binding.primaryGenreNameValue.text = trackUi.primaryGenreName
         binding.countryValue.text = trackUi.country
 
-        Log.d("favorite", "onFavoriteClicked: ${trackUi.isFavorite}")
+        Log.d("render", "render: ${trackUi.isFavorite}")
         when (trackUi.isFavorite) {
             true -> binding.addToFavorite.setImageResource(R.drawable.ic_add_to_favorite_true)
             false -> binding.addToFavorite.setImageResource(R.drawable.ic_add_to_favorite_false)

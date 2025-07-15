@@ -4,11 +4,13 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,14 +30,18 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private var simpleTextWatcher: TextWatcher? = null
     /*private val client = OkHttpClient.Builder().addInterceptor(TimingInterceptor()).build()*/
 
-    private val searchTrackList = TrackAdapter { track ->
+    private var trackIndex: Int? = null
+
+    private val searchTrackList = TrackAdapter { track, index ->
         hideKeyboard()
+        trackIndex = index
         viewModel.saveTrack(track)
         openPlayer(track)
     }
 
-    private val historyTrackList = TrackAdapter { track ->
+    private val historyTrackList = TrackAdapter { track, index ->
         hideKeyboard()
+        trackIndex = index
         viewModel.saveTrack(track)
         viewModel.updateHistory()
         openPlayer(track)
@@ -144,6 +150,8 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             render(it)
         }
 
+
+
 //      Очистить историю
         binding.clearHistory.setOnClickListener {
             viewModel.clearHistory()
@@ -190,6 +198,50 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             false
         }
 
+        val update = findNavController().currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Boolean>("update")
+
+        val update1 = findNavController().previousBackStackEntry
+            ?.savedStateHandle
+            ?.get<Boolean>("update")
+
+        Log.d("Upd", "historyUpdate $update")
+        Log.d("Upd", "historyUpdate1 $update1")
+
+        update
+            ?.observe(viewLifecycleOwner) { updated ->
+                if (update != null || update1 != null) {
+                    if (binding.trackFound.isVisible) {
+                        Log.d("searchUpdate", "searchUpdate: $updated")
+                        trackIndex?.let { index ->
+                            searchTrackList.tracks[index].copy(isFavorite = updated)
+                            searchTrackList.notifyDataSetChanged()
+//                            searchTrackList.notifyItemChanged(index)
+                        }
+                    } else if (binding.history.isVisible) {
+                        Log.d("historyUpdate", "historyUpdate: $updated")
+                        trackIndex?.let { index ->
+                            historyTrackList.tracks[0].copy(isFavorite = updated)
+                            historyTrackList.notifyItemChanged(index)
+                        }
+                    }
+                    findNavController().currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.remove<Boolean>("update")
+                }
+            }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("resume", "onResume: ")
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("pause", "pause: ")
     }
 
     override fun onDestroyView() {

@@ -18,11 +18,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
+import kotlin.Long
 
 class PlayerViewModel(
     private val mediaPlayer: MediaPlayer,
     private val favoriteInteractor: FavoriteInteractor
 ) : ViewModel() {
+
+    private var favoriteId = mutableListOf<Long>()
 
     private val stateLiveData = MutableLiveData<PlayerState>()
     fun getStateLiveData(): LiveData<PlayerState> = mediatorLiveData
@@ -56,24 +59,37 @@ class PlayerViewModel(
 
     fun setTrack(track: Track) {
         if (trackUi == null) {
-            trackUi = TrackUi(
-                trackId = track.trackId,
-                trackName = track.trackName,
-                artistName = track.artistName,
-                currentTime = "00:30",
-                trackTimeMillis = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()),
-                artworkUrl100 = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
-                collectionName = track.collectionName,
-                releaseDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)),
-                primaryGenreName = track.primaryGenreName,
-                country = track.country,
-                previewUrl = track.previewUrl,
-                isFavorite = track.isFavorite
-            )
 
-            renderState(PlayerState.Content(trackUi))
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    favoriteId.clear()
+                    favoriteInteractor.getTracks().collect { tracks ->
+                        favoriteId.addAll(tracks.map { it.trackId })
+                    }
+                }
+                trackUi = TrackUi(
+                    trackId = track.trackId,
+                    trackName = track.trackName,
+                    artistName = track.artistName,
+                    currentTime = "00:30",
+                    trackTimeMillis = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()),
+                    artworkUrl100 = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
+                    collectionName = track.collectionName,
+                    releaseDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)),
+                    primaryGenreName = track.primaryGenreName,
+                    country = track.country,
+                    previewUrl = track.previewUrl,
+//                isFavorite = track.isFavorite
+                    isFavorite = track.trackId in favoriteId
+                )
+                renderState(PlayerState.Content(trackUi))
 
-            preparePlayer(trackUi!!.previewUrl)
+                preparePlayer(trackUi!!.previewUrl)
+            }
+
+
+
+
 
             return
         }
@@ -83,23 +99,23 @@ class PlayerViewModel(
 
     fun onFavoriteClicked(track: Track) {
         viewModelScope.launch {
-            val updatedTrack = withContext(Dispatchers.IO) {
-                if (!track.isFavorite) {
+            withContext(Dispatchers.IO) {
+                if (trackUi?.isFavorite == false) {
                     favoriteInteractor.saveTrack(track)
-                    track.copy(isFavorite = true)
+                    trackUi?.isFavorite = true
                 } else {
                     favoriteInteractor.deleteTrack(track)
-                    track.copy(isFavorite = false)
+                    trackUi?.isFavorite = false
                 }
+
+                stateLiveData.postValue(
+                    PlayerState.Content(
+                        trackUi
+                    )
+                )
             }
 
-            stateLiveData.postValue(
-                PlayerState.Content(
-                    track = trackUi?.copy(isFavorite = updatedTrack.isFavorite).also { trackUi = it }
-                )
-            )
-
-            Log.d("favoriteClicked", "onFavoriteClicked: ${trackUi?.isFavorite}")
+            Log.d("clicked", "clicked: ${trackUi?.isFavorite}")
         }
     }
 
