@@ -1,12 +1,10 @@
 package com.practicum.playlistmaker.search.ui.view_model
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practicum.playlistmaker.player.ui.state.PlayerState
 import com.practicum.playlistmaker.search.domain.api.TracksInteractor
 import com.practicum.playlistmaker.search.domain.model.Resource
 import com.practicum.playlistmaker.search.domain.model.Track
@@ -32,27 +30,11 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
     }
 
     private val stateLiveData = MutableLiveData<TracksState>()
-    fun observerState(): LiveData<TracksState> = mediatorLiveData
-
-    private val mediatorLiveData = MediatorLiveData<TracksState>().also { liveData ->
-        liveData.addSource(stateLiveData) { state ->
-            liveData.value = when (state) {
-                TracksState.Loading -> state
-                TracksState.Empty -> state
-                TracksState.Error -> state
-                is TracksState.Content -> state
-                is TracksState.History -> {
-                    Log.d("TrackState", "History:${state.tracks.map { listOf(it.trackName, it.isFavorite) }}")
-                    state
-                }
-            }
-        }
-    }
+    fun observerState(): LiveData<TracksState> = stateLiveData
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             renderState(TracksState.History(tracksInteractor.getTracks()))
-            Log.d("init", "init")
         }
     }
 
@@ -81,7 +63,6 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
                 } else {
                     viewModelScope.launch(Dispatchers.IO) {
                         renderState(TracksState.History(tracksInteractor.getTracks()))
-                        Log.d("success", "success")
                     }
                 }
             }
@@ -91,7 +72,6 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
                 } else {
                     viewModelScope.launch(Dispatchers.IO) {
                         renderState(TracksState.History(tracksInteractor.getTracks()))
-                        Log.d("error", "error")
                     }
                 }
             }
@@ -113,7 +93,6 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
         viewModelScope.launch(Dispatchers.IO) {
             delay(1000)
             renderState(TracksState.History(tracksInteractor.getTracks()))
-            Log.d("update", "update")
         }
     }
 

@@ -2,7 +2,6 @@ package com.practicum.playlistmaker.player.ui.view_model
 
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,14 +17,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
-import kotlin.Long
 
 class PlayerViewModel(
     private val mediaPlayer: MediaPlayer,
     private val favoriteInteractor: FavoriteInteractor
 ) : ViewModel() {
-
-    private var favoriteId = mutableListOf<Long>()
 
     private val stateLiveData = MutableLiveData<PlayerState>()
     fun getStateLiveData(): LiveData<PlayerState> = mediatorLiveData
@@ -60,36 +56,24 @@ class PlayerViewModel(
     fun setTrack(track: Track) {
         if (trackUi == null) {
 
-            viewModelScope.launch {
-                withContext(Dispatchers.IO) {
-                    favoriteId.clear()
-                    favoriteInteractor.getTracks().collect { tracks ->
-                        favoriteId.addAll(tracks.map { it.trackId })
-                    }
-                }
-                trackUi = TrackUi(
-                    trackId = track.trackId,
-                    trackName = track.trackName,
-                    artistName = track.artistName,
-                    currentTime = "00:30",
-                    trackTimeMillis = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()),
-                    artworkUrl100 = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
-                    collectionName = track.collectionName,
-                    releaseDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)),
-                    primaryGenreName = track.primaryGenreName,
-                    country = track.country,
-                    previewUrl = track.previewUrl,
-//                isFavorite = track.isFavorite
-                    isFavorite = track.trackId in favoriteId
-                )
-                renderState(PlayerState.Content(trackUi))
+            trackUi = TrackUi(
+                trackId = track.trackId,
+                trackName = track.trackName,
+                artistName = track.artistName,
+                currentTime = "00:30",
+                trackTimeMillis = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()),
+                artworkUrl100 = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
+                collectionName = track.collectionName,
+                releaseDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)),
+                primaryGenreName = track.primaryGenreName,
+                country = track.country,
+                previewUrl = track.previewUrl,
+                isFavorite = track.isFavorite
+            )
 
-                preparePlayer(trackUi!!.previewUrl)
-            }
+            renderState(PlayerState.Content(trackUi))
 
-
-
-
+            preparePlayer(trackUi!!.previewUrl)
 
             return
         }
@@ -115,7 +99,6 @@ class PlayerViewModel(
                 )
             }
 
-            Log.d("clicked", "clicked: ${trackUi?.isFavorite}")
         }
     }
 
