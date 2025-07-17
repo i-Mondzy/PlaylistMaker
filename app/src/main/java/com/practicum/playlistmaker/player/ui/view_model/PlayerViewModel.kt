@@ -7,23 +7,31 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.db.domain.FavoriteInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
-class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
+class PlayerViewModel(
+    private val mediaPlayer: MediaPlayer,
+    private val favoriteInteractor: FavoriteInteractor
+) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<PlayerState>()
     fun getStateLiveData(): LiveData<PlayerState> = mediatorLiveData
 
-    private val mediatorLiveData = MediatorLiveData<PlayerState>().also { livedata ->
-        livedata.addSource(stateLiveData) { state ->
-            livedata.value = when (state) {
-                is PlayerState.Content -> PlayerState.Content(trackUi?.copy(currentTime = getCurrentPlayerPosition()))
+    private val mediatorLiveData = MediatorLiveData<PlayerState>().also { liveData ->
+        liveData.addSource(stateLiveData) { state ->
+            liveData.value = when (state) {
+                is PlayerState.Content -> PlayerState.Content(trackUi?.copy(
+                    currentTime = getCurrentPlayerPosition()
+                ))
                 is PlayerState.Pause -> state
                 is PlayerState.Play -> state
                 is PlayerState.Stop -> state
@@ -47,6 +55,7 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
 
     fun setTrack(track: Track) {
         if (trackUi == null) {
+
             trackUi = TrackUi(
                 trackId = track.trackId,
                 trackName = track.trackName,
@@ -58,7 +67,8 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
                 releaseDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).parse(track.releaseDate)),
                 primaryGenreName = track.primaryGenreName,
                 country = track.country,
-                previewUrl = track.previewUrl
+                previewUrl = track.previewUrl,
+                isFavorite = track.isFavorite
             )
 
             renderState(PlayerState.Content(trackUi))
@@ -69,6 +79,27 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
         }
 
         renderState(PlayerState.Content(trackUi))
+    }
+
+    fun onFavoriteClicked(track: Track) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                if (trackUi?.isFavorite == false) {
+                    favoriteInteractor.saveTrack(track)
+                    trackUi?.isFavorite = true
+                } else {
+                    favoriteInteractor.deleteTrack(track)
+                    trackUi?.isFavorite = false
+                }
+
+                stateLiveData.postValue(
+                    PlayerState.Content(
+                        trackUi
+                    )
+                )
+            }
+
+        }
     }
 
     private fun play() {

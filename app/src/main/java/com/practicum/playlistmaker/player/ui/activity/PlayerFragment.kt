@@ -27,30 +27,37 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private val viewModel by viewModel<PlayerViewModel>()
 
-    companion object {
-        private const val ARGS_TRACK = "Track"
+    private lateinit var trackUi: TrackUi
 
-        fun createArgs(trackId: Track): Bundle = bundleOf(ARGS_TRACK to trackId)
-    }
+    private fun setUi(trackUi: TrackUi?) {
+        if (trackUi == null) return
 
-    private fun setUi(track: TrackUi?) {
-        if (track == null) return
+        findNavController().previousBackStackEntry
+            ?.savedStateHandle
+            ?.set("update", trackUi.trackId to trackUi.isFavorite)
+
+        this@PlayerFragment.trackUi = trackUi
 
         Glide.with(this)
-            .load(track.artworkUrl100)
+            .load(trackUi.artworkUrl100)
             .placeholder(R.drawable.plug_artwork_high)
             .centerCrop()
             .transform(RoundedCorners(dpToPx(8f, requireContext())))
             .into(binding.artwork)
 
-        binding.trackName.text = track.trackName
-        binding.artistName.text = track.artistName
-        binding.currentTrackTime.text = track.currentTime
-        binding.trackTimeValue.text = track.trackTimeMillis
-        binding.collectionNameValue.text = track.collectionName
-        binding.releaseDateValue.text = track.releaseDate
-        binding.primaryGenreNameValue.text = track.primaryGenreName
-        binding.countryValue.text = track.country
+        binding.trackName.text = trackUi.trackName
+        binding.artistName.text = trackUi.artistName
+        binding.currentTrackTime.text = trackUi.currentTime
+        binding.trackTimeValue.text = trackUi.trackTimeMillis
+        binding.collectionNameValue.text = trackUi.collectionName
+        binding.releaseDateValue.text = trackUi.releaseDate
+        binding.primaryGenreNameValue.text = trackUi.primaryGenreName
+        binding.countryValue.text = trackUi.country
+
+        when (trackUi.isFavorite) {
+            true -> binding.addToFavorite.setImageResource(R.drawable.ic_add_to_favorite_true)
+            false -> binding.addToFavorite.setImageResource(R.drawable.ic_add_to_favorite_false)
+        }
 
         when (binding.collectionNameValue.text) {
             "" -> binding.collectionGroup.isVisible = false
@@ -124,6 +131,9 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             viewModel.playbackControl()
         }
 
+        binding.addToFavorite.setOnClickListener{
+            requireArguments().getParcelable<Track>(ARGS_TRACK)?.let { viewModel.onFavoriteClicked(it.copy(isFavorite = trackUi.isFavorite)) }
+        }
 
         binding.backBtn.setOnClickListener {
             findNavController().navigateUp()
@@ -134,6 +144,12 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     override fun onPause() {
         super.onPause()
         viewModel.pause()
+    }
+
+    companion object {
+        private const val ARGS_TRACK = "Track"
+
+        fun createArgs(trackId: Track): Bundle = bundleOf(ARGS_TRACK to trackId)
     }
 
 }

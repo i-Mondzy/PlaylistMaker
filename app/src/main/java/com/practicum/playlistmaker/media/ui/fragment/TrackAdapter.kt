@@ -1,8 +1,9 @@
-package com.practicum.playlistmaker.search.ui.activity
+package com.practicum.playlistmaker.media.ui.fragment
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.search.ui.activity.TrackViewHolder
 
 class TrackAdapter(private val clickListener: TrackClickListener?): Adapter<TrackViewHolder>() {
 

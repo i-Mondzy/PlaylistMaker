@@ -1,6 +1,9 @@
 package com.practicum.playlistmaker
 
 import android.app.Application
+import com.practicum.playlistmaker.db.di.dataBaseDataModule
+import com.practicum.playlistmaker.db.di.dataBaseInteractorModule
+import com.practicum.playlistmaker.db.di.dataBaseRepositoryModule
 import com.practicum.playlistmaker.media.di.mediaViewModelModule
 import com.practicum.playlistmaker.player.di.playerViewModelModule
 import com.practicum.playlistmaker.search.di.searchDataModule
@@ -44,7 +47,10 @@ class App : Application() {
                 shareDataModule,
                 shareInteractorModule,
                 playerViewModelModule,
-                mediaViewModelModule
+                mediaViewModelModule,
+                dataBaseDataModule,
+                dataBaseRepositoryModule,
+                dataBaseInteractorModule
             )
         }
 

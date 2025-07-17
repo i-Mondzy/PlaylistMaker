@@ -8,7 +8,7 @@ import org.koin.dsl.module
 val searchRepositoryModule = module {
 
     factory<TracksRepository> {
-        TracksRepositoryImpl(get(), get())
+        TracksRepositoryImpl(get(), get(), get())
     }
 
 }

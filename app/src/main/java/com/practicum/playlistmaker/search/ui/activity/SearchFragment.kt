@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -28,30 +29,51 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private var simpleTextWatcher: TextWatcher? = null
     /*private val client = OkHttpClient.Builder().addInterceptor(TimingInterceptor()).build()*/
 
-    private val searchTrackList = TrackAdapter { track ->
+    private var trackIndex: Int? = null
+    private var init = false
+
+    private val searchTrackList = TrackAdapter { track, index ->
         hideKeyboard()
+        trackIndex = index
         viewModel.saveTrack(track)
         openPlayer(track)
     }
 
-    private val historyTrackList = TrackAdapter { track ->
+    private val historyTrackList = TrackAdapter { track, index ->
         hideKeyboard()
+        trackIndex = index
         viewModel.saveTrack(track)
         viewModel.updateHistory()
         openPlayer(track)
     }
 
     private fun openPlayer(track: Track) {
+        Log.d("history", "${track.isFavorite}")
         findNavController().navigate(R.id.action_searchFragment_to_playerFragment, PlayerFragment.createArgs(track))
     }
 
     private fun render(state: TracksState) {
         when(state) {
-            is TracksState.Content -> showSearchTracks(state.tracks)
-            is TracksState.History -> showHistoryTracks(state.tracks)
-            TracksState.Empty -> showMessageNothingFound()
-            TracksState.Error -> showMessageNoInternet()
-            TracksState.Loading -> showProgressBar()
+            is TracksState.Content -> {
+                init = true
+                showSearchTracks(state.tracks)
+            }
+            is TracksState.History -> {
+                init = true
+                showHistoryTracks(state.tracks)
+            }
+            TracksState.Empty -> {
+                init = true
+                showMessageNothingFound()
+            }
+            TracksState.Error -> {
+                init = true
+                showMessageNoInternet()
+            }
+            TracksState.Loading -> {
+                init = true
+                showProgressBar()
+            }
         }
     }
 
@@ -190,6 +212,31 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             false
         }
 
+        findNavController().currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Pair<Long, Boolean>>("update")
+            ?.observe(viewLifecycleOwner) { (trackId, isFavorite) ->
+                Log.d("SEARupd", "${historyTrackList.tracks.indexOfFirst { it.trackId == trackId }}")
+                if (binding.trackFound.isVisible) {
+                    trackIndex?.let { index ->
+                        searchTrackList.tracks[searchTrackList.tracks.indexOfFirst { it.trackId == trackId }] = searchTrackList.tracks[searchTrackList.tracks.indexOfFirst { it.trackId == trackId }].copy(isFavorite = isFavorite)
+                    }
+                } else if (binding.history.isVisible) {
+                    trackIndex?.let { index ->
+                        historyTrackList.tracks[historyTrackList.tracks.indexOfFirst { it.trackId == trackId }] = historyTrackList.tracks[0].copy(isFavorite = isFavorite)
+                    }
+                }
+                findNavController().currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.remove<Pair<Long, Boolean>>("update")
+            }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (init) {
+            viewModel.refreshHistory()
+        }
     }
 
     override fun onDestroyView() {
