@@ -23,5 +23,8 @@
 <!--        Settings-->
         <item name="settingsColorTextPrimary">@color/white</item>
         <item name="settingsColorIcon">@color/white</item>
+
+<!--        Create Playlist-->
+        <item name="colorBorderEditText">@color/white</item>
     </style>
 </resources>

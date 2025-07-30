@@ -24,5 +24,8 @@
 <!--        Settings-->
         <item name="settingsColorTextPrimary">@color/dark</item>
         <item name="settingsColorIcon">@color/text_gray</item>
+
+<!--        Create Playlist-->
+        <item name="colorBorderEditText">@color/text_gray</item>
     </style>
 </resources>

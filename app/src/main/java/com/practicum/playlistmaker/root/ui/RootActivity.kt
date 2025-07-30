@@ -38,6 +38,10 @@ class RootActivity : AppCompatActivity() {
                     binding.bottomNavigationView.visibility = View.GONE
                     binding.separator.visibility = View.GONE
                 }
+                R.id.createPlaylist -> {
+                    binding.bottomNavigationView.visibility = View.GONE
+                    binding.separator.visibility = View.GONE
+                }
                 else -> {
                     binding.bottomNavigationView.visibility = View.VISIBLE
                     binding.separator.visibility = View.VISIBLE
