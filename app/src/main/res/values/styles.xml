@@ -165,4 +165,9 @@
         <item name="android:textFontWeight">400</item>
     </style>
 
+    <style name="RoundedImGPlaylistStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
 </resources>

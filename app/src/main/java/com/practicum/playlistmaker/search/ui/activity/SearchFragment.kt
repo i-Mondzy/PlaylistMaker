@@ -212,7 +212,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             false
         }
 
-        findNavController().currentBackStackEntry
+        /*findNavController().currentBackStackEntry
             ?.savedStateHandle
             ?.getLiveData<Pair<Long, Boolean>>("update")
             ?.observe(viewLifecycleOwner) { (trackId, isFavorite) ->
@@ -229,7 +229,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                 findNavController().currentBackStackEntry
                     ?.savedStateHandle
                     ?.remove<Pair<Long, Boolean>>("update")
-            }
+            }*/
     }
 
     override fun onResume() {

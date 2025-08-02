@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorBackground"
-    tools:context=".create_playlist.ui.fragment.CreatePlaylist">
+    tools:context=".create_playlist.ui.fragment.CreatePlaylistFragment">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/leftBorder"
@@ -38,7 +38,7 @@
         app:layout_constraintTop_toTopOf="@id/backBtn" />
 
     <FrameLayout
-        android:id="@+id/imgPlaylist"
+        android:id="@+id/imgFrame"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginHorizontal="8dp"
@@ -50,6 +50,7 @@
         app:layout_constraintTop_toBottomOf="@id/backBtn">
 
         <ImageView
+            android:id="@+id/imgPlaylist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -69,7 +70,7 @@
         android:textColorHint="@color/dark"
         app:layout_constraintEnd_toEndOf="@id/rightBorder"
         app:layout_constraintStart_toStartOf="@id/leftBorder"
-        app:layout_constraintTop_toBottomOf="@id/imgPlaylist" />
+        app:layout_constraintTop_toBottomOf="@id/imgFrame" />
 
     <EditText
         android:id="@+id/descriptionPlaylist"
@@ -83,5 +84,23 @@
         app:layout_constraintEnd_toEndOf="@id/rightBorder"
         app:layout_constraintStart_toStartOf="@id/leftBorder"
         app:layout_constraintTop_toBottomOf="@id/namePlaylist" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/createPlaylist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Создать"
+        app:backgroundTint="@color/blue"
+        android:padding="12dp"
+        app:cornerRadius="8dp"
+        android:insetBottom="0dp"
+        android:insetTop="0dp"
+        android:textFontWeight="500"
+        android:fontFamily="@font/ys_display_medium"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/rightBorder"
+        app:layout_constraintStart_toStartOf="@id/leftBorder" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

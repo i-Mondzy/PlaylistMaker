@@ -59,7 +59,7 @@ class TracksRepositoryImpl(
     }
 
     private suspend fun copyFavorites(tracks: List<Track>): List<Track> {
-        val tracksId = appDatabase.trackDao().getTracksId().map { it.toLong() }
+        val tracksId = appDatabase.favoriteTrackDao().getTracksId().map { it.toLong() }
         return tracks.map { track ->
             track.copy(isFavorite = track.trackId in tracksId)
         }
