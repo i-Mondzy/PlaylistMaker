@@ -27,5 +27,6 @@
 
 <!--        Create Playlist-->
         <item name="colorBorderEditText">@color/text_gray</item>
+        <item name="colorTextEditText">@color/dark</item>
     </style>
 </resources>

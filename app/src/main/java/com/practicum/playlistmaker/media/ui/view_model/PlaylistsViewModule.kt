@@ -22,6 +22,11 @@ class PlaylistsViewModule(private val interactor: PlaylistInteractor) : ViewMode
         Log.d("init", "init")
     }
 
+    fun refreshPlaylists() {
+        playlists.clear()
+        showPlaylists()
+    }
+
     private fun showPlaylists() {
         viewModelScope.launch {
             interactor

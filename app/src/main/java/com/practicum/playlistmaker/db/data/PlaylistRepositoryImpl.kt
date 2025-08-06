@@ -29,6 +29,21 @@ class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRep
         appDataBase.playlistDao().insertPlaylist(playlistEntity)
     }
 
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        val playlistEntity = with(playlist) {
+            PlaylistEntity(
+                playlistId = playlistId,
+                namePlaylist = namePlaylist,
+                description = description,
+                imgPath = imgPath,
+                trackList = gson.toJson(playlist.trackList),
+                tracksCount = playlist.trackList.size.toLong()
+            )
+        }
+
+        appDataBase.playlistDao().updatePlaylist(playlistEntity)
+    }
+
     override fun getPlaylist(): Flow<List<Playlist>> {
         return flow {
             val playlist = appDataBase.playlistDao().getPlaylists().map { playlistEntity ->
@@ -38,7 +53,7 @@ class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRep
                         namePlaylist = namePlaylist,
                         description = description,
                         imgPath = imgPath,
-                        trackList = gson.fromJson(playlistEntity.trackList, object : TypeToken<List<Playlist>>() {}.type),
+                        trackList = gson.fromJson(playlistEntity.trackList, object : TypeToken<List<Long>>() {}.type),
                         tracksCount = tracksCount
                     )
                 }
@@ -59,6 +74,10 @@ class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRep
             PlaylistTrackEntity(trackId.toString(), trackName, artistName, trackTimeMillis, artworkUrl100, collectionName, releaseDate, primaryGenreName, country, previewUrl)
         }
         appDataBase.playlistTrackDao().deleteTrack(playlistTrackEntity)
+    }
+
+    override suspend fun clearTable() {
+        appDataBase.playlistDao().clearTable()
     }
 
 }

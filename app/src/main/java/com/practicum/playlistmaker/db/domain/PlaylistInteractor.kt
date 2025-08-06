@@ -8,10 +8,14 @@ interface PlaylistInteractor {
 
     suspend fun savePlaylist(playlist: Playlist)
 
+    suspend fun updatePlaylist(playlist: Playlist)
+
     fun getPlaylist(): Flow<List<Playlist>>
 
     suspend fun saveTrack(playlistTrack: Track)
 
     suspend fun deleteTrack(playlistTrack: Track)
+
+    suspend fun clearTable()
 
 }

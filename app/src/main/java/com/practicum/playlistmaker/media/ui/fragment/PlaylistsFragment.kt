@@ -14,9 +14,7 @@ import com.practicum.playlistmaker.media.ui.view_model.PlaylistsViewModule
 import com.practicum.playlistmaker.utils.BindingFragment
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
-import com.practicum.playlistmaker.media.ui.state.FavoriteState
 import com.practicum.playlistmaker.media.ui.state.PlaylistsState
-import com.practicum.playlistmaker.search.domain.model.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
@@ -24,13 +22,16 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
     private val viewModel by viewModel<PlaylistsViewModule>()
 
     private val playlists = PlaylistsAdapter()
+    private var init = false
 
     private fun render(state: PlaylistsState) {
         when(state) {
             is PlaylistsState.Content -> {
+                init = true
                 showPlaylists(state.playlists)
             }
             PlaylistsState.Empty -> {
+                init = true
                 showMessageEmpty()
             }
         }
@@ -67,14 +68,11 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
                 parent: RecyclerView,
                 state: RecyclerView.State
             ) {
-                val position = parent.getChildAdapterPosition(view) // Позиция элемента в списке
+                val position = parent.getChildAdapterPosition(view)
                 if (position == RecyclerView.NO_POSITION) return
 
-                val column = position % 2 // Определяем столбец
+                val column = position % 2
 
-//                val halfSpacing = binding.playlists.adapter.dpToPx(16f, view.context) / 2
-
-                // Убираем отступы у краёв, но оставляем между элементами
                 outRect.left = if (column == 0) 0 else 8
                 outRect.right = if (column == 2 - 1) 0 else 8
             }
@@ -88,6 +86,13 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
             render(it)
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (init) {
+            viewModel.refreshPlaylists()
+        }
     }
 
     companion object {

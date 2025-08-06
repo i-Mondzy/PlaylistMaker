@@ -12,6 +12,10 @@ class PlaylistInteractorImpl(val repository: PlaylistRepository) : PlaylistInter
         repository.savePlaylist(playlist)
     }
 
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        repository.updatePlaylist(playlist)
+    }
+
     override fun getPlaylist(): Flow<List<Playlist>> {
         return repository.getPlaylist()
     }
@@ -22,6 +26,10 @@ class PlaylistInteractorImpl(val repository: PlaylistRepository) : PlaylistInter
 
     override suspend fun deleteTrack(playlistTrack: Track) {
         repository.deleteTrack(playlistTrack)
+    }
+
+    override suspend fun clearTable() {
+        repository.clearTable()
     }
 
 }

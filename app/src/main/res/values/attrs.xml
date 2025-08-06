@@ -16,5 +16,6 @@
     <attr name="colorBorderEditText" format="color" />
     <attr name="drawable_nothing_found" format="reference"/>
     <attr name="drawable_no_internet" format="reference"/>
+    <attr name="colorTextEditText" format="color"/>
 
 </resources>

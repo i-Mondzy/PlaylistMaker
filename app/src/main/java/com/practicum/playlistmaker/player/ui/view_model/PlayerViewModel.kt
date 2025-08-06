@@ -2,14 +2,18 @@ package com.practicum.playlistmaker.player.ui.view_model
 
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
 import com.practicum.playlistmaker.db.domain.FavoriteInteractor
+import com.practicum.playlistmaker.db.domain.PlaylistInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.model.TrackUi
+import com.practicum.playlistmaker.player.ui.state.PlayerStateBottomSheet
 import com.practicum.playlistmaker.player.ui.state.PlayerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,11 +24,17 @@ import java.util.Locale
 
 class PlayerViewModel(
     private val mediaPlayer: MediaPlayer,
-    private val favoriteInteractor: FavoriteInteractor
+    private val favoriteInteractor: FavoriteInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
+
+    private val playlistsBS = mutableListOf<Playlist>()
 
     private val stateLiveData = MutableLiveData<PlayerState>()
     fun getStateLiveData(): LiveData<PlayerState> = mediatorLiveData
+
+    private val stateLiveDataBS = MutableLiveData<PlayerStateBottomSheet>()
+    fun getStateLiveDataBS(): LiveData<PlayerStateBottomSheet> = stateLiveDataBS
 
     private val mediatorLiveData = MediatorLiveData<PlayerState>().also { liveData ->
         liveData.addSource(stateLiveData) { state ->
@@ -72,6 +82,7 @@ class PlayerViewModel(
             )
 
             renderState(PlayerState.Content(trackUi))
+            getPlaylists()
 
             preparePlayer(trackUi!!.previewUrl)
 
@@ -79,6 +90,7 @@ class PlayerViewModel(
         }
 
         renderState(PlayerState.Content(trackUi))
+        getPlaylists()
     }
 
     fun onFavoriteClicked(track: Track) {
@@ -98,7 +110,50 @@ class PlayerViewModel(
                     )
                 )
             }
+        }
+    }
 
+    private fun getPlaylists() {
+        viewModelScope.launch {
+            playlistsBS.clear()
+            playlistInteractor
+                .getPlaylist()
+                .collect {
+                    playlists -> playlistsBS.addAll(playlists)
+                }
+
+            renderStateBS(PlayerStateBottomSheet.Content(playlistsBS))
+            Log.d("getPlaylists", "${playlistsBS.flatMap { it.trackList }}")
+        }
+    }
+
+    fun onPlaylistClicked(track: Track, position: Int) {
+        Log.d("onPlaylistClicked", "click!")
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                if (!playlistsBS[playlistsBS.indexOfFirst{ it.playlistId == playlistsBS[position].playlistId }].trackList.contains(track.trackId)) {
+                    playlistInteractor.saveTrack(track)
+                    playlistsBS[position] = with(playlistsBS[position]) {
+                        copy(
+                            playlistId = playlistId,
+                            namePlaylist = namePlaylist,
+                            description = description,
+                            imgPath = imgPath,
+                            trackList = trackList + track.trackId,
+                            tracksCount = trackList.size.toLong()
+                        )
+                    }
+                    playlistInteractor.updatePlaylist(playlistsBS[position])
+                    getPlaylists()
+                    Log.d("playlist", "${playlistsBS[position].trackList}")
+                }
+
+                stateLiveDataBS.postValue(
+                    PlayerStateBottomSheet.Content(
+                        playlistsBS
+                    )
+                )
+            }
         }
     }
 
@@ -165,6 +220,10 @@ class PlayerViewModel(
 
     private fun renderState(state: PlayerState) {
         stateLiveData.value = state
+    }
+
+    private fun renderStateBS(state: PlayerStateBottomSheet) {
+        stateLiveDataBS.value = state
     }
 
     override fun onCleared() {
