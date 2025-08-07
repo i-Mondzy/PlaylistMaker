@@ -100,10 +100,10 @@ class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { handleBackPressed() }
 
         confirmDialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Завершить создание плейлиста?")
-            .setMessage("Все несохраненные данные будут потеряны")
-            .setNegativeButton("Отмена") { dialog, which -> }
-                .setPositiveButton("Завершить") { dialog, which ->
+            .setTitle(R.string.createPlaylistDialogTitle)
+            .setMessage(R.string.createPlaylistDialogDescription)
+            .setNegativeButton(R.string.createPlaylistDialogCancel) { dialog, which -> }
+                .setPositiveButton(R.string.createPlaylistDialogConfirm) { dialog, which ->
                 findNavController().navigateUp()
             }
 
