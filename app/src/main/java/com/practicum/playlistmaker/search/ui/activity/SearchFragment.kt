@@ -48,7 +48,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun openPlayer(track: Track) {
-        Log.d("history", "${track.isFavorite}")
         findNavController().navigate(R.id.action_searchFragment_to_playerFragment, PlayerFragment.createArgs(track))
     }
 
@@ -60,7 +59,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             }
             is TracksState.History -> {
                 init = true
-                showHistoryTracks(state.tracks)
+                if (binding.inputText.text.isNullOrEmpty()) {
+                    Log.d("History", "History: ${state.tracks.map { it.trackName }}")
+                    showHistoryTracks(state.tracks)
+                }
             }
             TracksState.Empty -> {
                 init = true
@@ -211,25 +213,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             }
             false
         }
-
-        findNavController().currentBackStackEntry
-            ?.savedStateHandle
-            ?.getLiveData<Pair<Long, Boolean>>("update")
-            ?.observe(viewLifecycleOwner) { (trackId, isFavorite) ->
-                Log.d("SEARupd", "${historyTrackList.tracks.indexOfFirst { it.trackId == trackId }}")
-                if (binding.trackFound.isVisible) {
-                    trackIndex?.let { index ->
-                        searchTrackList.tracks[searchTrackList.tracks.indexOfFirst { it.trackId == trackId }] = searchTrackList.tracks[searchTrackList.tracks.indexOfFirst { it.trackId == trackId }].copy(isFavorite = isFavorite)
-                    }
-                } else if (binding.history.isVisible) {
-                    trackIndex?.let { index ->
-                        historyTrackList.tracks[historyTrackList.tracks.indexOfFirst { it.trackId == trackId }] = historyTrackList.tracks[0].copy(isFavorite = isFavorite)
-                    }
-                }
-                findNavController().currentBackStackEntry
-                    ?.savedStateHandle
-                    ?.remove<Pair<Long, Boolean>>("update")
-            }
     }
 
     override fun onResume() {

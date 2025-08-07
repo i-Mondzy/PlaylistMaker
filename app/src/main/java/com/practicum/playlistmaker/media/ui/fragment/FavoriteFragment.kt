@@ -79,7 +79,7 @@ class FavoriteFragment : BindingFragment<FragmentFavoriteBinding>() {
             render(it)
         }
 
-        val upd = findNavController().currentBackStackEntry
+        /*val upd = findNavController().currentBackStackEntry
             ?.savedStateHandle
             ?.getLiveData<Pair<Long, Boolean>>("update")
         Log.d("FAVupd", "$upd")
@@ -99,7 +99,7 @@ class FavoriteFragment : BindingFragment<FragmentFavoriteBinding>() {
                 findNavController().currentBackStackEntry
                     ?.savedStateHandle
                     ?.remove<Pair<Long, Boolean>>("update")
-            }
+            }*/
 
     }
 

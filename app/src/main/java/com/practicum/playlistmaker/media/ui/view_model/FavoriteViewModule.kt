@@ -22,19 +22,6 @@ class FavoriteViewModule(private val favoriteInteractor: FavoriteInteractor) : V
         Log.d("init", "init")
     }
 
-    fun updateFavorite(tracks: List<Track>) {
-        this.tracks.clear()
-        this.tracks.addAll(tracks)
-
-        if (this.tracks.isEmpty()) {
-            renderState(FavoriteState.Empty)
-        } else {
-            renderState(FavoriteState.Content(this.tracks.map { track ->
-                track.copy(isFavorite = true)
-            }))
-        }
-    }
-
     fun refreshFavorites() {
         tracks.clear()
         showFavorite()

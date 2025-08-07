@@ -1,6 +1,9 @@
 package com.practicum.playlistmaker
 
 import android.app.Application
+import android.content.Intent
+import com.markodevcic.peko.PermissionRequester
+import com.practicum.playlistmaker.create_playlist.di.createPlaylistViewModelModule
 import com.practicum.playlistmaker.db.di.dataBaseDataModule
 import com.practicum.playlistmaker.db.di.dataBaseInteractorModule
 import com.practicum.playlistmaker.db.di.dataBaseRepositoryModule
@@ -50,12 +53,14 @@ class App : Application() {
                 mediaViewModelModule,
                 dataBaseDataModule,
                 dataBaseRepositoryModule,
-                dataBaseInteractorModule
+                dataBaseInteractorModule,
+                createPlaylistViewModelModule
             )
         }
 
         switchAppTheme()
 
+        PermissionRequester.initialize(applicationContext)
     }
 
 }

@@ -29,4 +29,14 @@
     <string name="supportBodyMail">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="supportAddressMail">iMondzy@yandex.ru</string>
     <string name="userAgreementUrl">https://yandex.ru/legal/practicum_offer/</string>
+
+    <string name="createPlaylistNameHint">Название*</string>
+    <string name="createPlaylistDescriptionHint">Описание</string>
+    <string name="createPlaylistCreateButton">Создать</string>
+    <string name="createPlaylistDialogTitle">Завершить создание плейлиста?</string>
+    <string name="createPlaylistDialogDescription">Все несохраненные данные будут потеряны</string>
+    <string name="createPlaylistDialogCancel">Отмена</string>
+    <string name="createPlaylistDialogConfirm">Завершить</string>
+
+    <string name="playerAddToPlaylistTitle">Добавить в плейлист</string>
 </resources>

@@ -68,10 +68,10 @@
             android:id="@+id/progressBar"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:layout_marginTop="124dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="124dp"
             android:indeterminateTint="@color/blue"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/placeholder_nothing_found"
@@ -81,7 +81,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="?attr/drawable_nothing_found"/>
+                android:src="?attr/drawable_nothing_found" />
 
             <TextView
                 style="@style/SearchTextView"
