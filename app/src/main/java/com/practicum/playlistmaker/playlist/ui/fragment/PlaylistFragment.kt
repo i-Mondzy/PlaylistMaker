@@ -19,6 +19,8 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.create_playlist.ui.fragment.CreatePlaylistFragment
+import com.practicum.playlistmaker.create_playlist.ui.fragment.EditPlaylistFragment
 import com.practicum.playlistmaker.databinding.FragmentPlaylistBinding
 import com.practicum.playlistmaker.media.ui.fragment.TrackAdapter
 import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
@@ -239,6 +241,13 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+        }
+
+        binding.editPlaylist.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_playlistFragment_to_createPlaylist,
+                EditPlaylistFragment.createArgs(playlistUi)
+            )
         }
 
         binding.deletePlaylist.setOnClickListener {

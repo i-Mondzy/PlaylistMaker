@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -19,11 +20,13 @@ import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.create_playlist.ui.view_model.CreatePlaylistViewModel
 import com.practicum.playlistmaker.databinding.FragmentCreatePlaylistBinding
+import com.practicum.playlistmaker.playlist.ui.model.PlaylistUi
 import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -32,7 +35,7 @@ import java.util.UUID
 
 open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() {
 
-    private val viewModel by viewModel<CreatePlaylistViewModel>()
+    open val viewModel by viewModel<CreatePlaylistViewModel>()
 
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
 
@@ -40,7 +43,7 @@ open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBindin
     private var uriImgPlaylist: Uri? = null
     private var absoluteImgPath: String? = null
 
-    private fun saveImageToPrivateStorage(uri: Uri?) {
+    protected fun saveImageToPrivateStorage(uri: Uri?) {
         if (uri == null) return
         //создаём экземпляр класса File, который указывает на нужный каталог
         val imgPath = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "imgplaylists")
@@ -158,6 +161,9 @@ open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBindin
             }
             false
         }
+
+
+
 
     }
 

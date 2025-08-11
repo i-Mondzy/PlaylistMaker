@@ -247,6 +247,7 @@
             android:textSize="16sp" />
 
         <TextView
+            android:id="@+id/editPlaylist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/ys_display_regular"

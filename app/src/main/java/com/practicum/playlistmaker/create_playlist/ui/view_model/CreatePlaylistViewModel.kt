@@ -6,7 +6,7 @@ import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
 import com.practicum.playlistmaker.db.domain.PlaylistInteractor
 import kotlinx.coroutines.launch
 
-class CreatePlaylistViewModel(private val interactor: PlaylistInteractor) : ViewModel() {
+open class CreatePlaylistViewModel(private val interactor: PlaylistInteractor) : ViewModel() {
 
     fun savePlaylist(imgPath: String?, name: String, description: String) {
         val playlist = Playlist(
