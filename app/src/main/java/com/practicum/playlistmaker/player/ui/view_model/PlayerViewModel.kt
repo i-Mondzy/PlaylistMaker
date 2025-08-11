@@ -104,11 +104,7 @@ class PlayerViewModel(
                     trackUi?.isFavorite = false
                 }
 
-                stateLiveData.postValue(
-                    PlayerState.Content(
-                        trackUi
-                    )
-                )
+                stateLiveData.postValue(PlayerState.Content(trackUi))
             }
         }
     }
@@ -117,13 +113,12 @@ class PlayerViewModel(
         viewModelScope.launch {
             playlistsBS.clear()
             playlistInteractor
-                .getPlaylist()
+                .getPlaylists()
                 .collect {
                     playlists -> playlistsBS.addAll(playlists)
                 }
 
             renderStateBS(PlayerStateBottomSheet.Content(playlistsBS))
-            Log.d("getPlaylists", "${playlistsBS.flatMap { it.trackList }}")
         }
     }
 
@@ -145,7 +140,6 @@ class PlayerViewModel(
                     }
                     playlistInteractor.updatePlaylist(playlistsBS[position])
                     getPlaylists()
-                    Log.d("playlist", "${playlistsBS[position].trackList}")
                 }
 
                 stateLiveDataBS.postValue(

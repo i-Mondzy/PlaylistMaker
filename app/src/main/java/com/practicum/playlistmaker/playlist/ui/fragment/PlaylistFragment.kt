@@ -1,30 +1,263 @@
 package com.practicum.playlistmaker.playlist.ui.fragment
 
-import androidx.fragment.app.viewModels
+import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.create_playlist.ui.view_model.CreatePlaylistViewModel
 import com.practicum.playlistmaker.databinding.FragmentPlaylistBinding
+import com.practicum.playlistmaker.media.ui.fragment.TrackAdapter
+import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
+import com.practicum.playlistmaker.playlist.ui.model.PlaylistUi
+import com.practicum.playlistmaker.playlist.ui.state.PlaylistState
 import com.practicum.playlistmaker.playlist.ui.view_model.PlaylistViewModel
+import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.getValue
 
 class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
 
     private val viewModel by viewModel<PlaylistViewModel>()
 
-    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentPlaylistBinding {
+    private lateinit var playlistUi: PlaylistUi
+    private lateinit var tracksBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var otherBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var confirmDialog: MaterialAlertDialogBuilder
+
+    private val tracksAdapter = TrackAdapter(object : TrackAdapter.TrackClickListener {
+        override fun onTrackClickListener(track: Track, position: Int) {
+            openPlayer(track)
+        }
+
+        override fun onTrackLongClickListener(track: Track, position: Int) {
+            confirmDialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Хотите удалить трек?")
+                .setNegativeButton("НЕТ") { dialog, which -> }
+                .setPositiveButton("ДА") { dialog, which ->
+                    viewModel.deleteTrack(track)
+                }
+            confirmDialog.show()
+        }
+    })
+
+    private fun openPlayer(track: Track) {
+        findNavController().navigate(
+            R.id.action_playlistFragment_to_playerFragment,
+            PlayerFragment.createArgs(track)
+        )
+    }
+
+    fun setUi(playlistUi: PlaylistUi?) {
+        if (playlistUi == null) return
+
+        this.playlistUi = playlistUi
+
+        Glide.with(this)
+            .load(playlistUi.imgPath)
+            .placeholder(R.drawable.plug_artwork_high)
+            .centerCrop()
+            .into(binding.imgPlaylist)
+
+        binding.namePlaylist.text = playlistUi.namePlaylist
+        binding.descriptionPlaylist.text = playlistUi.description
+        binding.minutes.text = playlistUi.tracksTime
+        binding.countTracks.text = playlistUi.tracksCount
+        setTracks(playlistUi.trackList)
+
+        Glide.with(this)
+            .load(playlistUi.imgPath)
+            .placeholder(R.drawable.plug_artwork_low)
+            .centerCrop()
+            .into(binding.imgPlaylistBottomSheet)
+
+        binding.namePlaylistBottomSheet.text = playlistUi.namePlaylist
+        binding.countTracksBottomSheet.text = word(playlistUi.tracksCount.toInt())
+    }
+
+    private fun word(count: Int): String {
+        val lastTwoDigits = count % 100
+        val lastDigit = count % 10
+
+        val word = when {
+            lastTwoDigits in 11..14 -> "треков"
+            lastDigit == 1 -> "трек"
+            lastDigit in 2..4 -> "трека"
+            else -> "треков"
+        }
+
+        return "$count $word"
+    }
+
+    private fun render(state: PlaylistState) {
+        when (state) {
+            is PlaylistState.Content -> setUi(state.playlistUi)
+            PlaylistState.Empty -> ""
+        }
+    }
+
+    private fun setTracks(tracks: List<Track>) {
+        tracksAdapter.tracks.apply {
+            clear()
+            addAll(tracks)
+        }
+        tracksAdapter.notifyDataSetChanged()
+        binding.tracksRV.scrollToPosition(0)
+    }
+
+    private fun dynamicRenderHeightBottomSheet() {
+        tracksBottomSheetBehavior = BottomSheetBehavior.from(binding.tracksBottomSheet)
+
+        val locationTracks = IntArray(2)
+        val locationOther = IntArray(2)
+        binding.share.getLocationOnScreen(locationTracks)
+        binding.namePlaylist.getLocationOnScreen(locationOther)
+        val bottomShareBtn = locationTracks[1] + binding.share.height
+        val bottomNamePlaylist = locationOther[1] + binding.namePlaylist.height
+
+        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+
+        tracksBottomSheetBehavior.peekHeight =
+            screenHeight - bottomShareBtn - dpToPx(24f, requireContext())
+        otherBottomSheetBehavior.peekHeight = screenHeight - bottomNamePlaylist
+        Log.d("collapsedHeight", "collapsedHeight: ${binding.share.height}")
+        tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+//        bottomSheetBehavior.isHideable = true
+
+        /*bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+            }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })*/
+    }
+
+    private fun dpToPx(dp: Float, context: Context): Int {
+        val px = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            context.resources.displayMetrics
+        ).toInt()
+
+        return px
+    }
+
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentPlaylistBinding {
         return FragmentPlaylistBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireArguments().getLong(ARGS_PLAYLIST).let { viewModel.setPlaylist(it) }
+
+        binding.share.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                binding.share.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                dynamicRenderHeightBottomSheet()
+            }
+        })
+
+        viewModel.observeState().observe(viewLifecycleOwner) { state ->
+            render(state)
+        }
+
+        otherBottomSheetBehavior = BottomSheetBehavior.from(binding.otherBottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        otherBottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.isVisible = false
+                    }
+
+                    else -> {
+                        binding.overlay.isVisible = true
+                        binding.overlay.isClickable = true
+                        binding.overlay.isFocusable = true
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
+        binding.overlay.setOnTouchListener { _, _ -> true }
+
+        binding.backBtn.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        binding.tracksRV.adapter = tracksAdapter
+        binding.tracksRV.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+        binding.other.setOnClickListener {
+            otherBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        binding.share.setOnClickListener {
+            if (playlistUi.trackList.isNotEmpty()) {
+                viewModel.share()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "В этом плейлисте нет списка треков, которым можно поделиться",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        binding.shareBottomSheet.setOnClickListener {
+            if (playlistUi.trackList.isNotEmpty()) {
+                viewModel.share()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "В этом плейлисте нет списка треков, которым можно поделиться",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        binding.deletePlaylist.setOnClickListener {
+            confirmDialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Хотите удалить плейлист?")
+                .setNegativeButton("НЕТ") { dialog, which -> }
+                .setPositiveButton("ДА") { dialog, which ->
+                    viewModel.deletePlaylist()
+                    findNavController().navigateUp()
+                }
+            confirmDialog.show()
+        }
+
+    }
+
+    companion object {
+        private const val ARGS_PLAYLIST = "Playlist"
+
+        fun createArgs(playlistId: Long): Bundle = bundleOf(ARGS_PLAYLIST to playlistId)
     }
 
 }

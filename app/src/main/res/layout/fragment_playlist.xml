@@ -34,14 +34,6 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/backBtn"
-            style="@style/BackButtonStyle"
-            android:layout_margin="4dp"
-            android:backgroundTint="#E6E8EB"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ImageView
             android:id="@+id/imgPlaylist"
             android:layout_width="0dp"
@@ -52,6 +44,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="@drawable/plug_artwork_high" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/backBtn"
+            style="@style/BackButtonStyle"
+            android:layout_margin="4dp"
+            android:backgroundTint="@android:color/transparent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/namePlaylist"
@@ -132,7 +132,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="28dp"
+            android:layout_marginStart="20dp"
+            android:paddingHorizontal="12dp"
             android:src="@drawable/ic_other"
             app:layout_constraintBottom_toBottomOf="@id/share"
             app:layout_constraintStart_toEndOf="@id/share"
@@ -141,23 +142,130 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
-        android:id="@+id/bottomSheet"
+        android:id="@+id/tracksBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/custom_bottom_sheet"
         android:orientation="vertical"
-        app:behavior_hideable="true"
-        app:behavior_peekHeight="504dp"
+        app:behavior_hideable="false"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         tools:visibility="gone">
 
         <View
-            android:id="@+id/dragHandle"
+            android:id="@+id/tracksDragHandle"
             android:layout_width="50dp"
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
             android:background="@drawable/custom_drag_handle" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tracksRV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/otherBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/custom_bottom_sheet"
+        android:orientation="vertical"
+        app:behavior_hideable="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:visibility="visible">
+
+        <View
+            android:id="@+id/otherDragHandle"
+            android:layout_width="50dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/custom_drag_handle" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp">
+
+            <ImageView
+                android:id="@+id/imgPlaylistBottomSheet"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="8dp"
+                tools:src="@drawable/plug_artwork_low" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/namePlaylistBottomSheet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/ys_display_regular"
+                    android:textFontWeight="400"
+                    android:textSize="16sp"
+                    tools:text="Best songs 2021" />
+
+                <TextView
+                    android:id="@+id/countTracksBottomSheet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/ys_display_regular"
+                    android:textFontWeight="400"
+                    android:textSize="11sp"
+                    tools:text="98 треков" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/shareBottomSheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ys_display_regular"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="20dp"
+            android:text="Поделиться"
+            android:textFontWeight="400"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ys_display_regular"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="20dp"
+            android:text="Редактировать информацию"
+            android:textFontWeight="400"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/deletePlaylist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ys_display_regular"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="20dp"
+            android:text="Удалить плейлист"
+            android:textFontWeight="400"
+            android:textSize="16sp" />
 
     </LinearLayout>
 

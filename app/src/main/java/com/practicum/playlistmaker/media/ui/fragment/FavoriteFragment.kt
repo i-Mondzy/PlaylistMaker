@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.media.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import com.practicum.playlistmaker.media.ui.state.FavoriteState
 import com.practicum.playlistmaker.media.ui.view_model.FavoriteViewModule
 import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.search.ui.activity.TrackAdapter
 import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -24,7 +24,7 @@ class FavoriteFragment : BindingFragment<FragmentFavoriteBinding>() {
     private var trackIndex: Int? = null
     private var init = false
 
-    private val favoriteTracks = TrackAdapter{ track, position ->
+    private val favoriteTracks = TrackAdapter { track, position ->
         trackIndex = position
         openPlayer(track)
     }

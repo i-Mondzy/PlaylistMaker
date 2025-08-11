@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
 
-class PlaylistsAdapter() : Adapter<PlaylistsViewHolder>() {
+class PlaylistsAdapter(private val clickListener: playlistClickListener?) : Adapter<PlaylistsViewHolder>() {
 
     var playlists = ArrayList<Playlist>()
 
@@ -18,6 +18,11 @@ class PlaylistsAdapter() : Adapter<PlaylistsViewHolder>() {
 
     override fun onBindViewHolder(holder: PlaylistsViewHolder, position: Int) {
         holder.bind(playlists[position])
+        holder.itemView.setOnClickListener{ clickListener?.onPlaylistListener(playlists[position]) }
+    }
+
+    fun interface playlistClickListener {
+        fun onPlaylistListener(playlist: Playlist)
     }
 
 }

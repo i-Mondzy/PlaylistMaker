@@ -30,7 +30,7 @@ class PlaylistsViewModule(private val interactor: PlaylistInteractor) : ViewMode
     private fun showPlaylists() {
         viewModelScope.launch {
             interactor
-                .getPlaylist()
+                .getPlaylists()
                 .collect {
                         playlists -> this@PlaylistsViewModule.playlists.addAll(playlists)
                 }

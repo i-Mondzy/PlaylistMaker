@@ -30,7 +30,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
 
-class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() {
+open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() {
 
     private val viewModel by viewModel<CreatePlaylistViewModel>()
 

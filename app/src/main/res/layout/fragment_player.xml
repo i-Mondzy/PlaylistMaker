@@ -252,10 +252,10 @@
         app:behavior_hideable="true"
         app:behavior_peekHeight="504dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <View
-            android:id="@+id/dragHandle"
+            android:id="@+id/tracksDragHandle"
             android:layout_width="50dp"
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"

@@ -9,6 +9,7 @@ import com.practicum.playlistmaker.db.di.dataBaseInteractorModule
 import com.practicum.playlistmaker.db.di.dataBaseRepositoryModule
 import com.practicum.playlistmaker.media.di.mediaViewModelModule
 import com.practicum.playlistmaker.player.di.playerViewModelModule
+import com.practicum.playlistmaker.playlist.di.playlistViewModelModule
 import com.practicum.playlistmaker.search.di.searchDataModule
 import com.practicum.playlistmaker.search.di.searchInteractorModule
 import com.practicum.playlistmaker.search.di.searchRepositoryModule
@@ -54,7 +55,8 @@ class App : Application() {
                 dataBaseDataModule,
                 dataBaseRepositoryModule,
                 dataBaseInteractorModule,
-                createPlaylistViewModelModule
+                createPlaylistViewModelModule,
+                playlistViewModelModule
             )
         }
 
