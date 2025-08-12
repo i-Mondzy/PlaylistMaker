@@ -38,6 +38,7 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
     private lateinit var tracksBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var otherBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
+
     private var init = false
 
     private val tracksAdapter = TrackAdapter(object : TrackAdapter.TrackClickListener {
@@ -241,8 +242,10 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
 
         binding.shareBottomSheet.setOnClickListener {
             if (playlistUi.trackList.isNotEmpty()) {
+                otherBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 viewModel.share()
             } else {
+                otherBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 Toast.makeText(
                     requireContext(),
                     "В этом плейлисте нет списка треков, которым можно поделиться",
@@ -259,6 +262,7 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         }
 
         binding.deletePlaylist.setOnClickListener {
+            otherBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             confirmDialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.playlistDeletePlaylist, playlistUi.namePlaylist))
                 .setNegativeButton(R.string.playlistNo) { dialog, which -> }

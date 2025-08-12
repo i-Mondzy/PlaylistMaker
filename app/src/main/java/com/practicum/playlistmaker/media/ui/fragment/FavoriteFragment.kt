@@ -79,28 +79,6 @@ class FavoriteFragment : BindingFragment<FragmentFavoriteBinding>() {
             render(it)
         }
 
-        /*val upd = findNavController().currentBackStackEntry
-            ?.savedStateHandle
-            ?.getLiveData<Pair<Long, Boolean>>("update")
-        Log.d("FAVupd", "$upd")
-        upd
-            ?.observe(viewLifecycleOwner) { (trackId, isFavorite) ->
-                Log.d("FAVupdated", "${favoriteTracks.tracks.indexOfFirst { it.trackId == trackId }}")
-                trackIndex?.let { index ->
-                    if (binding.favoriteTracks.isVisible) {
-                        favoriteTracks.tracks[favoriteTracks.tracks.indexOfFirst { it.trackId == trackId }] = favoriteTracks.tracks[favoriteTracks.tracks.indexOfFirst { it.trackId == trackId }].copy(isFavorite = isFavorite)
-                        Log.d("FAVfav", "${favoriteTracks.tracks[favoriteTracks.tracks.indexOfFirst { it.trackId == trackId }].isFavorite}")
-                    }
-                    if (!favoriteTracks.tracks[favoriteTracks.tracks.indexOfFirst { it.trackId == trackId }].isFavorite) {
-                        favoriteTracks.tracks.removeAt(favoriteTracks.tracks.indexOfFirst { it.trackId == trackId })
-                        viewModel.updateFavorite(favoriteTracks.tracks)
-                    }
-                }
-                findNavController().currentBackStackEntry
-                    ?.savedStateHandle
-                    ?.remove<Pair<Long, Boolean>>("update")
-            }*/
-
     }
 
     override fun onResume() {

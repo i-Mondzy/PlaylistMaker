@@ -49,10 +49,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     private fun setUi(trackUi: TrackUi?) {
         if (trackUi == null) return
 
-        /*findNavController().previousBackStackEntry
-            ?.savedStateHandle
-            ?.set("update", trackUi.trackId to trackUi.isFavorite)*/
-
         this@PlayerFragment.trackUi = trackUi
 
         Glide.with(this)

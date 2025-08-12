@@ -24,10 +24,8 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
 import com.practicum.playlistmaker.create_playlist.ui.view_model.CreatePlaylistViewModel
 import com.practicum.playlistmaker.databinding.FragmentCreatePlaylistBinding
-import com.practicum.playlistmaker.playlist.ui.fragment.PlaylistFragment
 import com.practicum.playlistmaker.playlist.ui.model.PlaylistUi
 import com.practicum.playlistmaker.playlist.ui.state.PlaylistState
 import com.practicum.playlistmaker.utils.BindingFragment

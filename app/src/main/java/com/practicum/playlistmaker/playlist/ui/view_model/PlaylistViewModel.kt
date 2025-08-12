@@ -112,8 +112,4 @@ class PlaylistViewModel(
         }
     }
 
-    private fun renderState(state: PlaylistState) {
-        stateLiveData.value = state
-    }
-
 }

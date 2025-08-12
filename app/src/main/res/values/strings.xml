@@ -44,9 +44,9 @@
 
     <string name="playlistDeleteTrack">Хотите удалить трек?</string>
     <string name="playlistDeletePlaylist">Хотите удалить плейлист «%1$s»?</string>
+    <string name="playlistShare">Поделиться</string>
+    <string name="playlistEdit">Редактировать информацию</string>
+    <string name="playlistDelete">Удалить плейлист</string>
     <string name="playlistYes">ДА</string>
     <string name="playlistNo">НЕТ</string>
-<!--    <string name="playerAddToPlaylistTitle">Добавить в плейлист</string>-->
-<!--    <string name="playerAddToPlaylistTitle">Добавить в плейлист</string>-->
-<!--    <string name="playerAddToPlaylistTitle">Добавить в плейлист</string>-->
 </resources>
