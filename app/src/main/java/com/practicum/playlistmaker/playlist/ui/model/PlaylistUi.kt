@@ -12,5 +12,5 @@ data class PlaylistUi(
     val imgPath: String,
     val trackList: List<Track>,
     var tracksTime: String,
-    val tracksCount: String
+    var tracksCount: String
 ) : Parcelable

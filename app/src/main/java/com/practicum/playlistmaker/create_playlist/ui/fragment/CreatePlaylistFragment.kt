@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -22,11 +21,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
 import com.practicum.playlistmaker.create_playlist.ui.view_model.CreatePlaylistViewModel
 import com.practicum.playlistmaker.databinding.FragmentCreatePlaylistBinding
+import com.practicum.playlistmaker.playlist.ui.fragment.PlaylistFragment
 import com.practicum.playlistmaker.playlist.ui.model.PlaylistUi
+import com.practicum.playlistmaker.playlist.ui.state.PlaylistState
 import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -35,15 +38,42 @@ import java.util.UUID
 
 open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() {
 
-    open val viewModel by viewModel<CreatePlaylistViewModel>()
+    private val viewModel by viewModel<CreatePlaylistViewModel>()
 
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
 
     private var simpleTextWatcher: TextWatcher? = null
     private var uriImgPlaylist: Uri? = null
     private var absoluteImgPath: String? = null
+    private var playlistUi: PlaylistUi? = null
 
-    protected fun saveImageToPrivateStorage(uri: Uri?) {
+    private fun setUi(playlistUi: PlaylistUi?) {
+        binding.newPlaylist.text = getString(R.string.editPlaylist)
+
+        if (playlistUi?.imgPath?.isEmpty() == false){
+            binding.imgPlaylist.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            binding.imgPlaylist.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+            absoluteImgPath = playlistUi.imgPath
+
+            Glide.with(this)
+                .load(playlistUi.imgPath)
+                .centerCrop()
+                .into(binding.imgPlaylist)
+        }
+
+        binding.namePlaylist.setText(playlistUi?.namePlaylist)
+        binding.descriptionPlaylist.setText(playlistUi?.description)
+        binding.createPlaylist.text = getString(R.string.editPlaylistSave)
+    }
+
+    private fun render(state: PlaylistState) {
+        when (state) {
+            is PlaylistState.Content -> setUi(state.playlistUi)
+            PlaylistState.Empty -> null
+        }
+    }
+
+    private fun saveImageToPrivateStorage(uri: Uri?) {
         if (uri == null) return
         //создаём экземпляр класса File, который указывает на нужный каталог
         val imgPath = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "imgplaylists")
@@ -76,7 +106,7 @@ open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBindin
 
     private fun handleBackPressed() {
         hideKeyboard()
-        if (isImageChanged() || !binding.namePlaylist.text.isNullOrEmpty() || !binding.descriptionPlaylist.text.isNullOrEmpty()) {
+        if (isImageChanged() && playlistUi == null || !binding.namePlaylist.text.isNullOrEmpty() && playlistUi == null || !binding.descriptionPlaylist.text.isNullOrEmpty() && playlistUi == null) {
             confirmDialog.show()
         } else {
             findNavController().navigateUp()
@@ -97,6 +127,15 @@ open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBindin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        playlistUi = arguments?.getParcelable(ARGS_PLAYLIST)
+
+        if (playlistUi != null) {
+            playlistUi?.let { viewModel.setUi(it) }
+            viewModel.observeState().observe(viewLifecycleOwner) { state ->
+                render(state)
+            }
+        }
+
         binding.backBtn.setOnClickListener {
             handleBackPressed()
         }
@@ -106,7 +145,7 @@ open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBindin
             .setTitle(R.string.createPlaylistDialogTitle)
             .setMessage(R.string.createPlaylistDialogDescription)
             .setNegativeButton(R.string.createPlaylistDialogCancel) { dialog, which -> }
-                .setPositiveButton(R.string.createPlaylistDialogConfirm) { dialog, which ->
+            .setPositiveButton(R.string.createPlaylistDialogConfirm) { dialog, which ->
                 findNavController().navigateUp()
             }
 
@@ -125,14 +164,28 @@ open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBindin
         }
 
         binding.createPlaylist.setOnClickListener {
-            if (!binding.namePlaylist.text.isNullOrEmpty()) {
+            if (!binding.namePlaylist.text.isNullOrEmpty() && playlistUi == null) {
                 saveImageToPrivateStorage(uriImgPlaylist)
                 viewModel.savePlaylist(
                     absoluteImgPath,
                     binding.namePlaylist.text.toString(),
                     binding.descriptionPlaylist.text.toString()
                 )
-                Toast.makeText(requireContext(), "Плейлист ${binding.namePlaylist.text} создан!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Плейлист ${binding.namePlaylist.text} создан!",
+                    Toast.LENGTH_SHORT
+                ).show()
+                findNavController().navigateUp()
+            } else if (!binding.namePlaylist.text.isNullOrEmpty() && playlistUi != null) {
+                saveImageToPrivateStorage(uriImgPlaylist)
+                viewModel.editPlaylist(
+                    absoluteImgPath,
+                    binding.namePlaylist.text.toString(),
+                    binding.descriptionPlaylist.text.toString(),
+                    playlistUi!!.playlistId,
+                    playlistUi!!.trackList.map { it.trackId }
+                )
                 findNavController().navigateUp()
             } else {
                 Toast.makeText(requireContext(), "Напишите название", Toast.LENGTH_SHORT).show()
@@ -162,15 +215,18 @@ open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBindin
             false
         }
 
-
-
-
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         simpleTextWatcher.let { binding.namePlaylist.removeTextChangedListener(it) }
         simpleTextWatcher = null
+    }
+
+    companion object {
+        private const val ARGS_PLAYLIST = "Playlist"
+
+        fun createArgs(playlistUi: PlaylistUi?): Bundle = bundleOf(ARGS_PLAYLIST to playlistUi)
     }
 
 }

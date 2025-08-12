@@ -20,7 +20,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.create_playlist.ui.fragment.CreatePlaylistFragment
-import com.practicum.playlistmaker.create_playlist.ui.fragment.EditPlaylistFragment
 import com.practicum.playlistmaker.databinding.FragmentPlaylistBinding
 import com.practicum.playlistmaker.media.ui.fragment.TrackAdapter
 import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
@@ -39,6 +38,7 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
     private lateinit var tracksBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var otherBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
+    private var init = false
 
     private val tracksAdapter = TrackAdapter(object : TrackAdapter.TrackClickListener {
         override fun onTrackClickListener(track: Track, position: Int) {
@@ -47,9 +47,9 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
 
         override fun onTrackLongClickListener(track: Track, position: Int) {
             confirmDialog = MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Хотите удалить трек?")
-                .setNegativeButton("НЕТ") { dialog, which -> }
-                .setPositiveButton("ДА") { dialog, which ->
+                .setTitle(R.string.playlistDeleteTrack)
+                .setNegativeButton(R.string.playlistNo) { dialog, which -> }
+                .setPositiveButton(R.string.playlistYes) { dialog, which ->
                     viewModel.deleteTrack(track)
                 }
             confirmDialog.show()
@@ -76,9 +76,13 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
 
         binding.namePlaylist.text = playlistUi.namePlaylist
         binding.descriptionPlaylist.text = playlistUi.description
-        binding.minutes.text = playlistUi.tracksTime
-        binding.countTracks.text = playlistUi.tracksCount
+        binding.minutes.text = wordMinutes(playlistUi.tracksTime.toInt())
+        binding.countTracks.text = wordTracks(playlistUi.tracksCount.toInt())
         setTracks(playlistUi.trackList)
+
+        if (playlistUi.trackList.isEmpty()) {
+            Toast.makeText(requireContext(), "В этом плейлисте нет треков", Toast.LENGTH_SHORT).show()
+        }
 
         Glide.with(this)
             .load(playlistUi.imgPath)
@@ -87,10 +91,10 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
             .into(binding.imgPlaylistBottomSheet)
 
         binding.namePlaylistBottomSheet.text = playlistUi.namePlaylist
-        binding.countTracksBottomSheet.text = word(playlistUi.tracksCount.toInt())
+        binding.countTracksBottomSheet.text = wordTracks(playlistUi.tracksCount.toInt())
     }
 
-    private fun word(count: Int): String {
+    private fun wordTracks(count: Int): String {
         val lastTwoDigits = count % 100
         val lastDigit = count % 10
 
@@ -104,9 +108,26 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         return "$count $word"
     }
 
+    private fun wordMinutes(minute: Int): String {
+        val lastTwoDigits = minute % 100
+        val lastDigit = minute % 10
+
+        val word = when {
+            lastTwoDigits in 11..14 -> "минут"
+            lastDigit == 1 -> "минута"
+            lastDigit in 2..4 -> "минуты"
+            else -> "минут"
+        }
+
+        return "$minute $word"
+    }
+
     private fun render(state: PlaylistState) {
         when (state) {
-            is PlaylistState.Content -> setUi(state.playlistUi)
+            is PlaylistState.Content -> {
+                init = true
+                setUi(state.playlistUi)
+            }
             PlaylistState.Empty -> ""
         }
     }
@@ -137,16 +158,6 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         otherBottomSheetBehavior.peekHeight = screenHeight - bottomNamePlaylist
         Log.d("collapsedHeight", "collapsedHeight: ${binding.share.height}")
         tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-//        bottomSheetBehavior.isHideable = true
-
-        /*bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                }
-            }
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-        })*/
     }
 
     private fun dpToPx(dp: Float, context: Context): Int {
@@ -159,17 +170,16 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         return px
     }
 
-    override fun createBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentPlaylistBinding {
+    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentPlaylistBinding {
         return FragmentPlaylistBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireArguments().getLong(ARGS_PLAYLIST).let { viewModel.setPlaylist(it) }
+         if (!init) {
+             requireArguments().getLong(ARGS_PLAYLIST).let { viewModel.setPlaylist(it) }
+         }
 
         binding.share.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
@@ -197,8 +207,6 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
 
                     else -> {
                         binding.overlay.isVisible = true
-                        binding.overlay.isClickable = true
-                        binding.overlay.isFocusable = true
                     }
                 }
             }
@@ -246,21 +254,29 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         binding.editPlaylist.setOnClickListener {
             findNavController().navigate(
                 R.id.action_playlistFragment_to_createPlaylist,
-                EditPlaylistFragment.createArgs(playlistUi)
+                CreatePlaylistFragment.createArgs(playlistUi)
             )
         }
 
         binding.deletePlaylist.setOnClickListener {
             confirmDialog = MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Хотите удалить плейлист?")
-                .setNegativeButton("НЕТ") { dialog, which -> }
-                .setPositiveButton("ДА") { dialog, which ->
+                .setTitle(getString(R.string.playlistDeletePlaylist, playlistUi.namePlaylist))
+                .setNegativeButton(R.string.playlistNo) { dialog, which -> }
+                .setPositiveButton(R.string.playlistYes) { dialog, which ->
                     viewModel.deletePlaylist()
                     findNavController().navigateUp()
                 }
             confirmDialog.show()
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (init) {
+            viewModel.updatePlaylist()
+        }
     }
 
     companion object {

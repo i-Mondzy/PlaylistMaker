@@ -11,6 +11,7 @@ import com.practicum.playlistmaker.playlist.ui.model.PlaylistUi
 import com.practicum.playlistmaker.playlist.ui.state.PlaylistState
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.share.domain.ShareInteractor
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PlaylistViewModel(
@@ -28,7 +29,7 @@ class PlaylistViewModel(
     fun setPlaylist(playlistId: Long) {
         if (playlistUi == null) {
 
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 interactor
                     .getPlaylist(playlistId)
                     .collect { playlist = it }
@@ -46,14 +47,18 @@ class PlaylistViewModel(
                 }
 
                 getTracks(playlist!!)
-                Log.d("setPlaylist", "setPlaylist: ${playlistUi}")
             }
 
             return
         }
 
         getTracks(playlist!!)
-        Log.d("setPlaylist", "setPlaylist: ${playlist}")
+    }
+
+    fun updatePlaylist() {
+        tracks.clear()
+        playlistUi = null
+        setPlaylist(playlist?.playlistId!!)
     }
 
     fun deletePlaylist() {
@@ -63,8 +68,10 @@ class PlaylistViewModel(
     }
 
     fun deleteTrack(track: Track) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             tracks.removeIf { it.trackId == track.trackId }
+            playlistUi?.tracksTime = (tracks.sumOf { it.trackTimeMillis.toLongOrNull() ?: 0L } / 60000).toString()
+            playlistUi?.tracksCount = tracks.size.toString()
 
             if (playlist != null) {
                 playlist = with(playlist) {
@@ -91,7 +98,7 @@ class PlaylistViewModel(
     }
 
     private fun getTracks(playlist: Playlist) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             tracks.clear()
             interactor
                 .getTracks(playlist.trackList)
@@ -99,7 +106,7 @@ class PlaylistViewModel(
                     tracks -> this@PlaylistViewModel.tracks.addAll(tracks)
                 }
 
-            Log.d("getTracks", "getTracks: ${tracks.sumOf { it.trackTimeMillis.toLongOrNull() ?: 0L } / 60000}")
+            Log.d("tracks", "${tracks.map { it.trackName }}")
             playlistUi?.tracksTime = (tracks.sumOf { it.trackTimeMillis.toLongOrNull() ?: 0L } / 60000).toString()
             stateLiveData.postValue(PlaylistState.Content(playlistUi))
         }

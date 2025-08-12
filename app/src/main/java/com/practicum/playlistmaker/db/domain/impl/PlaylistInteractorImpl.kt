@@ -5,6 +5,7 @@ import com.practicum.playlistmaker.db.domain.PlaylistInteractor
 import com.practicum.playlistmaker.db.domain.PlaylistRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class PlaylistInteractorImpl(val repository: PlaylistRepository) : PlaylistInteractor {
 
@@ -33,7 +34,8 @@ class PlaylistInteractorImpl(val repository: PlaylistRepository) : PlaylistInter
     }
 
     override fun getTracks(tracks: List<Long>): Flow<List<Track>> {
-        return repository.getTracks(tracks)
+        val tracks = repository.getTracks(tracks).map { it.reversed() }
+        return tracks
     }
 
     override suspend fun deleteTrack(playlistTrackId: Long) {

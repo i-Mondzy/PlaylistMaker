@@ -89,7 +89,10 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
         })
 
         binding.newPlaylistBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_mediaFragment_to_createPlaylist)
+            findNavController().navigate(
+                R.id.action_mediaFragment_to_createPlaylist,
+                null
+            )
         }
 
         viewModel.observeState().observe(viewLifecycleOwner) {

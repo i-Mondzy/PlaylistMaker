@@ -37,6 +37,16 @@
     <string name="createPlaylistDialogDescription">Все несохраненные данные будут потеряны</string>
     <string name="createPlaylistDialogCancel">Отмена</string>
     <string name="createPlaylistDialogConfirm">Завершить</string>
+    <string name="editPlaylist">Редактировать плейлист</string>
+    <string name="editPlaylistSave">Сохранить</string>
 
     <string name="playerAddToPlaylistTitle">Добавить в плейлист</string>
+
+    <string name="playlistDeleteTrack">Хотите удалить трек?</string>
+    <string name="playlistDeletePlaylist">Хотите удалить плейлист «%1$s»?</string>
+    <string name="playlistYes">ДА</string>
+    <string name="playlistNo">НЕТ</string>
+<!--    <string name="playerAddToPlaylistTitle">Добавить в плейлист</string>-->
+<!--    <string name="playerAddToPlaylistTitle">Добавить в плейлист</string>-->
+<!--    <string name="playerAddToPlaylistTitle">Добавить в плейлист</string>-->
 </resources>
