@@ -5,6 +5,7 @@ import com.practicum.playlistmaker.db.domain.PlaylistInteractor
 import com.practicum.playlistmaker.db.domain.PlaylistRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class PlaylistInteractorImpl(val repository: PlaylistRepository) : PlaylistInteractor {
 
@@ -12,20 +13,33 @@ class PlaylistInteractorImpl(val repository: PlaylistRepository) : PlaylistInter
         repository.savePlaylist(playlist)
     }
 
+    override suspend fun deletePlaylist(playlist: Playlist) {
+        repository.deletePlaylist(playlist)
+    }
+
     override suspend fun updatePlaylist(playlist: Playlist) {
         repository.updatePlaylist(playlist)
     }
 
-    override fun getPlaylist(): Flow<List<Playlist>> {
-        return repository.getPlaylist()
+    override fun getPlaylists(): Flow<List<Playlist>> {
+        return repository.getPlaylists()
+    }
+
+    override fun getPlaylist(playlistId: Long): Flow<Playlist> {
+        return repository.getPlaylist(playlistId)
     }
 
     override suspend fun saveTrack(playlistTrack: Track) {
         repository.saveTrack(playlistTrack)
     }
 
-    override suspend fun deleteTrack(playlistTrack: Track) {
-        repository.deleteTrack(playlistTrack)
+    override fun getTracks(tracks: List<Long>): Flow<List<Track>> {
+        val tracks = repository.getTracks(tracks).map { it.reversed() }
+        return tracks
+    }
+
+    override suspend fun deleteTrack(playlistTrackId: Long) {
+        repository.deleteTrack(playlistTrackId)
     }
 
     override suspend fun clearTable() {

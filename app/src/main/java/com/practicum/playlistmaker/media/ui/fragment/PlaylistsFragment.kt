@@ -15,14 +15,24 @@ import com.practicum.playlistmaker.utils.BindingFragment
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
 import com.practicum.playlistmaker.media.ui.state.PlaylistsState
+import com.practicum.playlistmaker.playlist.ui.fragment.PlaylistFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
 
     private val viewModel by viewModel<PlaylistsViewModule>()
 
-    private val playlists = PlaylistsAdapter()
+    private val playlists = PlaylistsAdapter{ playlist ->
+        openPlaylist(playlist)
+    }
     private var init = false
+
+    private fun openPlaylist(playlist: Playlist) {
+        findNavController().navigate(
+            R.id.action_mediaFragment_to_playlistFragment,
+            PlaylistFragment.createArgs(playlist.playlistId)
+        )
+    }
 
     private fun render(state: PlaylistsState) {
         when(state) {
@@ -79,7 +89,10 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
         })
 
         binding.newPlaylistBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_mediaFragment_to_createPlaylist)
+            findNavController().navigate(
+                R.id.action_mediaFragment_to_createPlaylist,
+                null
+            )
         }
 
         viewModel.observeState().observe(viewLifecycleOwner) {

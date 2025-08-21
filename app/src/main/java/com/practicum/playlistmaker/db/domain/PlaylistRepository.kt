@@ -8,13 +8,19 @@ interface PlaylistRepository {
 
     suspend fun savePlaylist(playlist: Playlist)
 
+    suspend fun deletePlaylist(playlist: Playlist)
+
     suspend fun updatePlaylist(playlist: Playlist)
 
-    fun getPlaylist(): Flow<List<Playlist>>
+    fun getPlaylists(): Flow<List<Playlist>>
+
+    fun getPlaylist(playlistId: Long): Flow<Playlist>
 
     suspend fun saveTrack(playlistTrack: Track)
 
-    suspend fun deleteTrack(playlistTrack: Track)
+    fun getTracks(tracks: List<Long>): Flow<List<Track>>
+
+    suspend fun deleteTrack(trackId: Long, skipPlaylistId: Long? = null)
 
     suspend fun clearTable()
 

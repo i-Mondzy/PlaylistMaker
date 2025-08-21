@@ -20,6 +20,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
+import com.practicum.playlistmaker.create_playlist.ui.fragment.CreatePlaylistFragment
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerStateBottomSheet
@@ -47,10 +48,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private fun setUi(trackUi: TrackUi?) {
         if (trackUi == null) return
-
-        /*findNavController().previousBackStackEntry
-            ?.savedStateHandle
-            ?.set("update", trackUi.trackId to trackUi.isFavorite)*/
 
         this@PlayerFragment.trackUi = trackUi
 
@@ -211,7 +208,10 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
 
         binding.createPlaylist.setOnClickListener {
-            findNavController().navigate(R.id.action_playerFragment_to_createPlaylist)
+            findNavController().navigate(
+                R.id.action_playerFragment_to_createPlaylist,
+                CreatePlaylistFragment.createArgs(null)
+            )
         }
 
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {

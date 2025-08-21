@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.db.data
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
@@ -7,8 +8,11 @@ import com.practicum.playlistmaker.db.data.entity.PlaylistEntity
 import com.practicum.playlistmaker.db.data.entity.PlaylistTrackEntity
 import com.practicum.playlistmaker.db.domain.PlaylistRepository
 import com.practicum.playlistmaker.search.domain.model.Track
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 
 class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRepository {
     
@@ -29,6 +33,18 @@ class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRep
         appDataBase.playlistDao().insertPlaylist(playlistEntity)
     }
 
+    override suspend fun deletePlaylist(playlist: Playlist) {
+
+        withContext(Dispatchers.IO) {
+            appDataBase.playlistDao().deletePlaylist(playlist.playlistId)
+            for (trackId in playlist.trackList) {
+                Log.d("deleteTrack", "deletePlaylist: ${playlist.trackList}")
+                deleteTrack(trackId, skipPlaylistId = playlist.playlistId)
+            }
+        }
+
+    }
+
     override suspend fun updatePlaylist(playlist: Playlist) {
         val playlistEntity = with(playlist) {
             PlaylistEntity(
@@ -44,7 +60,7 @@ class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRep
         appDataBase.playlistDao().updatePlaylist(playlistEntity)
     }
 
-    override fun getPlaylist(): Flow<List<Playlist>> {
+    override fun getPlaylists(): Flow<List<Playlist>> {
         return flow {
             val playlist = appDataBase.playlistDao().getPlaylists().map { playlistEntity ->
                 with(playlistEntity) {
@@ -62,6 +78,24 @@ class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRep
         }
     }
 
+    override fun getPlaylist(playlistId: Long): Flow<Playlist> {
+
+        return flow {
+            val playlist = with(appDataBase.playlistDao().getPlaylistId(playlistId)) {
+                Playlist(
+                    playlistId = playlistId,
+                    namePlaylist = namePlaylist,
+                    description = description,
+                    imgPath = imgPath,
+                    trackList = gson.fromJson(trackList, object : TypeToken<List<Long>>() {}.type),
+                    tracksCount = tracksCount
+                )
+            }
+            emit(playlist)
+        }
+    }
+
+
     override suspend fun saveTrack(playlistTrack: Track) {
         val playlistTrackEntity = with(playlistTrack) {
             PlaylistTrackEntity(trackId.toString(), trackName, artistName, trackTimeMillis, artworkUrl100, collectionName, releaseDate, primaryGenreName, country, previewUrl)
@@ -69,11 +103,55 @@ class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRep
         appDataBase.playlistTrackDao().insertTrack(playlistTrackEntity)
     }
 
-    override suspend fun deleteTrack(playlistTrack: Track) {
-        val playlistTrackEntity = with(playlistTrack) {
-            PlaylistTrackEntity(trackId.toString(), trackName, artistName, trackTimeMillis, artworkUrl100, collectionName, releaseDate, primaryGenreName, country, previewUrl)
+    override fun getTracks(tracks: List<Long>): Flow<List<Track>> {
+        return flow {
+            val favoritesTracksId = appDataBase.favoriteTrackDao().getTracksId().map { it.toLong() }
+            val allTracks = appDataBase.playlistTrackDao().getTracks().map { trackEntity->
+                with(trackEntity) {
+                    Track(
+                        trackId = trackId.toLong(),
+                        trackName = trackName,
+                        artistName = artistName,
+                        trackTimeMillis = trackTimeMillis,
+                        artworkUrl100 = artworkUrl100,
+                        collectionName = collectionName,
+                        releaseDate = releaseDate,
+                        primaryGenreName = primaryGenreName,
+                        country = country,
+                        previewUrl = previewUrl,
+                        isFavorite = trackId.toLong() in favoritesTracksId
+                    )
+                }
+            }
+            val tracksInPlaylist = allTracks.filter { track -> track.trackId in tracks }
+
+            emit(tracksInPlaylist)
         }
-        appDataBase.playlistTrackDao().deleteTrack(playlistTrackEntity)
+    }
+
+    override suspend fun deleteTrack(trackId: Long, skipPlaylistId: Long?) {
+        if (!checkTrackInPlaylists(trackId, skipPlaylistId)) {
+            appDataBase.playlistTrackDao().deleteTrack(trackId)
+        }
+    }
+
+    private suspend fun checkTrackInPlaylists(trackId: Long, skipPlaylistId: Long? = null): Boolean {
+        val playlists = appDataBase.playlistDao().getPlaylists()
+            .filter { it.playlistId != skipPlaylistId }
+            .map { playlistEntity ->
+                with(playlistEntity) {
+                    Playlist(
+                        playlistId = playlistId,
+                        namePlaylist = namePlaylist,
+                        description = description,
+                        imgPath = imgPath,
+                        trackList = gson.fromJson(playlistEntity.trackList, object : TypeToken<List<Long>>() {}.type),
+                        tracksCount = tracksCount
+                    )
+                }
+            }
+
+        return playlists.any { it.trackList.contains(trackId) }
     }
 
     override suspend fun clearTable() {

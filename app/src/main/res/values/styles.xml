@@ -115,6 +115,17 @@
         <item name="iconTint">?attr/settingsColorIcon</item>
     </style>
 
+    <style name="PlaylistTextViewOtherBottomSheet">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:paddingHorizontal">@dimen/default_padding</item>
+        <item name="android:paddingVertical">@dimen/settings_button_padding</item>
+        <item name="android:textColor">?attr/colorTitle</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/default_text_size</item>
+    </style>
+
     <style name="BackButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>

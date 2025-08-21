@@ -27,7 +27,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private val viewModel by viewModel<SearchViewModel>()
 
     private var simpleTextWatcher: TextWatcher? = null
-    /*private val client = OkHttpClient.Builder().addInterceptor(TimingInterceptor()).build()*/
 
     private var trackIndex: Int? = null
     private var init = false
