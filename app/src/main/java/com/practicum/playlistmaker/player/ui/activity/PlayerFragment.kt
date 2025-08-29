@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
@@ -23,8 +22,8 @@ import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
 import com.practicum.playlistmaker.create_playlist.ui.fragment.CreatePlaylistFragment
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.player.ui.model.TrackUi
-import com.practicum.playlistmaker.player.ui.state.PlayerStateBottomSheet
 import com.practicum.playlistmaker.player.ui.state.PlayerState
+import com.practicum.playlistmaker.player.ui.state.PlayerStateBottomSheet
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.utils.BindingFragment
@@ -67,6 +66,8 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         binding.primaryGenreNameValue.text = trackUi.primaryGenreName
         binding.countryValue.text = trackUi.country
 
+        binding.playButton.setCurrentButton(false)
+
         when (trackUi.isFavorite) {
             true -> binding.addToFavorite.setImageResource(R.drawable.ic_add_to_favorite_true)
             false -> binding.addToFavorite.setImageResource(R.drawable.ic_add_to_favorite_false)
@@ -88,17 +89,17 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     }
 
     private fun showPlay(state: PlayerState) {
-        binding.playButton.setImageDrawable(getDrawable(requireContext(), R.drawable.ic_pause))
+        binding.playButton.setCurrentButton(true)
         binding.currentTrackTime.text = (state as? PlayerState.Play)?.time
     }
 
     private fun showPause(state: PlayerState) {
-        binding.playButton.setImageDrawable(getDrawable(requireContext(), R.drawable.ic_play))
+        binding.playButton.setCurrentButton(false)
         binding.currentTrackTime.text = (state as? PlayerState.Pause)?.time
     }
 
     private fun showStop(state: PlayerState) {
-        binding.playButton.setImageDrawable(getDrawable(requireContext(), R.drawable.ic_play))
+        binding.playButton.setCurrentButton(false)
         binding.currentTrackTime.text = (state as? PlayerState.Stop)?.time
     }
 

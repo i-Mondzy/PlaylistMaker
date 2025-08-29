@@ -113,16 +113,17 @@
                 app:layout_constraintTop_toTopOf="@id/playButton"
                 app:srcCompat="@drawable/ic_add_to_favorite_false" />
 
-            <ImageButton
+            <com.practicum.playlistmaker.player.ui.custom_view.PlaybackButtonView
                 android:id="@+id/playButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="84dp"
+                android:layout_height="84dp"
                 android:layout_marginTop="40dp"
                 android:background="?attr/colorBackground"
                 app:layout_constraintEnd_toEndOf="@id/rightBorder"
                 app:layout_constraintStart_toStartOf="@id/leftBorder"
                 app:layout_constraintTop_toBottomOf="@id/artistName"
-                app:srcCompat="@drawable/ic_play" />
+                app:imagePlayResId="@drawable/ic_play"
+                app:imagePauseResId="@drawable/ic_pause"/>
 
             <TextView
                 android:id="@+id/currentTrackTime"
