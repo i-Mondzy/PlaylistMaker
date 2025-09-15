@@ -15,6 +15,7 @@ import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerStateBottomSheet
 import com.practicum.playlistmaker.player.ui.state.PlayerState
+import com.practicum.playlistmaker.services.AudioPlayerControl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -28,6 +29,7 @@ class PlayerViewModel(
     private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
+    private var audioPlayerControl: AudioPlayerControl? = null
     private val playlistsBS = mutableListOf<Playlist>()
 
     private val stateLiveData = MutableLiveData<PlayerState>()
@@ -218,6 +220,20 @@ class PlayerViewModel(
 
     private fun renderStateBS(state: PlayerStateBottomSheet) {
         stateLiveDataBS.value = state
+    }
+
+    fun setAudioPlayerControl(audioPlayerControl: AudioPlayerControl) {
+        this.audioPlayerControl = audioPlayerControl
+
+        viewModelScope.launch {
+            audioPlayerControl.getCurrentState().collect {
+                stateLiveData.postValue(it)
+            }
+        }
+    }
+
+    fun removeAudioPlayerControl() {
+        audioPlayerControl = null
     }
 
     override fun onCleared() {

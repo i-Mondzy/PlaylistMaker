@@ -1,7 +1,13 @@
 package com.practicum.playlistmaker.player.ui.activity
 
+import android.Manifest
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -10,6 +16,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
@@ -26,8 +33,10 @@ import com.practicum.playlistmaker.player.ui.state.PlayerState
 import com.practicum.playlistmaker.player.ui.state.PlayerStateBottomSheet
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.services.MusicService
 import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.security.acl.Permission
 import kotlin.math.max
 
 class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
@@ -37,6 +46,27 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     private lateinit var trackUi: TrackUi
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
+    private var musicService: MusicService? = null
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MusicService.MusicServiceBinder
+            musicService = binder.getService()
+            viewModel.setAudioPlayerControl(binder.getService())
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            musicService = null
+            viewModel.removeAudioPlayerControl()
+        }
+    }
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        when (isGranted) {
+            true -> bindMusicService()
+            false -> Toast.makeText(requireContext(), "Can't bind service!", Toast.LENGTH_LONG).show()
+        }
+    }
     private var clickPlay = false
 
     private val playlistsAdapter = PlayerPlaylistsAdapter{ position ->
@@ -151,6 +181,14 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
     }
 
+    private fun bindMusicService() {
+        val intent = Intent(requireContext(), MusicService::class.java).apply {
+            putExtra(ARGS_TRACK, trackUi)
+        }
+
+        requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+    }
+
     override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentPlayerBinding {
         return FragmentPlayerBinding.inflate(inflater, container, false)
     }
@@ -168,6 +206,12 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
         viewModel.getStateLiveDataBS().observe(viewLifecycleOwner) { state ->
             renderBS(state)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            bindMusicService()
         }
 
 //      Уменьшить обложку если маленький экран
@@ -238,6 +282,12 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         if (clickPlay) {
             viewModel.pause()
         }
+        musicService?.showNotification()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        musicService?.hideNotification()
     }
 
     companion object {
