@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.icu.text.SimpleDateFormat
@@ -54,7 +55,7 @@ class MusicService : Service(), AudioPlayerControl {
     }
 
     fun hideNotification() {
-        stopForeground(STOP_FOREGROUND_REMOVE)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
     }
 
     private fun createNotificationChannel() {
@@ -65,6 +66,9 @@ class MusicService : Service(), AudioPlayerControl {
             "Music Service",
             NotificationManager.IMPORTANCE_DEFAULT
         ).apply { description = "Service for playing music" }
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     private fun createServiceNotification(): Notification {
@@ -88,6 +92,7 @@ class MusicService : Service(), AudioPlayerControl {
         if (trackUi == null) return
 
         mediaPlayer?.let { mediaPlayer ->
+            mediaPlayer.reset()
             mediaPlayer.setDataSource(trackUi?.previewUrl)
             mediaPlayer.prepareAsync()
             mediaPlayer.setOnPreparedListener {
@@ -136,6 +141,17 @@ class MusicService : Service(), AudioPlayerControl {
     override fun onUnbind(intent: Intent?): Boolean {
         releasePlayer()
         return super.onUnbind(intent)
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        stopSelf()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        showNotification()
+
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onCreate() {

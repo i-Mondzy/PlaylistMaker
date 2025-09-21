@@ -17,8 +17,10 @@ import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -36,12 +38,14 @@ import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.services.MusicService
 import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.security.acl.Permission
 import kotlin.math.max
 
 class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private val viewModel by viewModel<PlayerViewModel>()
+
+//    private lateinit var destinationListener: NavController.OnDestinationChangedListener
+    private var init = false
 
     private lateinit var trackUi: TrackUi
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
@@ -63,18 +67,20 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         when (isGranted) {
-            true -> bindMusicService()
+            true -> {
+//                init = true
+                bindMusicService()
+            }
             false -> Toast.makeText(requireContext(), "Can't bind service!", Toast.LENGTH_LONG).show()
         }
     }
-    private var clickPlay = false
 
     private val playlistsAdapter = PlayerPlaylistsAdapter{ position ->
         requireArguments().getParcelable<Track>(ARGS_TRACK)?.let { track ->
             saveToPlaylist(track, position)
         }
     }
-
+//    region Восстановить
     private fun setUi(trackUi: TrackUi?) {
         if (trackUi == null) return
 
@@ -180,7 +186,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             }
         }
     }
-
+//    endregion
     private fun bindMusicService() {
         val intent = Intent(requireContext(), MusicService::class.java).apply {
             putExtra(ARGS_TRACK, trackUi)
@@ -211,8 +217,10 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
+//            init = true
             bindMusicService()
         }
+
 
 //      Уменьшить обложку если маленький экран
         binding.currentTrackTime.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -232,7 +240,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         })
 
         binding.playButton.setOnClickListener{
-            clickPlay = true
+            /*clickPlay = true*/
             viewModel.playbackControl()
         }
 
@@ -243,6 +251,17 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         binding.backBtn.setOnClickListener {
             findNavController().navigateUp()
         }
+
+        /*destinationListener = NavController.OnDestinationChangedListener { controller, destination, _ ->
+            if (destination.id != R.id.playerFragment) {
+                requireContext().stopService(Intent(requireContext(), MusicService::class.java))
+                requireContext().unbindService(serviceConnection)
+                controller.removeOnDestinationChangedListener(destinationListener)
+            }
+        }
+        findNavController().addOnDestinationChangedListener(destinationListener)*/
+
+//        requireContext().startService(Intent(requireContext(), MusicService::class.java))
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
@@ -277,17 +296,32 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     }
 
-    override fun onPause() {
-        super.onPause()
-        if (clickPlay) {
-            viewModel.pause()
-        }
-        musicService?.showNotification()
-    }
-
     override fun onResume() {
         super.onResume()
+        /*if (init) {
+            bindMusicService()
+        }*/
         musicService?.hideNotification()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        /*if (clickPlay) {
+            viewModel.pause()
+        }*/
+        if (requireActivity().isChangingConfigurations.not()) {
+//            requireContext().unbindService(serviceConnection)
+//            musicService?.showNotification()
+            requireContext().startForegroundService(Intent(requireContext(), MusicService::class.java))
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (requireActivity().isChangingConfigurations.not()) {
+            requireContext().unbindService(serviceConnection)
+            requireContext().stopService(Intent(requireContext(), MusicService::class.java))
+        }
     }
 
     companion object {
