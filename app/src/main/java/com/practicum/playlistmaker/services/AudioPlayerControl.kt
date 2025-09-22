@@ -9,4 +9,8 @@ interface AudioPlayerControl {
     fun startPlayer()
     fun pausePlayer()
 
+    fun showNotification()
+
+    fun hideNotification()
+
 }

@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker.player.ui.view_model
 
+import android.app.Service
+import android.content.ServiceConnection
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
 import android.util.Log
@@ -21,7 +23,6 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class PlayerViewModel(
-    private val mediaPlayer: MediaPlayer,
     private val favoriteInteractor: FavoriteInteractor,
     private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
@@ -30,11 +31,15 @@ class PlayerViewModel(
     private val playlistsBS = mutableListOf<Playlist>()
     private var trackUi: TrackUi? = null
 
+    var init = false
+
+    private var service: ServiceConnection? = null
+    private var serviceList = mutableListOf<ServiceConnection>()
+
     private val stateLiveData = MutableLiveData<PlayerState>()
-
     fun getStateLiveData(): LiveData<PlayerState> = stateLiveData
-    private val stateLiveDataBS = MutableLiveData<PlayerStateBottomSheet>()
 
+    private val stateLiveDataBS = MutableLiveData<PlayerStateBottomSheet>()
     fun getStateLiveDataBS(): LiveData<PlayerStateBottomSheet> = stateLiveDataBS
 
     /*private val mediatorLiveData = MediatorLiveData<PlayerState>().also { liveData ->
@@ -108,7 +113,6 @@ class PlayerViewModel(
     }
 
     fun onPlaylistClicked(track: Track, position: Int) {
-        Log.d("onPlaylistClicked", "click!")
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 if (!playlistsBS[playlistsBS.indexOfFirst{ it.playlistId == playlistsBS[position].playlistId }].trackList.contains(track.trackId)) {
@@ -164,6 +168,21 @@ class PlayerViewModel(
 
     fun removeAudioPlayerControl() {
         audioPlayerControl = null
+    }
+
+    fun setService(service: ServiceConnection) {
+        this.service = service
+        serviceList.add(service)
+    }
+
+    fun getServices(): List<ServiceConnection> = serviceList
+
+    fun showNotification() {
+        audioPlayerControl?.showNotification()
+    }
+
+    fun hideNotification() {
+        audioPlayerControl?.hideNotification()
     }
 
 }

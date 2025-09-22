@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,6 +38,8 @@ import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.services.MusicService
 import com.practicum.playlistmaker.utils.BindingFragment
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.math.max
 
@@ -44,22 +47,16 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private val viewModel by viewModel<PlayerViewModel>()
 
-//    private lateinit var destinationListener: NavController.OnDestinationChangedListener
-    private var init = false
-
     private lateinit var trackUi: TrackUi
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
-    private var musicService: MusicService? = null
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as MusicService.MusicServiceBinder
-            musicService = binder.getService()
             viewModel.setAudioPlayerControl(binder.getService())
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            musicService = null
             viewModel.removeAudioPlayerControl()
         }
     }
@@ -68,7 +65,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     ) { isGranted ->
         when (isGranted) {
             true -> {
-//                init = true
                 bindMusicService()
             }
             false -> Toast.makeText(requireContext(), "Can't bind service!", Toast.LENGTH_LONG).show()
@@ -179,7 +175,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     }
 
     private fun renderBS(state: PlayerStateBottomSheet) {
-        Log.d("renderBS", "renderBS")
         when (state) {
             is PlayerStateBottomSheet.Content -> {
                 showBS(state.playlists)
@@ -193,6 +188,18 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
 
         requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        viewModel.setService(serviceConnection)
+    }
+
+    private fun serviceToConnection() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(200)
+            val intent = Intent(requireContext(), MusicService::class.java).apply {
+                putExtra(ARGS_TRACK, trackUi)
+            }
+
+            requireContext().startService(intent)
+        }
     }
 
     override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentPlayerBinding {
@@ -217,10 +224,12 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
-//            init = true
             bindMusicService()
         }
 
+        if (!viewModel.init) {
+            serviceToConnection()
+        }
 
 //      Уменьшить обложку если маленький экран
         binding.currentTrackTime.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -240,7 +249,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         })
 
         binding.playButton.setOnClickListener{
-            /*clickPlay = true*/
             viewModel.playbackControl()
         }
 
@@ -251,17 +259,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         binding.backBtn.setOnClickListener {
             findNavController().navigateUp()
         }
-
-        /*destinationListener = NavController.OnDestinationChangedListener { controller, destination, _ ->
-            if (destination.id != R.id.playerFragment) {
-                requireContext().stopService(Intent(requireContext(), MusicService::class.java))
-                requireContext().unbindService(serviceConnection)
-                controller.removeOnDestinationChangedListener(destinationListener)
-            }
-        }
-        findNavController().addOnDestinationChangedListener(destinationListener)*/
-
-//        requireContext().startService(Intent(requireContext(), MusicService::class.java))
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
@@ -298,28 +295,25 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     override fun onResume() {
         super.onResume()
-        /*if (init) {
-            bindMusicService()
-        }*/
-        musicService?.hideNotification()
+        viewModel.hideNotification()
+//        if (requireActivity().isChangingConfigurations) {
+//            requireContext().stopService(Intent(requireContext(), MusicService::class.java))
+//        }
     }
 
     override fun onPause() {
         super.onPause()
-        /*if (clickPlay) {
-            viewModel.pause()
-        }*/
         if (requireActivity().isChangingConfigurations.not()) {
-//            requireContext().unbindService(serviceConnection)
-//            musicService?.showNotification()
-            requireContext().startForegroundService(Intent(requireContext(), MusicService::class.java))
+            viewModel.showNotification()
+        } else {
+//            requireContext().startService(Intent(requireContext(), MusicService::class.java))
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        requireContext().unbindService(serviceConnection)
         if (requireActivity().isChangingConfigurations.not()) {
-            requireContext().unbindService(serviceConnection)
             requireContext().stopService(Intent(requireContext(), MusicService::class.java))
         }
     }

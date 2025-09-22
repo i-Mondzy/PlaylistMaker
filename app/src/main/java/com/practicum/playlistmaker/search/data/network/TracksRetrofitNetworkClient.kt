@@ -15,7 +15,6 @@ class TracksRetrofitNetworkClient(private val trackApi: TrackApi) : TracksNetwor
                 val response = trackApi.search(text)
                 response.apply { resultCode = 200 }
             } catch (ex: Exception) {
-                Log.d("resultCode", "$ex")
                 NetworkResponse().apply { resultCode = 500 }
             }
         }

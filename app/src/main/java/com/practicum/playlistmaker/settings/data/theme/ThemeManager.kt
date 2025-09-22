@@ -15,7 +15,6 @@ class ThemeManager(private val sharedPrefs: SharedPreferences) {
             .edit()
             .putBoolean(THEME_KEY, darkThemeEnabled)
             .apply()
-        Log.d("saveTheme", "${getTheme()}")
 
     }
 

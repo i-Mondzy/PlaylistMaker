@@ -38,7 +38,6 @@ class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRep
         withContext(Dispatchers.IO) {
             appDataBase.playlistDao().deletePlaylist(playlist.playlistId)
             for (trackId in playlist.trackList) {
-                Log.d("deleteTrack", "deletePlaylist: ${playlist.trackList}")
                 deleteTrack(trackId, skipPlaylistId = playlist.playlistId)
             }
         }

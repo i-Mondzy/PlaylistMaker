@@ -12,7 +12,6 @@ class TimingInterceptor : Interceptor {
         val response = chain.proceed(request)
 
         val durationMs = (System.nanoTime() - startNs) / 1_000_000
-        Log.d("Retrofit", "Запрос ${request.url()} занял: $durationMs мс")
 
         return response
     }

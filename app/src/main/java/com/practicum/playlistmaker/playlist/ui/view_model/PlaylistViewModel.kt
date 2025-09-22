@@ -106,7 +106,6 @@ class PlaylistViewModel(
                     tracks -> this@PlaylistViewModel.tracks.addAll(tracks)
                 }
 
-            Log.d("tracks", "${tracks.map { it.trackName }}")
             playlistUi?.tracksTime = (tracks.sumOf { it.trackTimeMillis.toLongOrNull() ?: 0L } / 60000).toString()
             stateLiveData.postValue(PlaylistState.Content(playlistUi))
         }

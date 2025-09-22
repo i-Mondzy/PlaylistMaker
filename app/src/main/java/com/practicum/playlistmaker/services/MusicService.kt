@@ -12,6 +12,7 @@ import android.media.MediaPlayer
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.practicum.playlistmaker.R
@@ -42,19 +43,21 @@ class MusicService : Service(), AudioPlayerControl {
 
 //    region State
     private val _playerState = MutableStateFlow<PlayerState>(PlayerState.Stop("00:00"))
-    val playerState = _playerState.asStateFlow()
+    private val playerState = _playerState.asStateFlow()
 //    endregion
 
-    fun showNotification() {
-        ServiceCompat.startForeground(
-            this,
-            SERVICE_NOTIFICATION_ID,
-            createServiceNotification(),
-            getForegroundServiceTypeConstant()
-        )
+    override fun showNotification() {
+        if (mediaPlayer?.isPlaying == true) {
+            ServiceCompat.startForeground(
+                this,
+                SERVICE_NOTIFICATION_ID,
+                createServiceNotification(),
+                getForegroundServiceTypeConstant()
+            )
+        }
     }
 
-    fun hideNotification() {
+    override fun hideNotification() {
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
     }
 
@@ -99,13 +102,16 @@ class MusicService : Service(), AudioPlayerControl {
                 _playerState.value = PlayerState.Stop("00:30")
             }
             mediaPlayer.setOnCompletionListener {
+                timerJob?.cancel()
+                hideNotification()
                 _playerState.value = PlayerState.Stop("00:00")
+                Log.d("setOnCompletionListener", "initMediaPlayer: ${_playerState.value}")
             }
         }
     }
 
     private fun releasePlayer() {
-        timerJob?.cancel()
+//        timerJob?.cancel()
 
         mediaPlayer?.let { mediaPlayer ->
             mediaPlayer.stop()
@@ -121,7 +127,8 @@ class MusicService : Service(), AudioPlayerControl {
         timerJob = CoroutineScope(Dispatchers.Default).launch {
             while (mediaPlayer?.isPlaying == true) {
                 delay(200)
-                _playerState.value = (PlayerState.Play(getCurrentPlayerPosition()))
+                _playerState.value = PlayerState.Play(getCurrentPlayerPosition())
+                Log.d("startTimer", "startTimer: ${_playerState.value}")
             }
         }
     }
@@ -133,23 +140,28 @@ class MusicService : Service(), AudioPlayerControl {
     override fun onBind(intent: Intent?): IBinder? {
         trackUi = intent?.getParcelableExtra(ARGS_TRACK)
 
-        initMediaPlayer()
+//        initMediaPlayer()
 
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        releasePlayer()
+//        releasePlayer()
+        timerJob?.cancel()
         return super.onUnbind(intent)
     }
 
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        stopSelf()
-    }
+//    override fun onTaskRemoved(rootIntent: Intent?) {
+//        super.onTaskRemoved(rootIntent)
+//        releasePlayer()
+//        hideNotification()
+//        stopSelf()
+//    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        showNotification()
+//        showNotification()
+
+        initMediaPlayer()
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -159,6 +171,12 @@ class MusicService : Service(), AudioPlayerControl {
 
         createNotificationChannel()
         mediaPlayer = MediaPlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        releasePlayer()
     }
 
     override fun getCurrentState(): StateFlow<PlayerState> {
