@@ -8,7 +8,6 @@ import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +16,8 @@ import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -38,8 +34,6 @@ import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.services.MusicService
 import com.practicum.playlistmaker.utils.BindingFragment
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.math.max
 
@@ -188,18 +182,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
 
         requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-        viewModel.setService(serviceConnection)
-    }
-
-    private fun serviceToConnection() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            delay(200)
-            val intent = Intent(requireContext(), MusicService::class.java).apply {
-                putExtra(ARGS_TRACK, trackUi)
-            }
-
-            requireContext().startService(intent)
-        }
     }
 
     override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentPlayerBinding {
@@ -225,10 +207,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
             bindMusicService()
-        }
-
-        if (!viewModel.init) {
-            serviceToConnection()
         }
 
 //      Уменьшить обложку если маленький экран
@@ -296,25 +274,19 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     override fun onResume() {
         super.onResume()
         viewModel.hideNotification()
-//        if (requireActivity().isChangingConfigurations) {
-//            requireContext().stopService(Intent(requireContext(), MusicService::class.java))
-//        }
     }
 
     override fun onPause() {
         super.onPause()
         if (requireActivity().isChangingConfigurations.not()) {
             viewModel.showNotification()
-        } else {
-//            requireContext().startService(Intent(requireContext(), MusicService::class.java))
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        requireContext().unbindService(serviceConnection)
         if (requireActivity().isChangingConfigurations.not()) {
-            requireContext().stopService(Intent(requireContext(), MusicService::class.java))
+            requireContext().unbindService(serviceConnection)
         }
     }
 

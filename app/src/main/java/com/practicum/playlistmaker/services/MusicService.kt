@@ -99,7 +99,7 @@ class MusicService : Service(), AudioPlayerControl {
             mediaPlayer.setDataSource(trackUi?.previewUrl)
             mediaPlayer.prepareAsync()
             mediaPlayer.setOnPreparedListener {
-                _playerState.value = PlayerState.Stop("00:30")
+                _playerState.value = PlayerState.Stop("00:00")
             }
             mediaPlayer.setOnCompletionListener {
                 timerJob?.cancel()
@@ -111,7 +111,7 @@ class MusicService : Service(), AudioPlayerControl {
     }
 
     private fun releasePlayer() {
-//        timerJob?.cancel()
+        timerJob?.cancel()
 
         mediaPlayer?.let { mediaPlayer ->
             mediaPlayer.stop()
@@ -140,30 +140,14 @@ class MusicService : Service(), AudioPlayerControl {
     override fun onBind(intent: Intent?): IBinder? {
         trackUi = intent?.getParcelableExtra(ARGS_TRACK)
 
-//        initMediaPlayer()
+        initMediaPlayer()
 
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-//        releasePlayer()
-        timerJob?.cancel()
+        releasePlayer()
         return super.onUnbind(intent)
-    }
-
-//    override fun onTaskRemoved(rootIntent: Intent?) {
-//        super.onTaskRemoved(rootIntent)
-//        releasePlayer()
-//        hideNotification()
-//        stopSelf()
-//    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-//        showNotification()
-
-        initMediaPlayer()
-
-        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onCreate() {

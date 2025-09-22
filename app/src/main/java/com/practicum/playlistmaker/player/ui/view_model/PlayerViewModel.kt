@@ -1,10 +1,6 @@
 package com.practicum.playlistmaker.player.ui.view_model
 
-import android.app.Service
-import android.content.ServiceConnection
 import android.icu.text.SimpleDateFormat
-import android.media.MediaPlayer
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -30,11 +26,6 @@ class PlayerViewModel(
     private var audioPlayerControl: AudioPlayerControl? = null
     private val playlistsBS = mutableListOf<Playlist>()
     private var trackUi: TrackUi? = null
-
-    var init = false
-
-    private var service: ServiceConnection? = null
-    private var serviceList = mutableListOf<ServiceConnection>()
 
     private val stateLiveData = MutableLiveData<PlayerState>()
     fun getStateLiveData(): LiveData<PlayerState> = stateLiveData
@@ -62,7 +53,7 @@ class PlayerViewModel(
                 trackId = track.trackId,
                 trackName = track.trackName,
                 artistName = track.artistName,
-                currentTime = "00:30",
+                currentTime = "00:00",
                 trackTimeMillis = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong()),
                 artworkUrl100 = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
                 collectionName = track.collectionName,
@@ -169,13 +160,6 @@ class PlayerViewModel(
     fun removeAudioPlayerControl() {
         audioPlayerControl = null
     }
-
-    fun setService(service: ServiceConnection) {
-        this.service = service
-        serviceList.add(service)
-    }
-
-    fun getServices(): List<ServiceConnection> = serviceList
 
     fun showNotification() {
         audioPlayerControl?.showNotification()
