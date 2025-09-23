@@ -19,7 +19,6 @@ class FavoriteViewModule(private val favoriteInteractor: FavoriteInteractor) : V
 
     init {
         showFavorite()
-        Log.d("init", "init")
     }
 
     fun refreshFavorites() {

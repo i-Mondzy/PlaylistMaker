@@ -7,12 +7,12 @@ import org.koin.dsl.module
 
 val playerViewModelModule = module {
 
-    factory {
+    /*factory {
         MediaPlayer()
-    }
+    }*/
 
     viewModel {
-        PlayerViewModel(get(), get(), get())
+        PlayerViewModel(get(), get()/*, get()*/)
     }
 
 }

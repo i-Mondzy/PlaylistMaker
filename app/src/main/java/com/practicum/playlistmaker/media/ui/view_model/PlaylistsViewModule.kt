@@ -19,7 +19,6 @@ class PlaylistsViewModule(private val interactor: PlaylistInteractor) : ViewMode
 
     init {
         showPlaylists()
-        Log.d("init", "init")
     }
 
     fun refreshPlaylists() {

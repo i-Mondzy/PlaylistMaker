@@ -157,7 +157,6 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         tracksBottomSheetBehavior.peekHeight =
             screenHeight - bottomShareBtn - dpToPx(24f, requireContext())
         otherBottomSheetBehavior.peekHeight = screenHeight - bottomNamePlaylist
-        Log.d("collapsedHeight", "collapsedHeight: ${binding.share.height}")
         tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 

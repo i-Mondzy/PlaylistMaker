@@ -59,7 +59,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             is TracksState.History -> {
                 init = true
                 if (binding.inputText.text.isNullOrEmpty()) {
-                    Log.d("History", "History: ${state.tracks.map { it.trackName }}")
                     showHistoryTracks(state.tracks)
                 }
             }
