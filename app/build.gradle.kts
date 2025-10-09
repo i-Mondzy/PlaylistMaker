@@ -1,13 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     id("kotlin-parcelize")
     id("kotlin-kapt")
 }
 
 android {
     namespace = "com.practicum.playlistmaker"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.practicum.playlistmaker"
@@ -39,6 +40,7 @@ android {
     }
 
     buildFeatures {
+        compose = true
         viewBinding = true
     }
 }
@@ -54,6 +56,13 @@ dependencies {
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,8 +72,10 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
 
 //    Работа с изображениями
-    implementation("com.github.bumptech.glide:glide:4.14.2")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
+    implementation("com.github.bumptech.glide:glide:5.0.5")
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    annotationProcessor("com.github.bumptech.glide:compiler:5.0.5")
 
 //    Работа с Api
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
@@ -73,14 +84,16 @@ dependencies {
 //    Прокрутка экранов
     implementation("androidx.viewpager2:viewpager2:1.1.0")
 
-    implementation("androidx.activity:activity-ktx:1.10.1")
+    implementation("androidx.activity:activity-ktx:1.11.0")
     implementation("androidx.fragment:fragment-ktx:1.8.7")
 
 //    Зависимости
-    implementation("io.insert-koin:koin-android:4.0.4")
+    implementation("io.insert-koin:koin-android:4.1.1")
 
 //    Корутины
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
 //    Работа с базой данный SQL
     val room_version = "2.7.2"

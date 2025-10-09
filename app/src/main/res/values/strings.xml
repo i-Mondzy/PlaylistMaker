@@ -49,4 +49,5 @@
     <string name="playlistDelete">Удалить плейлист</string>
     <string name="playlistYes">ДА</string>
     <string name="playlistNo">НЕТ</string>
+    <string name="title_activity_main123">MainActivity123</string>
 </resources>
