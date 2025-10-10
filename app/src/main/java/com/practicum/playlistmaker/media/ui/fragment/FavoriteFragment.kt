@@ -4,22 +4,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentFavoriteBinding
+import com.practicum.playlistmaker.media.ui.compose_ui.MediaScreen
 import com.practicum.playlistmaker.media.ui.state.FavoriteState
 import com.practicum.playlistmaker.media.ui.view_model.FavoriteViewModule
 import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.activity.TrackAdapter
-import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class FavoriteFragment : BindingFragment<FragmentFavoriteBinding>() {
+class FavoriteFragment : Fragment() {
 
     private val viewModel by viewModel<FavoriteViewModule>()
+    private lateinit var binding: FragmentFavoriteBinding
 
     private var trackIndex: Int? = null
     private var init = false
@@ -61,8 +64,17 @@ class FavoriteFragment : BindingFragment<FragmentFavoriteBinding>() {
         binding.favoriteTracks.isVisible = true
     }
 
-    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentFavoriteBinding {
+    /*override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentFavoriteBinding {
         return FragmentFavoriteBinding.inflate(inflater, container, false)
+    }*/
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentFavoriteBinding.inflate(inflater, container, false)
+        return ComposeView(requireContext()).apply {
+            setContent {
+                MediaScreen()
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

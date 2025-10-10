@@ -103,4 +103,7 @@ dependencies {
 
 //    Работа с Permissions в корутинах
     implementation("com.markodevcic:peko:3.0.5")
+
+//    Compose
+    implementation("androidx.compose.material:material:1.9.3")
 }
