@@ -30,12 +30,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.media.ui.view_model.FavoriteViewModule
 import com.practicum.playlistmaker.ui.theme.PlaylistMakerTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun MediaScreen() {
+fun MediaScreen(
+    viewModel: ViewModel
+) {
 
     PlaylistMakerTheme {
         Scaffold(
@@ -61,7 +65,7 @@ fun MediaScreen() {
                     .fillMaxSize()
                     .background(Color.White)
             ) {
-                Pager()
+                Pager(viewModel)
             }
         }
     }
@@ -69,7 +73,7 @@ fun MediaScreen() {
 }
 
 @Composable
-fun Pager() {
+fun Pager(viewModel: ViewModel) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { 2 })
     val selectedTabIndex = pagerState.currentPage
@@ -136,21 +140,20 @@ fun Pager() {
             verticalAlignment = Alignment.Top
         ) { page ->
             when(page) {
-                0 -> FavoriteScreen()
+                0 -> FavoriteScreen(viewModel as FavoriteViewModule)
                 1 -> PlaylistsScreen()
             }
         }
     }
 }
 
-@Preview(showSystemUi = true, device = "spec:width=411dp,height=891dp")
+/*@Preview(showSystemUi = true, device = "spec:width=411dp,height=891dp")
 @Composable
 fun MediaScreenPreview() {
-
     Box(
         modifier = Modifier
             .statusBarsPadding()
     ) {
         MediaScreen()
     }
-}
+}*/
