@@ -6,51 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import com.google.android.material.tabs.TabLayoutMediator
-import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.FragmentFavoriteBinding
-import com.practicum.playlistmaker.databinding.FragmentMediaBinding
 import com.practicum.playlistmaker.media.ui.compose_ui.MediaScreen
-import com.practicum.playlistmaker.media.ui.view_model.FavoriteViewModule
-import com.practicum.playlistmaker.utils.BindingFragment
 
 class MediaFragment : Fragment() {
-
-    private var tabMediator: TabLayoutMediator? = null
-    private lateinit var binding: FragmentMediaBinding
-    private val favoriteViewModel by viewModels<FavoriteViewModule>()
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = FragmentMediaBinding.inflate(inflater, container, false)
         return ComposeView(requireContext()).apply {
             setContent {
-                MediaScreen(favoriteViewModel)
+                MediaScreen()
             }
         }
     }
-
-/*    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.viewPager.adapter = MediaViewPagerAdapter(childFragmentManager, lifecycle)
-
-        tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-
-            when (position) {
-                0 -> tab.text = getString(R.string.tabFavorite)
-                1 -> tab.text = getString(R.string.tabPlaylists)
-            }
-
-        }
-        tabMediator!!.attach()
-
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        tabMediator!!.detach()
-        tabMediator = null
-    }*/
-
 }

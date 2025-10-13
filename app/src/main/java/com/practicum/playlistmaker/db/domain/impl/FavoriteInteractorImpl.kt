@@ -18,7 +18,7 @@ class FavoriteInteractorImpl(
         repository.deleteTrack(track)
     }
 
-    override fun getTracks(): Flow<List<Track>> {
+    override suspend fun getTracks(): Flow<List<Track>> {
         val tracks = repository.getTracks().map { it.reversed() }
         return tracks
     }

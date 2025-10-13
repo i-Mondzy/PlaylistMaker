@@ -30,16 +30,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.media.ui.view_model.FavoriteViewModule
 import com.practicum.playlistmaker.ui.theme.PlaylistMakerTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MediaScreen(
-    viewModel: ViewModel
-) {
+fun MediaScreen() {
 
     PlaylistMakerTheme {
         Scaffold(
@@ -52,7 +49,7 @@ fun MediaScreen(
                             text = stringResource(R.string.media),
                             fontSize = dimensionResource(R.dimen.primary_text_size).value.sp,
                             fontWeight = FontWeight(500),
-                            fontFamily = FontFamily(Font(R.font.ys_display_medium, FontWeight(500))),
+                            fontFamily = FontFamily(Font(R.font.ys_display_medium)),
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -65,7 +62,7 @@ fun MediaScreen(
                     .fillMaxSize()
                     .background(Color.White)
             ) {
-                Pager(viewModel)
+                Pager()
             }
         }
     }
@@ -73,7 +70,7 @@ fun MediaScreen(
 }
 
 @Composable
-fun Pager(viewModel: ViewModel) {
+fun Pager() {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { 2 })
     val selectedTabIndex = pagerState.currentPage
@@ -81,11 +78,15 @@ fun Pager(viewModel: ViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         TabRow(
             selectedTabIndex = selectedTabIndex,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth(),
             backgroundColor = MaterialTheme.colorScheme.background,
+            divider = {},
             indicator = { tabPositions ->
                 Box(
                     Modifier
@@ -140,14 +141,14 @@ fun Pager(viewModel: ViewModel) {
             verticalAlignment = Alignment.Top
         ) { page ->
             when(page) {
-                0 -> FavoriteScreen(viewModel as FavoriteViewModule)
-                1 -> PlaylistsScreen()
+                0 -> FavoriteScreen(koinViewModel())
+                1 -> PlaylistsScreen(koinViewModel())
             }
         }
     }
 }
 
-/*@Preview(showSystemUi = true, device = "spec:width=411dp,height=891dp")
+@Preview(showSystemUi = true, device = "spec:width=411dp,height=891dp")
 @Composable
 fun MediaScreenPreview() {
     Box(
@@ -156,4 +157,4 @@ fun MediaScreenPreview() {
     ) {
         MediaScreen()
     }
-}*/
+}

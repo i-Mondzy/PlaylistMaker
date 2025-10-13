@@ -109,4 +109,5 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.9.5")
     implementation("androidx.compose.runtime:runtime-livedata:1.9.3")
     implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("io.insert-koin:koin-androidx-compose:4.1.1")
 }

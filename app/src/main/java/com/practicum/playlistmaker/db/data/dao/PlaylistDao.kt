@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.practicum.playlistmaker.db.data.entity.PlaylistEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlaylistDao {
@@ -20,7 +21,7 @@ interface PlaylistDao {
     suspend fun updatePlaylist(playlist: PlaylistEntity)
 
     @Query("SELECT * FROM playlist_table")
-    suspend fun getPlaylists(): List<PlaylistEntity>
+    fun getPlaylists(): Flow<List<PlaylistEntity>>
 
     @Query("SELECT * FROM playlist_table WHERE playlistId = :playlistId")
     suspend fun getPlaylistId(playlistId: Long): PlaylistEntity

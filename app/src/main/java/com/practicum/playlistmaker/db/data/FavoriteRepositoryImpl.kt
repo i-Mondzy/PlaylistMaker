@@ -4,7 +4,7 @@ import com.practicum.playlistmaker.db.data.entity.FavoriteTrackEntity
 import com.practicum.playlistmaker.db.domain.FavoriteRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class FavoriteRepositoryImpl(
     private val appDataBase: AppDataBase
@@ -24,17 +24,18 @@ class FavoriteRepositoryImpl(
         appDataBase.favoriteTrackDao().deleteTrack(favoriteTrackEntity)
     }
 
-    override fun getTracks(): Flow<List<Track>> {
-        return flow {
-            val tracks = appDataBase.favoriteTrackDao().getTracks().map {
-                with(it) {
+    override suspend fun getTracks(): Flow<List<Track>> {
+        val tracks = appDataBase.favoriteTrackDao().getTracks().map { entities ->
+            entities.map { trackEntity ->
+                with(trackEntity) {
                     Track(
                         trackId.toLong(), trackName, artistName, trackTimeMillis, artworkUrl100, collectionName, releaseDate, primaryGenreName, country, previewUrl
                     )
                 }
+
             }
-            emit(tracks)
         }
+        return tracks
     }
 
 }

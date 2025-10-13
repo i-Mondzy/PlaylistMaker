@@ -12,7 +12,7 @@ interface PlaylistInteractor {
 
     suspend fun updatePlaylist(playlist: Playlist)
 
-    fun getPlaylists(): Flow<List<Playlist>>
+    suspend fun getPlaylists(): Flow<List<Playlist>>
 
     fun getPlaylist(playlistId: Long): Flow<Playlist>
 

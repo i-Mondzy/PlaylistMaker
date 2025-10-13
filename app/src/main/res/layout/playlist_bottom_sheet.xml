@@ -32,7 +32,7 @@
             android:textColor="?attr/colorTextPrimary"
             android:textFontWeight="400"
             android:textSize="@dimen/default_text_size"
-            tools:text="Летнее пати" />
+            tools:text="vevdfbdbfd" />
 
         <TextView
             android:id="@+id/tracksCount"
