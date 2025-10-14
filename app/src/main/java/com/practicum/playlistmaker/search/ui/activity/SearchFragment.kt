@@ -4,149 +4,160 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.search.ui.compose_ui.SearchScreen
 import com.practicum.playlistmaker.search.ui.state.TracksState
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
-import com.practicum.playlistmaker.utils.BindingFragment
+import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchFragment : BindingFragment<FragmentSearchBinding>() {
+class SearchFragment : Fragment() {
 
-    private val viewModel by viewModel<SearchViewModel>()
-
-    private var simpleTextWatcher: TextWatcher? = null
-
-    private var trackIndex: Int? = null
-    private var init = false
-
-    private val searchTrackList = TrackAdapter { track, index ->
-        hideKeyboard()
-        trackIndex = index
-        viewModel.saveTrack(track)
-        openPlayer(track)
-    }
-
-    private val historyTrackList = TrackAdapter { track, index ->
-        hideKeyboard()
-        trackIndex = index
-        viewModel.saveTrack(track)
-        viewModel.updateHistory()
-        openPlayer(track)
-    }
-
-    private fun openPlayer(track: Track) {
-        findNavController().navigate(R.id.action_searchFragment_to_playerFragment, PlayerFragment.createArgs(track))
-    }
-
-    private fun render(state: TracksState) {
-        when(state) {
-            is TracksState.Content -> {
-                init = true
-                showSearchTracks(state.tracks)
-            }
-            is TracksState.History -> {
-                init = true
-                if (binding.inputText.text.isNullOrEmpty()) {
-                    showHistoryTracks(state.tracks)
-                }
-            }
-            TracksState.Empty -> {
-                init = true
-                showMessageNothingFound()
-            }
-            TracksState.Error -> {
-                init = true
-                showMessageNoInternet()
-            }
-            TracksState.Loading -> {
-                init = true
-                showProgressBar()
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+//        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return ComposeView(requireContext()).apply {
+            setContent {
+                SearchScreen(koinViewModel())
             }
         }
+//        return binding.root
     }
 
-    private fun showSearchTracks(tracks: List<Track>) {
-        searchTrackList.tracks.clear()
-        searchTrackList.tracks.addAll(tracks)
-        searchTrackList.notifyDataSetChanged()
-        binding.trackFound.scrollToPosition(0)
+/*    private val viewModel by viewModel<SearchViewModel>()
+        private lateinit var binding: FragmentSearchBinding
 
-        binding.trackFound.isVisible = true
-        binding.history.isVisible = false
-        binding.placeholderNothingFound.isVisible = false
-        binding.placeholderNoInternet.isVisible = false
-        binding.progressBar.isVisible = false
-    }
+        private var simpleTextWatcher: TextWatcher? = null
 
-    private fun showHistoryTracks(tracks: List<Track>) {
-        historyTrackList.tracks.clear()
-        historyTrackList.tracks.addAll(tracks)
-        historyTrackList.notifyDataSetChanged()
-        binding.trackFound.scrollToPosition(0)
+        private var trackIndex: Int? = null
+        private var init = false
 
-        binding.trackFound.isVisible = false
-        binding.history.isVisible = tracks.isNotEmpty()
-        binding.placeholderNothingFound.isVisible = false
-        binding.placeholderNoInternet.isVisible = false
-        binding.progressBar.isVisible = false
-    }
+        private val searchTrackList = TrackAdapter { track, index ->
+            hideKeyboard()
+            trackIndex = index
+            viewModel.saveTrack(track)
+            openPlayer(track)
+        }
 
-    private fun showMessageNothingFound() {
-        searchTrackList.tracks.clear()
-        searchTrackList.notifyDataSetChanged()
+        private val historyTrackList = TrackAdapter { track, index ->
+            hideKeyboard()
+            trackIndex = index
+            viewModel.saveTrack(track)
+            viewModel.updateHistory()
+            openPlayer(track)
+        }
 
-        binding.trackFound.isVisible = false
-        binding.history.isVisible = false
-        binding.placeholderNothingFound.isVisible = true
-        binding.placeholderNoInternet.isVisible = false
-        binding.progressBar.isVisible = false
-    }
+        private fun openPlayer(track: Track) {
+            findNavController().navigate(R.id.action_searchFragment_to_playerFragment, PlayerFragment.createArgs(track))
+        }
 
-    private fun showMessageNoInternet() {
-        searchTrackList.tracks.clear()
-        searchTrackList.notifyDataSetChanged()
+        private fun render(state: TracksState) {
+            when(state) {
+                is TracksState.Content -> {
+                    init = true
+                    showSearchTracks(state.tracks)
+                }
+                is TracksState.History -> {
+                    init = true
+                    if (binding.inputText.text.isNullOrEmpty()) {
+                        showHistoryTracks(state.tracks)
+                    }
+                }
+                TracksState.Empty -> {
+                    init = true
+                    showMessageNothingFound()
+                }
+                TracksState.Error -> {
+                    init = true
+                    showMessageNoInternet()
+                }
+                TracksState.Loading -> {
+                    init = true
+                    showProgressBar()
+                }
+            }
+        }
 
-        binding.trackFound.isVisible = false
-        binding.history.isVisible = false
-        binding.placeholderNothingFound.isVisible = false
-        binding.placeholderNoInternet.isVisible = true
-        binding.progressBar.isVisible = false
-    }
+        private fun showSearchTracks(tracks: List<Track>) {
+            searchTrackList.tracks.clear()
+            searchTrackList.tracks.addAll(tracks)
+            searchTrackList.notifyDataSetChanged()
+            binding.trackFound.scrollToPosition(0)
 
-    // Метод для видимости "Прогресс бара"
-    private fun showProgressBar() {
-        binding.trackFound.isVisible = false
-        binding.history.isVisible = false
-        binding.placeholderNothingFound.isVisible = false
-        binding.placeholderNoInternet.isVisible = false
-        binding.progressBar.isVisible = true
-    }
+            binding.trackFound.isVisible = true
+            binding.history.isVisible = false
+            binding.placeholderNothingFound.isVisible = false
+            binding.placeholderNoInternet.isVisible = false
+            binding.progressBar.isVisible = false
+        }
 
-    //  Метод для "Скрытия клавиатуры"
-    private fun hideKeyboard() {
-        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        val view = requireActivity().currentFocus ?: requireActivity().window.decorView
-        inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
-        requireActivity().currentFocus?.clearFocus()
-    }
+        private fun showHistoryTracks(tracks: List<Track>) {
+            historyTrackList.tracks.clear()
+            historyTrackList.tracks.addAll(tracks)
+            historyTrackList.notifyDataSetChanged()
+            binding.trackFound.scrollToPosition(0)
 
-    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSearchBinding {
-        return FragmentSearchBinding.inflate(inflater, container, false)
-    }
+            binding.trackFound.isVisible = false
+            binding.history.isVisible = tracks.isNotEmpty()
+            binding.placeholderNothingFound.isVisible = false
+            binding.placeholderNoInternet.isVisible = false
+            binding.progressBar.isVisible = false
+        }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        private fun showMessageNothingFound() {
+            searchTrackList.tracks.clear()
+            searchTrackList.notifyDataSetChanged()
+
+            binding.trackFound.isVisible = false
+            binding.history.isVisible = false
+            binding.placeholderNothingFound.isVisible = true
+            binding.placeholderNoInternet.isVisible = false
+            binding.progressBar.isVisible = false
+        }
+
+        private fun showMessageNoInternet() {
+            searchTrackList.tracks.clear()
+            searchTrackList.notifyDataSetChanged()
+
+            binding.trackFound.isVisible = false
+            binding.history.isVisible = false
+            binding.placeholderNothingFound.isVisible = false
+            binding.placeholderNoInternet.isVisible = true
+            binding.progressBar.isVisible = false
+        }
+
+        // Метод для видимости "Прогресс бара"
+        private fun showProgressBar() {
+            binding.trackFound.isVisible = false
+            binding.history.isVisible = false
+            binding.placeholderNothingFound.isVisible = false
+            binding.placeholderNoInternet.isVisible = false
+            binding.progressBar.isVisible = true
+        }
+
+        //  Метод для "Скрытия клавиатуры"
+        private fun hideKeyboard() {
+            val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            val view = requireActivity().currentFocus ?: requireActivity().window.decorView
+            inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
+            requireActivity().currentFocus?.clearFocus()
+        }*/
+
+
+
+/*    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.placeholderNothingFound.isVisible = false
@@ -224,6 +235,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         super.onDestroyView()
         simpleTextWatcher.let { binding.inputText.removeTextChangedListener(it) }
         simpleTextWatcher = null
-    }
+    }*/
 
 }

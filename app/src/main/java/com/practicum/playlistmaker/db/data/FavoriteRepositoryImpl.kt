@@ -32,7 +32,6 @@ class FavoriteRepositoryImpl(
                         trackId.toLong(), trackName, artistName, trackTimeMillis, artworkUrl100, collectionName, releaseDate, primaryGenreName, country, previewUrl
                     )
                 }
-
             }
         }
         return tracks

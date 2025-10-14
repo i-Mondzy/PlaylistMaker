@@ -8,7 +8,9 @@ import com.practicum.playlistmaker.search.domain.api.TracksRepository
 import com.practicum.playlistmaker.search.domain.model.Resource
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class TracksRepositoryImpl(
     private val networkClient: TracksNetworkClient,
@@ -46,12 +48,17 @@ class TracksRepositoryImpl(
         }
     }
 
-    override fun saveTrack(track: Track) {
+    override suspend fun saveTrack(track: Track) {
         tracksManager.saveTrack(track)
     }
 
-    override suspend fun getTracks(): List<Track> {
-        return copyFavorites(tracksManager.getTracks())
+    override suspend fun getTracks(): Flow<List<Track>> {
+        return flow {
+            val tracks = tracksManager.getTracks().first()
+
+            emit(copyFavorites(tracks))
+        }
+//        return copyFavorites(tracksManager.getTracks())
     }
 
     override fun clearTracks() {
@@ -59,7 +66,21 @@ class TracksRepositoryImpl(
     }
 
     private suspend fun copyFavorites(tracks: List<Track>): List<Track> {
-        val tracksId = appDataBase.favoriteTrackDao().getTracksId().map { it.toLong() }
+        /*val tracksId = appDataBase.favoriteTrackDao().getTracksId().map { entities ->
+            entities.map { trackId ->
+                with(trackId) {
+                    trackId.toLong()
+                }
+            }
+        }
+
+        val tracks = tracks.map { entities ->
+            entities.map { track ->
+                track.copy(isFavorite = track.trackId in tracksId)
+            }
+        }*/
+
+        val tracksId = appDataBase.favoriteTrackDao().getTracksId().first().map { it.toLong() }
         return tracks.map { track ->
             track.copy(isFavorite = track.trackId in tracksId)
         }
