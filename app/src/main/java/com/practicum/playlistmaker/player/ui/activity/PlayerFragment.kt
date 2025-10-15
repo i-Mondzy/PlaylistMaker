@@ -177,8 +177,9 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     }
 //    endregion
     private fun bindMusicService() {
+        val track = requireArguments().getParcelable<Track>(ARGS_TRACK)
         val intent = Intent(requireContext(), MusicService::class.java).apply {
-            putExtra(ARGS_TRACK, trackUi)
+            putExtra(ARGS_TRACK, track)
         }
 
         requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)

@@ -20,7 +20,8 @@ private val DarkColorScheme = darkColorScheme(
     background = Dark,
     onBackground = Color.White,
     tertiaryFixed = DarkBlue,
-    tertiaryFixedDim = Blue
+    tertiaryFixedDim = Blue,
+    onSurface = Dark
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -32,7 +33,8 @@ private val LightColorScheme = lightColorScheme(
     background = Color.White,
     onBackground = Dark,
     tertiaryFixed = LightGray,
-    tertiaryFixedDim = Gray
+    tertiaryFixedDim = Gray,
+    onSurface = Dark
 )
 
 @Composable

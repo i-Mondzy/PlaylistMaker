@@ -293,7 +293,7 @@ fun SearchField(
             },
             singleLine = true,
             textStyle = TextStyle(
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontFamily = FontFamily(Font(R.font.ys_display_regular)),
                 fontWeight = FontWeight.W400,
                 fontSize = dimensionResource(R.dimen.default_text_size).value.sp
@@ -317,7 +317,7 @@ fun SearchField(
                     colors = colors,
                     visualTransformation = VisualTransformation.None,
                     interactionSource = remember { MutableInteractionSource() },
-                    contentPadding = PaddingValues(0.dp), // кастомный отступ
+                    contentPadding = PaddingValues(0.dp),
                     leadingIcon = {
                         Icon(
                             painter = painterResource(R.drawable.ic_search_edit_text),

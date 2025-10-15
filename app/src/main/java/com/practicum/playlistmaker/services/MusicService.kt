@@ -15,8 +15,8 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.state.PlayerState
+import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,7 +35,7 @@ class MusicService : Service(), AudioPlayerControl {
 
 //    region Работа с плеером
     private var mediaPlayer: MediaPlayer? = null
-    private var trackUi: TrackUi? = null
+    private var track: Track? = null
     private var totalMillis = 30000
     private var timerJob: Job? = null
 //    endregion
@@ -75,7 +75,7 @@ class MusicService : Service(), AudioPlayerControl {
 
     private fun createServiceNotification(): Notification {
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("${trackUi?.artistName} - ${trackUi?.trackName}")
+            .setContentTitle("${track?.artistName} - ${track?.trackName}")
             .setSmallIcon(R.mipmap.ic_launcher_custom)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
@@ -91,11 +91,11 @@ class MusicService : Service(), AudioPlayerControl {
     }
 
     private fun initMediaPlayer() {
-        if (trackUi == null) return
+        if (track == null) return
 
         mediaPlayer?.let { mediaPlayer ->
             mediaPlayer.reset()
-            mediaPlayer.setDataSource(trackUi?.previewUrl)
+            mediaPlayer.setDataSource(track?.previewUrl)
             mediaPlayer.prepareAsync()
             mediaPlayer.setOnPreparedListener {
                 _playerState.value = PlayerState.Stop("00:00")
@@ -135,7 +135,7 @@ class MusicService : Service(), AudioPlayerControl {
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        trackUi = intent?.getParcelableExtra(ARGS_TRACK)
+        track = intent?.getParcelableExtra(ARGS_TRACK)
 
         initMediaPlayer()
 
