@@ -1,11 +1,10 @@
 package com.practicum.playlistmaker.playlist.ui.fragment
 
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.playlist.ui.fragment.TrackViewHolder
+import androidx.recyclerview.widget.RecyclerView.Adapter
 
-class TrackAdapter(private val clickListener: TrackClickListener?): androidx.recyclerview.widget.RecyclerView.Adapter<TrackViewHolder>() {
+class TrackAdapter(private val clickListener: TrackClickListener?): Adapter<TrackViewHolder>() {
 
     var tracks = ArrayList<Track>()
 

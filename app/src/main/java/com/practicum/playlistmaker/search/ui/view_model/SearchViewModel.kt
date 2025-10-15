@@ -110,11 +110,7 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
     fun clearHistory() {
         tracksInteractor.clearTracks()
         viewModelScope.launch(Dispatchers.IO) {
-            tracksInteractor
-                .getTracks()
-                .collect {
-                    renderState(TracksState.History(it))
-                }
+            renderState(TracksState.History(tracksInteractor.getTracks().first()))
         }
     }
 

@@ -118,25 +118,25 @@ fun SearchScreen(viewModel: SearchViewModel) {
                     }
 
                     is TracksState.History -> {
-                        Text(
-                            modifier = Modifier
-                                .padding(top = 40.dp, bottom = 20.dp),
-                            text = stringResource(R.string.you_search),
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = 19.sp,
-                            fontFamily = FontFamily(Font(R.font.ys_display_medium)),
-                            fontWeight = FontWeight.W500
-                        )
-
-                        LazyColumn(
-                            state = listState
-                        ) {
-                            items(state.tracks) { track ->
-                                SearchTracks(viewModel, view, navController, track)
-                            }
-                        }
-
                         if (state.tracks.isNotEmpty()) {
+                            Text(
+                                modifier = Modifier
+                                    .padding(top = 40.dp, bottom = 20.dp),
+                                text = stringResource(R.string.you_search),
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = 19.sp,
+                                fontFamily = FontFamily(Font(R.font.ys_display_medium)),
+                                fontWeight = FontWeight.W500
+                            )
+
+                            LazyColumn(
+                                state = listState
+                            ) {
+                                items(state.tracks) { track ->
+                                    SearchTracks(viewModel, view, navController, track)
+                                }
+                            }
+
                             ClearButton(viewModel)
                         }
                     }
@@ -328,7 +328,10 @@ fun SearchField(
                     trailingIcon = {
                         if (text.isNotEmpty()) {
                             IconButton(
-                                onClick = { viewModel.onTextChanged("") },
+                                onClick = {
+                                    viewModel.onTextChanged("")
+                                    viewModel.searchDebounce("")
+                                },
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_clear),
