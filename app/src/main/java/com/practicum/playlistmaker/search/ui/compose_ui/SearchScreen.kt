@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,11 +30,9 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,25 +41,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -120,12 +115,6 @@ fun SearchScreen(viewModel: SearchViewModel) {
                             state = listState
                         ) {
                             items(state.tracks) { track ->
-                                /*Box(
-                                    modifier = Modifier
-                                        .padding(top = 16.dp)
-                                ) {
-
-                                }*/
                                 SearchTracks(viewModel, view, navController, track)
                             }
                         }
@@ -159,67 +148,110 @@ fun SearchScreen(viewModel: SearchViewModel) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .padding(top = 124.dp)
-                                .size(44.dp), // как 44dp в XML
-                            color = MaterialTheme.colorScheme.onPrimary, // аналог indeterminateTint
+                                .size(44.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
                             strokeWidth = 4.dp
                         )
                     }
 
-                    TracksState.Empty -> FavoritePlaceholder()
-                    TracksState.Error -> FavoritePlaceholder()
+                    TracksState.Empty -> NothingSearchPlaceholder()
+                    TracksState.Error -> ErrorPlaceholder(viewModel)
 
                     else -> null
                 }
             }
-            /*Box(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                Log.d("state", state.toString())
-                when (state) {
-                    is TracksState.Content -> {
-                        LazyColumn(
-                            state = listState
-                        ) {
-                            items(state.tracks) { track ->
-                                SearchTracks(viewModel, view, navController, track)
-                            }
-                        }
-                    }
-
-                    is TracksState.History -> {
-                        LazyColumn(
-                            state = listState
-                        ) {
-                            items(state.tracks) { track ->
-                                SearchTracks(viewModel, view, navController, track)
-                            }
-                        }
-
-                        ClearButton(viewModel)
-                    }
-
-                    TracksState.Loading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(44.dp), // как 44dp в XML
-                            color = MaterialTheme.colorScheme.onPrimary, // аналог indeterminateTint
-                            strokeWidth = 4.dp
-                        )
-                    }
-
-                    TracksState.Empty -> FavoritePlaceholder()
-                    TracksState.Error -> FavoritePlaceholder()
-
-                    else -> null
-                }
-            }*/
         }
-        /*Box(
+    }
+}
+
+@Composable
+fun ErrorPlaceholder(viewModel: SearchViewModel) {
+    val imageRes = if (isSystemInDarkTheme()) {
+        R.drawable.plug_something_wrong_night
+    } else {
+        R.drawable.plug_something_wrong_day
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
             modifier = Modifier
-                .padding(top = innerPadding.calculateTopPadding())
-                .fillMaxSize()
-                .background(Color.White)
-        ) { }*/
+                .padding(top = 118.dp, bottom = 16.dp)
+                .size(120.dp, 120.dp)
+                .background(MaterialTheme.colorScheme.background),
+            contentDescription = null,
+            painter = painterResource(imageRes)
+        )
+
+        Text(
+            modifier = Modifier
+                .padding(horizontal = 24.dp),
+            text = stringResource(R.string.no_internet),
+            fontSize = 19.sp,
+            fontWeight = FontWeight(500),
+            fontFamily = FontFamily(Font(R.font.ys_display_medium, FontWeight(500))),
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center
+        )
+
+        Button(
+            modifier = Modifier
+                .padding(top = 24.dp),
+            elevation = ButtonDefaults.elevation(4.dp),
+            shape = RoundedCornerShape(54.dp),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onBackground),
+            onClick = {
+                viewModel.updateSearch()
+            }
+        ) {
+            Text(
+                text = stringResource(R.string.update),
+                color = MaterialTheme.colorScheme.background,
+                fontSize = 14.sp,
+                fontWeight = FontWeight(500),
+                fontFamily = FontFamily(Font(R.font.ys_display_medium))
+            )
+        }
+    }
+}
+
+@Composable
+fun NothingSearchPlaceholder() {
+    val imageRes = if (isSystemInDarkTheme()) {
+        R.drawable.plug_nothing_found_night
+    } else {
+        R.drawable.plug_nothing_found_day
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier
+                .padding(top = 118.dp, bottom = 16.dp)
+                .size(120.dp, 120.dp)
+                .background(MaterialTheme.colorScheme.background),
+            contentDescription = null,
+            painter = painterResource(imageRes)
+        )
+
+        Text(
+            modifier = Modifier
+                .padding(horizontal = 24.dp),
+            text = stringResource(R.string.nothing_found),
+            fontSize = 19.sp,
+            fontWeight = FontWeight(500),
+            fontFamily = FontFamily(Font(R.font.ys_display_medium, FontWeight(500))),
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center
+        )
+
+
     }
 }
 
@@ -228,6 +260,7 @@ fun SearchField(
     viewModel: SearchViewModel, text: String
 ) {
 
+    val focusManager = LocalFocusManager.current
     val colors = TextFieldDefaults.colors(
         focusedTextColor = MaterialTheme.colorScheme.primary,
         unfocusedTextColor = MaterialTheme.colorScheme.primary,
@@ -246,29 +279,15 @@ fun SearchField(
         unfocusedLeadingIconColor = MaterialTheme.colorScheme.tertiary,
     )
 
-    // Состояние фокуса для UX (по желанию)
-    val focusManager = LocalFocusManager.current
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = dimensionResource(R.dimen.default_padding), vertical = 8.dp)
-//            .height(36.dp)
+            .height(36.dp)
             .background(
                 color = MaterialTheme.colorScheme.tertiaryContainer,
-                shape = RoundedCornerShape(8.dp) // радиусы/фон перенесите из @drawable/custom_search_field
+                shape = RoundedCornerShape(8.dp)
             )
-        /*.paint(
-            painter = painterResource(R.drawable.custom_search_field),
-            contentDescription = null
-        ) {
-            // Если @drawable/custom_search_field — shape/vector, используйте Modifier.background(shape, color)
-            // Если это сложный drawable, можно нарисовать через Image(painterResource(...)) как фон
-            Image(
-                painter = painterResource(R.drawable.custom_search_field),
-                contentDescription = null
-            )
-        }*/
     ) {
         BasicTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -277,7 +296,23 @@ fun SearchField(
                 viewModel.onTextChanged(it)
                 viewModel.searchDebounce(it)
             },
+            singleLine = true,
+            textStyle = TextStyle(
+                color = MaterialTheme.colorScheme.onBackground,
+                fontFamily = FontFamily(Font(R.font.ys_display_regular)),
+                fontWeight = FontWeight.W400,
+                fontSize = dimensionResource(R.dimen.default_text_size).value.sp
+            ),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onPrimary),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Text
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
             decorationBox = { innerTextField ->
                 TextFieldDefaults.DecorationBox(
                     value = text,
@@ -290,7 +325,6 @@ fun SearchField(
                     contentPadding = PaddingValues(0.dp), // кастомный отступ
                     leadingIcon = {
                         Icon(
-                            modifier = Modifier.padding(end = 8.dp),
                             painter = painterResource(R.drawable.ic_search_edit_text),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.tertiary
@@ -298,10 +332,8 @@ fun SearchField(
                     },
                     trailingIcon = {
                         if (text.isNotEmpty()) {
-                            // Кнопка очистки справа; высота по центру как у match_parent ImageView
                             IconButton(
                                 onClick = { viewModel.onTextChanged("") },
-                                modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_clear),
@@ -310,118 +342,20 @@ fun SearchField(
                                 )
                             }
                         }
+                    },
+                    placeholder = {
+                        Text(
+                            text = stringResource(R.string.search),
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontFamily = FontFamily(Font(R.font.ys_display_regular)),
+                            fontWeight = FontWeight.W400,
+                            fontSize = dimensionResource(R.dimen.default_text_size).value.sp
+                        )
                     }
                 )
             }
         )
     }
-
-    /*TextField(
-        modifier = Modifier
-            .fillMaxWidth()
-        *//*.padding(vertical = 8.dp, horizontal = 16.dp)*//*,
-        value = text,
-        onValueChange = {
-            viewModel.onTextChanged(it)
-            viewModel.searchDebounce(it)
-        },
-        singleLine = true,
-        placeholder = {
-            Text(
-                text = stringResource(R.string.search),
-                color = MaterialTheme.colorScheme.tertiary,
-                fontFamily = FontFamily(Font(R.font.ys_display_regular)),
-                fontWeight = FontWeight.W400,
-                fontSize = dimensionResource(R.dimen.default_text_size).value.sp
-            )
-        },
-        leadingIcon = {
-            //                Row(modifier = Modifier.padding(end = 8.dp)) {
-            Icon(
-                modifier = Modifier.padding(end = 8.dp),
-                painter = painterResource(R.drawable.ic_search_edit_text),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.tertiary
-            )
-            //                }
-        },
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Done,
-            keyboardType = KeyboardType.Text
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                focusManager.clearFocus()
-            }
-        ),
-        textStyle = LocalTextStyle.current.copy(
-            fontFamily = FontFamily(Font(R.font.ys_display_regular)),
-            fontWeight = FontWeight.W400,
-            fontSize = dimensionResource(R.dimen.default_text_size).value.sp,
-            color = MaterialTheme.colorScheme.primary
-        ),
-        colors = colors,
-        shape = RoundedCornerShape(8.dp), // повторите форму фона из custom_search_field
-        trailingIcon = {
-            if (text.isNotEmpty()) {
-                // Кнопка очистки справа; высота по центру как у match_parent ImageView
-                IconButton(
-                    onClick = { viewModel.onTextChanged("") },
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_clear),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.tertiary
-                    )
-                }
-            }
-        }
-    )*/
-
-    /*BasicTextField(
-        value = text,
-        onValueChange = {
-            viewModel.onTextChanged(it)
-            viewModel.searchDebounce(it)
-        },
-        modifier = Modifier.fillMaxWidth(),
-        decorationBox = { innerTextField ->
-            TextFieldDefaults.DecorationBox(
-                value = text,
-                innerTextField = innerTextField,
-                enabled = true,
-                singleLine = true,
-                visualTransformation = VisualTransformation.None,
-                interactionSource = remember { MutableInteractionSource() },
-                contentPadding = PaddingValues(0.dp), // кастомный отступ
-                leadingIcon = {
-                    Icon(
-                        modifier = Modifier.padding(end = 8.dp),
-                        painter = painterResource(R.drawable.ic_search_edit_text),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.tertiary
-                    )
-                },
-                trailingIcon = {
-                    if (text.isNotEmpty()) {
-                        // Кнопка очистки справа; высота по центру как у match_parent ImageView
-                        IconButton(
-                            onClick = { viewModel.onTextChanged("") },
-                            modifier = Modifier.padding(start = 12.dp, end = 12.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_clear),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.tertiary
-                            )
-                        }
-                    }
-                }
-            )
-        }
-    )*/
-//    }
 }
 
 @Composable

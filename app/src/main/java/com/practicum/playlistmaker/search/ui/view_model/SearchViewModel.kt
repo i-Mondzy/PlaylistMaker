@@ -169,22 +169,22 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
         executeSearch()
     }
 
-/*    fun updateSearch() {
+    fun updateSearch() {
         executeSearch()
     }
 
-    fun updateHistory() {
-        viewModelScope.launch(Dispatchers.IO) {
-            delay(1000)
-            renderState(TracksState.History(tracksInteractor.getTracks().first()))
+    /*    fun updateHistory() {
+            viewModelScope.launch(Dispatchers.IO) {
+                delay(1000)
+                renderState(TracksState.History(tracksInteractor.getTracks().first()))
+            }
         }
-    }
 
-    fun refreshHistory() {
-        viewModelScope.launch(Dispatchers.IO) {
-            renderState(TracksState.History(tracksInteractor.getTracks().first()))
-        }
-    }*/
+        fun refreshHistory() {
+            viewModelScope.launch(Dispatchers.IO) {
+                renderState(TracksState.History(tracksInteractor.getTracks().first()))
+            }
+        }*/
 
     fun clearHistory() {
         tracksInteractor.clearTracks()

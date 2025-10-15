@@ -148,7 +148,7 @@ fun PlaylistsPlaceholder() {
     ) {
         Image(
             modifier = Modifier
-                .padding(top = 118.dp)
+                .padding(top = 118.dp, bottom = 16.dp)
                 .size(120.dp, 120.dp)
                 .background(MaterialTheme.colorScheme.background),
             contentDescription = null,
@@ -156,6 +156,8 @@ fun PlaylistsPlaceholder() {
         )
 
         Text(
+            modifier = Modifier
+                .padding(horizontal = 24.dp),
             text = stringResource(R.string.emptyPlaylist),
             fontSize = 19.sp,
             fontWeight = FontWeight(500),
