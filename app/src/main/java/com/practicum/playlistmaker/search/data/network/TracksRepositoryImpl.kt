@@ -32,10 +32,10 @@ class TracksRepositoryImpl(
                             it.trackTimeMillis,
                             it.artworkUrl100,
                             it.collectionName,
-                            it.releaseDate,
+                            it.releaseDate ?: "",
                             it.primaryGenreName,
                             it.country,
-                            it.previewUrl
+                            it.previewUrl ?: ""
                         )
                     })
                     emit(Resource.Success(tracks))
@@ -53,12 +53,13 @@ class TracksRepositoryImpl(
     }
 
     override suspend fun getTracks(): Flow<List<Track>> {
-        return flow {
-            val tracks = tracksManager.getTracks().first()
+        /*return flow {
+            val tracks = tracksManager.getTracks().map { copyFavorites(tracks) }
 
             emit(copyFavorites(tracks))
-        }
-//        return copyFavorites(tracksManager.getTracks())
+        }*/
+        val tracks = tracksManager.getTracks().map { copyFavorites(it) }
+        return tracks
     }
 
     override fun clearTracks() {
@@ -80,7 +81,7 @@ class TracksRepositoryImpl(
             }
         }*/
 
-        val tracksId = appDataBase.favoriteTrackDao().getTracksId().first().map { it.toLong() }
+        val tracksId = appDataBase.favoriteTrackDao().getTracksId().map { it.toLong() }
         return tracks.map { track ->
             track.copy(isFavorite = track.trackId in tracksId)
         }

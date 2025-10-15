@@ -106,6 +106,7 @@ dependencies {
 
 //    Compose
     implementation("androidx.compose.material:material:1.9.3")
+    implementation("androidx.compose.material3:material3:1.4.0")
     implementation("androidx.navigation:navigation-compose:2.9.5")
     implementation("androidx.compose.runtime:runtime-livedata:1.9.3")
     implementation("io.coil-kt:coil-compose:2.7.0")

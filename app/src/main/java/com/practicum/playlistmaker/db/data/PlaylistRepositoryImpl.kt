@@ -10,7 +10,6 @@ import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.any
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -120,7 +119,7 @@ class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRep
 
     override fun getTracks(tracks: List<Long>): Flow<List<Track>> {
         return flow {
-            val favoritesTracksId = appDataBase.favoriteTrackDao().getTracksId().first().map { it.toLong() }
+            val favoritesTracksId = appDataBase.favoriteTrackDao().getTracksId().map { it.toLong() }
             val allTracks = appDataBase.playlistTrackDao().getTracks().map { trackEntity ->
                 with(trackEntity) {
                     Track(
