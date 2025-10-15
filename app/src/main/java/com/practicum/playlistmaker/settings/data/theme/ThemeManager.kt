@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.settings.data.theme
 
 import android.content.SharedPreferences
-import android.util.Log
 
 class ThemeManager(private val sharedPrefs: SharedPreferences) {
 

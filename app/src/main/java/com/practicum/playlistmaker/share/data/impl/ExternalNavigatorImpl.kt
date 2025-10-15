@@ -4,11 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
-import androidx.core.util.TimeUtils.formatDuration
 import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.share.domain.model.EmailData
 import com.practicum.playlistmaker.share.domain.ExternalNavigator
+import com.practicum.playlistmaker.share.domain.model.EmailData
 import java.util.Locale
 
 class ExternalNavigatorImpl(private val context: Context) : ExternalNavigator {

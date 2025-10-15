@@ -41,8 +41,7 @@ fun PlaylistItem(playlist: Playlist) {
             placeholder = painterResource(R.drawable.plug_artwork_high),
             error = painterResource(R.drawable.plug_artwork_high)
         )
-
-        // namePlaylist
+        
         Text(
             text = playlist.namePlaylist,
             modifier = Modifier
@@ -62,7 +61,6 @@ fun PlaylistItem(playlist: Playlist) {
             )
         )
 
-        // tracksCount
         Text(
             text = word(playlist.tracksCount.toInt()),
             modifier = Modifier

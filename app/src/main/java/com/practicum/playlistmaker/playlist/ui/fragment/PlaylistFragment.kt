@@ -20,7 +20,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.create_playlist.ui.fragment.CreatePlaylistFragment
 import com.practicum.playlistmaker.databinding.FragmentPlaylistBinding
-import com.practicum.playlistmaker.media.ui.fragment.TrackAdapter
 import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.playlist.ui.model.PlaylistUi
 import com.practicum.playlistmaker.playlist.ui.state.PlaylistState

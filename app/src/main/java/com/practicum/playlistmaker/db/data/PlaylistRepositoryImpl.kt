@@ -9,7 +9,7 @@ import com.practicum.playlistmaker.db.domain.PlaylistRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.any
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -153,30 +153,22 @@ class PlaylistRepositoryImpl(private val appDataBase: AppDataBase) : PlaylistRep
         trackId: Long,
         skipPlaylistId: Long? = null
     ): Boolean {
-        val playlists = appDataBase.playlistDao().getPlaylists().map { entities ->
-            entities
-                .filter { it.playlistId != skipPlaylistId }
-                .map { playlistEntity ->
-                    with(playlistEntity) {
-                        Playlist(
-                            playlistId = playlistId,
-                            namePlaylist = namePlaylist,
-                            description = description,
-                            imgPath = imgPath,
-                            trackList = gson.fromJson(
-                                playlistEntity.trackList,
-                                object : TypeToken<List<Long>>() {}.type
-                            ),
-                            tracksCount = tracksCount
-                        )
-                    }
+        val playlists = appDataBase.playlistDao().getPlaylists().first().filter { it.playlistId != skipPlaylistId }
+            .map { playlistEntity ->
+                with(playlistEntity) {
+                    Playlist(
+                        playlistId = playlistId,
+                        namePlaylist = namePlaylist,
+                        description = description,
+                        imgPath = imgPath,
+                        trackList = gson.fromJson(playlistEntity.trackList, object : TypeToken<List<Long>>() {}.type),
+                        tracksCount = tracksCount
+                    )
                 }
-        }
-
-        return playlists.any { playlists ->
-            playlists.any { playlist ->
-                playlist.trackList.contains(trackId)
             }
+
+        return playlists.any { playlist ->
+            playlist.trackList.contains(trackId)
         }
     }
 

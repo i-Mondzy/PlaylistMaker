@@ -92,7 +92,7 @@ fun Pager() {
                     Modifier
                         .tabIndicatorOffset(tabPositions[selectedTabIndex])
                         .height(2.dp)
-                        .background(MaterialTheme.colorScheme.onBackground) // Здесь укажите нужный цвет полоски
+                        .background(MaterialTheme.colorScheme.onBackground)
                 )
             }
         ) {

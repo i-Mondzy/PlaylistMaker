@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.search.ui.compose_ui
 
-import android.util.Log
 import android.view.SoundEffectConstants
 import android.view.View
 import androidx.compose.foundation.Image
@@ -62,7 +61,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.media.ui.compose_ui.FavoritePlaceholder
 import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.state.TracksState
@@ -105,7 +103,6 @@ fun SearchScreen(viewModel: SearchViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 SearchField(viewModel, text)
-                Log.d("text", text)
 
                 when (state) {
                     is TracksState.Content -> {
@@ -267,8 +264,6 @@ fun SearchField(
         cursorColor = MaterialTheme.colorScheme.onPrimary,
         focusedPlaceholderColor = MaterialTheme.colorScheme.tertiary,
         unfocusedPlaceholderColor = MaterialTheme.colorScheme.tertiary,
-//        focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
-//        unfocusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
         focusedContainerColor = Color.Transparent,
         unfocusedContainerColor = Color.Transparent,
         disabledContainerColor = Color.Transparent,

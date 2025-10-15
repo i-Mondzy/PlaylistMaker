@@ -8,8 +8,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 
 class TracksManager(
     private val sharedPrefs: SharedPreferences,
@@ -39,10 +37,8 @@ class TracksManager(
     }
 
     fun getTracks() : Flow<List<Track>> {
-
         return callbackFlow {
 
-            // Начальная инициализация
             val emitCurrent = {
                 val json = sharedPrefs.getString(HISTORY_KEY, "")
                 val list = if (!json.isNullOrEmpty()) {
@@ -64,14 +60,6 @@ class TracksManager(
                 sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
             }
         }
-
-        /*val json = sharedPrefs.getString(HISTORY_KEY, "")
-        return if (!json.isNullOrEmpty()) {
-            val tracks = gson.fromJson<List<Track>>(json, object : TypeToken<List<Track>>() {}.type)
-            flowOf(tracks)
-        } else {
-            flowOf(emptyList())
-        }*/
     }
 
     fun clearTracks() {

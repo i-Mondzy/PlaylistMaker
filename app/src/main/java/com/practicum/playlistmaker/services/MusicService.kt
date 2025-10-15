@@ -12,7 +12,6 @@ import android.media.MediaPlayer
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.practicum.playlistmaker.R
@@ -105,7 +104,6 @@ class MusicService : Service(), AudioPlayerControl {
                 timerJob?.cancel()
                 hideNotification()
                 _playerState.value = PlayerState.Stop("00:00")
-                Log.d("setOnCompletionListener", "initMediaPlayer: ${_playerState.value}")
             }
         }
     }
@@ -128,7 +126,6 @@ class MusicService : Service(), AudioPlayerControl {
             while (mediaPlayer?.isPlaying == true) {
                 delay(200)
                 _playerState.value = PlayerState.Play(getCurrentPlayerPosition())
-                Log.d("startTimer", "startTimer: ${_playerState.value}")
             }
         }
     }
