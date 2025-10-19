@@ -9,6 +9,6 @@ interface FavoriteRepository {
 
     suspend fun deleteTrack(track: Track)
 
-    fun getTracks(): Flow<List<Track>>
+    suspend fun getTracks(): Flow<List<Track>>
 
 }

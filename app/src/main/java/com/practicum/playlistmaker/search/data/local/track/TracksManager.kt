@@ -4,6 +4,10 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.search.domain.model.Track
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
 
 class TracksManager(
     private val sharedPrefs: SharedPreferences,
@@ -14,8 +18,9 @@ class TracksManager(
         const val HISTORY_KEY = "key_history"
     }
 
-    fun saveTrack(track: Track) {
-        val tracksHistory = getTracks().toMutableList()
+    suspend fun saveTrack(track: Track) {
+        val tracksFlow = getTracks().first()
+        val tracksHistory = tracksFlow.toMutableList()
         tracksHistory.removeAll{it.trackId == track.trackId}
         tracksHistory.add(0, track)
 
@@ -31,12 +36,29 @@ class TracksManager(
             .apply()
     }
 
-    fun getTracks() : List<Track> {
-        val json = sharedPrefs.getString(HISTORY_KEY, "")
-        return if (!json.isNullOrEmpty()) {
-            gson.fromJson(json, object : TypeToken<List<Track>>() {}.type)
-        } else {
-            emptyList()
+    fun getTracks() : Flow<List<Track>> {
+        return callbackFlow {
+
+            val emitCurrent = {
+                val json = sharedPrefs.getString(HISTORY_KEY, "")
+                val list = if (!json.isNullOrEmpty()) {
+                    gson.fromJson<List<Track>>(json, object : TypeToken<List<Track>>() {}.type)
+                } else {
+                    emptyList()
+                }
+                trySend(list)
+            }
+
+            emitCurrent()
+
+            val listener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
+                if (key == HISTORY_KEY) emitCurrent()
+            }
+
+            sharedPrefs.registerOnSharedPreferenceChangeListener(listener)
+            awaitClose {
+                sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
+            }
         }
     }
 

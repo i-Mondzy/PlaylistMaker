@@ -1,8 +1,7 @@
 package com.practicum.playlistmaker.search.data.network
 
-import android.util.Log
-import com.practicum.playlistmaker.search.data.dto.NetworkResponse
 import com.practicum.playlistmaker.search.data.TracksNetworkClient
+import com.practicum.playlistmaker.search.data.dto.NetworkResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

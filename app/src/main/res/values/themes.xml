@@ -6,7 +6,7 @@
     </style>
 
     <style name="Root.Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
-<!--        Search (start)-->
+        <!--        Search (start)-->
         <item name="colorBackground">@color/white</item>
         <item name="colorTitle">@color/dark</item>
         <item name="colorTitleReverse">@color/white</item>
@@ -17,16 +17,18 @@
         <item name="drawable_nothing_found">@drawable/plug_nothing_found_day</item>
         <item name="drawable_no_internet">@drawable/plug_something_wrong_day</item>
 
-<!--        Player-->
+        <!--        Player-->
         <item name="playerColorButton">@color/dark</item>
         <item name="playerColorOtherButton">@color/dark</item>
 
-<!--        Settings-->
+        <!--        Settings-->
         <item name="settingsColorTextPrimary">@color/dark</item>
         <item name="settingsColorIcon">@color/text_gray</item>
 
-<!--        Create Playlist-->
+        <!--        Create Playlist-->
         <item name="colorBorderEditText">@color/text_gray</item>
         <item name="colorTextEditText">@color/dark</item>
     </style>
+
+    <style name="Theme.MaterialComponents.DayNight.NoActionBar" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

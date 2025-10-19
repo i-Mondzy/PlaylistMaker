@@ -20,11 +20,11 @@ class TracksInteractorImpl(
         }
     }
 
-    override fun saveTrack(track: Track) {
+    override suspend fun saveTrack(track: Track) {
         repository.saveTrack(track)
     }
 
-    override suspend fun getTracks(): List<Track> {
+    override suspend fun getTracks(): Flow<List<Track>> {
         return repository.getTracks()
     }
 

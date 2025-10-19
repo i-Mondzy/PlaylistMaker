@@ -33,19 +33,6 @@ class PlayerViewModel(
     private val stateLiveDataBS = MutableLiveData<PlayerStateBottomSheet>()
     fun getStateLiveDataBS(): LiveData<PlayerStateBottomSheet> = stateLiveDataBS
 
-    /*private val mediatorLiveData = MediatorLiveData<PlayerState>().also { liveData ->
-        liveData.addSource(stateLiveData) { state ->
-            liveData.value = when (state) {
-                is PlayerState.Content -> PlayerState.Content(trackUi?.copy(
-                    currentTime = getCurrentPlayerPosition()
-                ))
-                is PlayerState.Pause -> state
-                is PlayerState.Play -> state
-                is PlayerState.Stop -> state
-            }
-        }
-    }*/
-
     fun setTrack(track: Track) {
         if (trackUi == null) {
 
@@ -71,7 +58,6 @@ class PlayerViewModel(
         }
 
         renderState(PlayerState.Content(trackUi))
-        getPlaylists()
     }
 
     fun onFavoriteClicked(track: Track) {
@@ -92,14 +78,13 @@ class PlayerViewModel(
 
     private fun getPlaylists() {
         viewModelScope.launch {
-            playlistsBS.clear()
             playlistInteractor
                 .getPlaylists()
-                .collect {
-                    playlists -> playlistsBS.addAll(playlists)
+                .collect { playlists ->
+                    playlistsBS.clear()
+                    playlistsBS.addAll(playlists)
+                    renderStateBS(PlayerStateBottomSheet.Content(playlistsBS))
                 }
-
-            renderStateBS(PlayerStateBottomSheet.Content(playlistsBS))
         }
     }
 
@@ -119,14 +104,7 @@ class PlayerViewModel(
                         )
                     }
                     playlistInteractor.updatePlaylist(playlistsBS[position])
-                    getPlaylists()
                 }
-
-                stateLiveDataBS.postValue(
-                    PlayerStateBottomSheet.Content(
-                        playlistsBS
-                    )
-                )
             }
         }
     }

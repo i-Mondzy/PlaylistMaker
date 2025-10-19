@@ -10,7 +10,11 @@ import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.state.TracksState
 import com.practicum.playlistmaker.utils.debounce
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewModel() {
@@ -24,15 +28,31 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
         viewModelScope,
         true
     ) { search ->
+        if (lastSearchText.isNullOrEmpty()){
+            return@debounce
+        }
         searchRequest(search)
     }
 
     private val stateLiveData = MutableLiveData<TracksState>()
     fun observerState(): LiveData<TracksState> = stateLiveData
 
+    private val _text = MutableStateFlow("")
+    val text = _text.asStateFlow()
+    fun onTextChanged(newText: String) {
+        _text.value = newText
+    }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            renderState(TracksState.History(tracksInteractor.getTracks()))
+            combine(
+                tracksInteractor.getTracks(),
+                text
+            ) { tracks, searchText ->
+                tracks to searchText
+            }
+                .filter { (_, searchText) -> searchText.isEmpty() }
+                .collect { (tracks, _) -> renderState(TracksState.History(tracks)) }
         }
     }
 
@@ -60,7 +80,7 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
                     renderState(TracksState.Empty)
                 } else {
                     viewModelScope.launch(Dispatchers.IO) {
-                        renderState(TracksState.History(tracksInteractor.getTracks()))
+                        renderState(TracksState.History(tracksInteractor.getTracks().first()))
                     }
                 }
             }
@@ -69,7 +89,7 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
                     renderState(TracksState.Error)
                 } else {
                     viewModelScope.launch(Dispatchers.IO) {
-                        renderState(TracksState.History(tracksInteractor.getTracks()))
+                        renderState(TracksState.History(tracksInteractor.getTracks().first()))
                     }
                 }
             }
@@ -87,27 +107,14 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor) : ViewMode
         executeSearch()
     }
 
-    fun updateHistory() {
-        viewModelScope.launch(Dispatchers.IO) {
-            delay(1000)
-            renderState(TracksState.History(tracksInteractor.getTracks()))
-        }
-    }
-
-    fun refreshHistory() {
-        viewModelScope.launch(Dispatchers.IO) {
-            renderState(TracksState.History(tracksInteractor.getTracks()))
-        }
-    }
-
     fun clearHistory() {
         tracksInteractor.clearTracks()
         viewModelScope.launch(Dispatchers.IO) {
-            renderState(TracksState.History(tracksInteractor.getTracks()))
+            renderState(TracksState.History(tracksInteractor.getTracks().first()))
         }
     }
 
-    fun saveTrack(track: Track) {
+    suspend fun saveTrack(track: Track) {
         tracksInteractor.saveTrack(track)
     }
 

@@ -3,7 +3,6 @@ package com.practicum.playlistmaker.share.domain
 import com.practicum.playlistmaker.create_playlist.domain.model.Playlist
 import com.practicum.playlistmaker.search.domain.model.Track
 
-
 interface ShareInteractor {
 
     fun shareApp(link: String)
